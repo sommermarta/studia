@@ -1,0 +1,91 @@
+TEXT MINING LAB
+
+
+
+1. Install the 'tm' package
+
+
+2. Prepare the Reuters21578 dataset containing annotated news from Reuters
+
+
+
+# load the data
+
+
+install.packages("tm.corpus.Reuters21578", repos = "http://datacube.wu.ac.at")
+
+library("tm.corpus.Reuters21578")
+
+data(Reuters21578)
+
+Reuters21578
+
+
+
+# see an example article + its metadata
+
+
+
+Reuters21578[[1]]
+
+meta(Reuters21578[[1]])
+
+
+
+# create train/test sets + class variable (is article about crude oil)
+
+
+
+train_test <- unlist(meta(Reuters21578, tag="lewissplit"))
+
+train_ind <- train_test == "TRAIN"
+
+test_ind <- train_test == "TEST"
+
+class <- unlist(lapply(meta(Reuters21578, tag="topics_cat"), function(x) {is.element("crude", x)})) * 1
+
+class_train <- class[train_ind]
+class_test <- class[test_ind]
+
+reuters <- Reuters21578 # retain original file
+
+
+
+
+3. Create document term matrices for train and test sets.  Build a
+   
+   classifier on the training set and draw an ROC curve on the test
+   
+   set.
+
+
+
+HINTS:
+a) limit the size of the training/test sets to avoid performance problems
+
+b) use sparse matrices (Matrix class) when possible (document/term
+   
+   matrices returned by 'tm' are sparse)
+
+c) use 'inspect' to see fragments of the document term matrix
+
+d) glmnet allows sparse matrices as input
+
+
+
+
+4. Apply Latent Semantic Indexing to the data.  List most important
+
+   words in the first few topics.  (use the 'svd' function)
+
+
+
+5. Build a new classifier on the transformed data (in concept space)
+
+   and draw a new ROC curve on the test data
+
+
+
+6. Experiment with text data preprocessing: stemming / number removal /
+
+   stop words removal / ....
