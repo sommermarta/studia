@@ -1,0 +1,47 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+
+library("plotly")
+library("dplyr")
+
+kobiety <- read.table("fltper_1x1.txt", skip=2, header=T) 
+mezczyzni <- read.table("mltper_1x1.txt", skip=2, header=T) 
+
+kobiety2 <- kobiety %>% 
+  filter(Age %in% as.character(0:5)) %>%
+  group_by(Year) %>% 
+  summarize(sumazgonow=sum(dx),
+            plec='Kobiety')
+
+mezczyzni2 <- mezczyzni %>% 
+  filter(Age %in% as.character(0:5)) %>%
+  group_by(Year) %>% 
+  summarize(sumazgonow=sum(dx),
+            plec='Mężczyźni')
+
+d <- rbind(kobiety2,mezczyzni2)
+
+
+wyk <- ggplot(d,aes(x=Year,y=sumazgonow,col=plec))+
+  geom_point()+
+  geom_line()+
+  theme_bw()
+
+wyk
+
+```
+
+
+```{r, plotly=TRUE, message=FALSE, warning=FALSE}
+py <- plotly()
+py$ggplotly(wyk, session="knitr", kwargs=list(filename="przezwalnosc_marta_wiktor"))
+                                             #fileopt="overwrite"))
+```
+
+<iframe scrolling='no' seamless='seamless' style='border:none'
+src='https://plot.ly/~przemyslaw.biecek/63/deaths-of-children-under-5/' width='800' height='800'></iframe>
+

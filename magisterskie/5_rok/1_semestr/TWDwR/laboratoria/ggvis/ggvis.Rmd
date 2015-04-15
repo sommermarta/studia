@@ -1,0 +1,318 @@
+# Wprowadzenie do ggvis
+
+1. Podstawy ggvis
+2. Warstwy
+3. Mapowania
+4. Interaktywność
+5. Suwaki
+
+## Wprowadzenie
+
+O podobieństwach i różnicach pomiędzy ggvis i ggplot2
+http://ggvis.rstudio.com/ggplot2.html
+
+Pakiet ggplot bazuje na pakiecie grid a ggvis bazuje na bibliotece vega dla java script http://trifacta.github.io/vega/. ggplot2 jest świetny do statystycznej grafiki statystycznej, ggvis jest szybszy opracowany z myślą o włączania w strony html.
+
+ggvis szybko się rozwija i łatwo go poznać, gdy już zna się sposób pracy z ggplot2.
+
+## Dane
+
+Jeżeli danych nie ma to je pobierz i wczytaj.
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+# if (!("PISAeurope.rda" %in% list.files())) {
+#   library(downloader)
+#   download("https://github.com/pbiecek/TechnikiWizualizacjiDanych/blob/master/MINI_MIMUW_2014/materialy_z_wykladow_i_lab/PISAeurope.rda?raw=true", "PISAeurope.rda", mode = "wb")
+# read.table("C:\\Users\\sommerm\\Dropbox\\TWDwR\\laboratoria\\ggvis\\PISAeurope.rda")  
+# }
+setwd("C:\\Users\\Marta\\Dropbox\\TWDwR\\laboratoria\\ggvis" )
+load("PISAeurope.rda")
+```
+
+Mały preprocesing, policzmy średnie w krajach i średnie w podziale na płeć.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+library(dplyr)
+avgs <- pisa %>% 
+    group_by(CNT) %>% 
+    summarise(math = weighted.mean(PV1MATH, W_FSTUWT, na.rm = TRUE),
+              read = weighted.mean(PV1READ, W_FSTUWT, na.rm = TRUE)) 
+avgs
+
+avgsGender <- pisa %>% 
+    group_by(ST04Q01, CNT) %>% 
+    summarise(math = weighted.mean(PV1MATH, W_FSTUWT, na.rm = TRUE),
+              read = weighted.mean(PV1READ, W_FSTUWT, na.rm = TRUE)) 
+avgsGender
+
+```
+
+## Podstawy ggvis
+
+Geometrie w ggvis nazywa się warstwami (layers).
+
+Mapowania określa się poprzez formuły, warstwy dodaje się operatorem `%>%`.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+library(ggvis)
+avgs %>%
+  ggvis(x = ~math, y = ~read) %>%
+  layer_points()
+```
+
+W ggvis można wykorzystywać operator `:=` (który istniał wcześniej w R, ale nie był wykorzystywany). Pozwala on na wskazanie cechy wykresu przez wartość.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(x = ~math, y = ~read, stroke := 'red') %>%    # stroke to kolor obramowki
+  layer_points()
+```
+
+## Warstwy - Layers
+
+Podobnie jak w ggplot2, można i tu dodawać nowe warstwy. Ich lista znajduje się na stronie 
+http://ggvis.rstudio.com/layers.html.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(x = ~math, y = ~read, stroke := 'red') %>%
+  layer_points() %>%
+  layer_smooths()  
+```
+
+## Mapowania
+
+Właściwości w ggvis są nazywane properties (http://ggvis.rstudio.com/0.1/properties-scales.html).
+
+Warto pamiętać:
+- Mapowanie zmiennej vs. wskazywanie przez wartość (skalowanie/brak / - vs :=)
+- ~ kontroluje ewaluacje
+
+Warstwy mogą być parametryzowane, np. layer_model_predictions() przyjmują za parametry: se i model.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(x = ~math, y = ~read, stroke := 'red') %>%
+  layer_points() %>%
+  layer_smooths() %>%
+  layer_model_predictions(model = "lm", se = TRUE)
+
+# domain oznacza tyle co limits w ggplot2
+
+avgs %>%
+  ggvis(x = ~math, y = ~read, stroke := 'red') %>%
+  layer_points() %>%
+   scale_numeric("x", domain = c(0,600))
+```
+
+Więcej mapowań przedstawionych jest na stronie http://ggvis.rstudio.com/cookbook.html
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgsGender %>%
+  ggvis(x = ~math, y = ~read, fill  = ~ST04Q01, shape = ~factor(CNT)) %>%
+  layer_points() 
+```
+
+### Inne popularne warstwy
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(y = ~math, x = ~CNT) %>%
+  layer_bars() 
+
+avgs %>%
+  ggvis(x = ~math, y = ~CNT) %>%
+  layer_points() 
+
+avgs %>%
+  ggvis(y = ~math, x = ~CNT) %>%
+  layer_lines()  %>%
+  layer_points() 
+```
+
+
+## Interaktywność
+
+Ciekawą opcją w ggvis jest interaktywność, szybka i płynna w przeciwieństwie do połączenia shiny i ggplot2.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(x = ~math, y = ~read, shape = ~CNT) %>%
+  layer_points() %>% 
+  add_tooltip(function(df) df$CNT) 
+
+```
+
+Używając funkcji input_... można określone wartości udostępnić do wyboru użytkownikowi.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgs %>%
+  ggvis(x = ~math, y = ~read, 
+        fill := input_select(c("Red" = "red", "Blue" = "blue", "Yellow" = "yellow"), 
+                               label="Colour")) %>%
+  layer_points()
+
+```
+
+
+## Suwaki
+
+Inną ciekawą kontrolką jest 'input_slider()', pozwala na wybranie wartości z pewnego ciągłego przedziału.
+Wykorzystajmy ten suwak do kontroli stopnia wygładzenia.
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgsGender %>%
+  ggvis(x = ~math, y = ~read, fill  = ~ST04Q01) %>%
+  layer_points() %>%
+  layer_smooths(span  = input_slider(0.5, 2, step = 0.1))
+
+```
+
+Można dodawać więcej suwaków
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+avgsGender %>%
+  ggvis(x = ~math, y = ~read, fill  = ~ST04Q01) %>%
+  layer_points(size := input_slider(1, 30, step = 1)) %>%
+  layer_smooths(span  = input_slider(0.5, 2, step = 0.1))
+
+```
+
+
+# Inny przykład, wykorzystujący ggvis
+
+```{r fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+x <- c('ggplot2', 'ggplot2 + tufte', 'Excel', 'Tableau', 'plotly')
+y <- c(183, 22, 28, 29, 8)
+
+df <- data.frame(zrodlo = factor(x, levels=x), liczba.odpowiedzi = y, stringsAsFactors = FALSE)
+
+ggvis(df, ~zrodlo, ~liczba.odpowiedzi) %>%
+  layer_bars(width = 0.75) %>%
+  add_axis("x", properties = axis_props(
+    grid = list(stroke = "white")
+  ))
+
+```
+
+
+# Zadanie na zajęcia:
+
+- Nierówności w krajach (pomiędzy płciami, pomiędzy małymi / dużymi miastami, pomiędzy szkołami)
+- ESCS, edukacja PV1MATH, PV1READ, HISEI, CULTPOS
+
+W których krajach nierówności są duże a w których małe?
+
+# Ja i Piotrek - miasta duze/male
+
+```{r}
+
+dane <- data.frame(pisa$SC03Q01, pisa$CNT, pisa$PV1MATH, pisa$SC03Q01, pisa$ESCS, pisa$PV1READ, 
+                   pisa$CULTPOS, pisa$HISEI, pisa$W_FSTUWT)
+
+names(dane) <- c("miasto", "kraj", "matma", "maleiduzemiasta", "ekonomicznyindeks", 
+                 "czytanie", "dobrakultury", "statusrodzicow", "wagi")
+
+levels(dane$maleiduzemiasta) <- c("Small","Small",NA,"Big","Big") 
+
+dane <- dane[!is.na(dane[,4]),]
+
+table(dane$maleiduzemiasta)
+
+head(dane,20)
+
+dane2 <- dane %>%
+    group_by(kraj, maleiduzemiasta) %>% 
+    summarise(math = weighted.mean(matma, wagi, na.rm = TRUE),
+              read = weighted.mean(czytanie, wagi, na.rm = TRUE),
+              status = mean(statusrodzicow, na.rm=TRUE))  
+dane2
+
+dane3 <- dane2 %>%
+    group_by(kraj) %>% 
+    arrange(kraj,maleiduzemiasta) %>%
+    summarise(roznica = diff(math),
+              status = diff(status)) 
+
+dane3
+
+dane3 %>%
+  ggvis(x = ~kraj) %>%
+  layer_points(y = ~roznica,  fill := "red") %>%
+  layer_points(y = ~status,  fill := "blue") %>%
+  layer_lines(y=0)
+
+```
+
+# Paulina, Marta i Anita - plec
+
+```{r}
+pisa <- cbind(pisa, nowe=paste(pisa$CNT,pisa$ST04Q01))
+
+### ciekawszy
+pisa %>%
+  filter(!is.na(PV1MATH)) %>%
+    ggvis(x = ~nowe, y=~ PV1MATH,fill=~ST04Q01)%>%
+      add_axis("x",properties=axis_props(
+      labels=list(angle=90,align="left")))%>%
+      layer_boxplots()
+
+#### mniej ciekawy
+
+pisa %>%
+  filter(!is.na(HISEI)) %>%
+    ggvis(x = ~nowe, y=~ HISEI,fill=~ST04Q01)%>%
+      add_axis("x",properties=axis_props(
+      labels=list(angle=90,align="left")))%>%
+      layer_boxplots()
+
+################################################## poprawione przeze mnie i Piotrka:
+
+dane <- data.frame(pisa$CNT, pisa$ST04Q01, pisa$PV1MATH, pisa$ESCS, pisa$PV1READ, 
+                   pisa$CULTPOS, pisa$HISEI, pisa$W_FSTUWT)
+
+names(dane) <- c("kraj", "plec","matma", "ekonomicznyindeks", 
+                 "czytanie", "dobrakultury", "statusrodzicow", "wagi")
+
+dane2 <- dane %>%
+    group_by(kraj, plec) %>% 
+    summarise(math = weighted.mean(matma, wagi, na.rm = TRUE),
+              read = weighted.mean(czytanie, wagi, na.rm = TRUE))  
+dane2
+
+dane3 <- dane2 %>%
+    group_by(kraj) %>% 
+    arrange(kraj,plec) %>%
+    summarise(Math = diff(math),
+              Reading = diff(read)) 
+dane3
+
+library("tidyr")
+
+dane4 <- gather(dane3, key=kraj)
+names(dane4) <- c("kraj", "Test", "roznicaliczba")
+
+dane4 %>%
+  ggvis(x = ~kraj, y = ~roznicaliczba, fill= ~Test) %>%
+  layer_points(size := 300, opacity := 0.8) %>%
+  layer_lines(y=0) %>%
+  add_axis("x", title = "Country", title_offset = 50) %>%
+  add_axis("y", title = "Difference between male and female score", title_offset = 50) %>% 
+  add_axis("x", orient = "top", ticks = 0,
+  subdivide = 0, tick_padding = 0, tick_size_major = 0, title = "MEN BETTER AT MATH AND WOMEN AT READING!", title_offset = 20,
+  properties = axis_props(
+             axis = list(stroke = "white"),
+             labels = list(fontSize = 0, stroke="white"))) 
+
+
+dane3 %>%
+  ggvis(x = ~roznicaczyt, y = ~roznicamat, fill= ~kraj) %>%
+  layer_points() %>% 
+  scale_numeric("x", domain = c(-60,60)) %>%
+  scale_numeric("y", domain = c(-60,60)) %>%
+  add_tooltip(function(df) df$kraj) 
+
+```
+
+
+
+

@@ -1,0 +1,33 @@
+------------------------------------------------------ LISTA NR 3 ------------------------------------------------------------------------------------------------------------------
+
+-- # 1
+
+update orders
+set employeeid=4
+where employeeid=1
+
+select *    -- sprawdzenie
+from orders
+where employeeid=1
+
+-- # 2
+
+update [order details]
+set quantity=round(0.8*quantity,0)
+where productid in (select distinct productid from products where productname='Ikura') and
+	orderid in (select distinct orderid from orders where orderdate>'1997-05-15')
+
+update [order details]
+set quantity=round(0.8*quantity,0)
+from [order details] as od
+join orders as o on o.orderid=od.orderid
+join products as p on p.productid=od.productid
+where p.productname='Ikura' and o.orderdate>'1997-05-15'
+
+-- # 3
+
+delete from customers
+where customerid not in (select customerid from orders)
+
+delete from customers
+where not exists (select * from orders as o where o.customerid=customers.customerid)

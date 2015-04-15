@@ -1,0 +1,121 @@
+create procedure insreg @val int 
+as
+begin
+insert into region values(@val,'Central');
+end
+
+alter procedure insreg @val int 
+as
+begin
+insert into region values(@val,'Central');
+end   -- zmiana istniejacej procedury
+
+execute insreg 5
+execute insreg 555   --dziala ;D
+
+
+create procedure arc @minimalageinyears int
+as
+begin
+
+begin transaction
+set transaction isolation level serializable
+
+set identity_insert archivedorders on
+
+insert into archivedorders (orderid, customerid, employeeid, orderdate, 
+	requireddate, shippeddate, shipvia, freight, shipname, shipaddress, shipcity, 
+	shipregion, shippostalcode, shipcountry, archivedate)
+select *, getdate() as ArchiveDate
+from Orders
+where datediff(yy, orderDate, getdate())>@minimalageinyears
+
+insert into ArchievedOrderDetails
+select od.*
+from [order details] as od
+join orders as o on od.orderid=o.orderid
+where datediff(yy, orderDate, getdate())>@minimalageinyears
+
+delete from [order details]
+where orderid in (
+	select orderid 
+	from archivedorders
+	where datediff(yy, orderDate, getdate())>@minimalageinyears
+	)
+
+delete from orders
+where orderid in (
+	select orderid 
+	from archivedorders
+	where datediff(yy, orderDate, getdate())>@minimalageinyears
+	)
+
+set identity_insert archievedorders off
+
+commit
+
+end
+
+execute arc 13
+
+-- screnariusz 2
+
+-- uproscimy to troche, damy ten sam rabat
+
+alter procedure calculatediscount
+as 
+begin
+
+declare @c_id nchar(5)
+declare @p_id int
+declare @l_zam int
+-- kursor do przechodzenia wiersz po wierszu po selectach
+--deklaracja kursora
+declare klient cursor local for select customerid from orders
+-- teraz trzeba go otworzyc
+open klient
+-- do lokalnej zmiennej c_id wpisuje altualne zamowienie
+fetch next from klient into @c_id
+-- lokalna zmienna tez trzeba zadellarowac - patrz wyzej
+
+while @@fetch_status=0 
+begin
+	declare produkt cursor local for select productid from [order details] od
+		join orders o on o.orderid=od.orderid
+		where o.customerid=@c_id
+
+	open produkt
+	fetch next from produkt into @p_id
+	while @@fetch_status=0
+	begin
+		set @l_zam=(select count(*) from [Order Details] od
+					join orders o on o.orderid=od.orderid
+					where o.customerid=@c_id)
+		if @l_zam<3
+		begin
+		update [Order Details] set discount=0.00777
+		from [Order Details] od
+		join orders o on o.orderid=od.orderid
+		where od.productid=@p_id and o.customerid=@c_id
+		end
+		--else if @l_zam<5
+		--begin
+		--...
+		--end
+		fetch next from produkt into @p_id
+	end
+
+	fetch next from klient into @c_id
+end
+
+-- trzeba zamknac kursor i delokowac miejsce w pamieci
+close klient
+deallocate klient
+close produkt
+deallocate produkt
+
+end
+
+execute calculatediscount 
+
+

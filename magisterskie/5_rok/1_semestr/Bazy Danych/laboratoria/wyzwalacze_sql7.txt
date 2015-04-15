@@ -1,0 +1,164 @@
+-- wyzwalacze; 
+
+-- scenariusz 1
+
+-- krok 1
+
+create trigger insertdiscount2 on [order details] after insert
+as 
+begin
+	update [order details] set discount=0.1234
+	where orderid=(
+		select orderid
+		from inserted
+		) and productid=(
+			select productid 
+			from inserted
+			)
+end
+
+insert into [order details] (orderid, productid) values(10250,55)
+
+
+-- krok 2
+
+-- chcemy w zwiazku z tym wykorzystac kursor, zeby chodzic wiersz po wiersz 
+-- po danych. Chcemy zatem chodzic po wierszach tabeli inserted
+-- trzeba obudowac tamtego inserta w petle
+
+alter trigger insertdiscount2 on [order details] after insert
+as 
+begin
+	declare @oid int
+	declare @pid int -- nazwe zmiennej zawsze poprzedzamy malpka
+	declare kursor cursor local for 
+		select orderid, productid 
+		from inserted  -- to jeszcze nic nie robi, to jest tylko delkaracja
+
+	open kursor
+
+	fetch next from kursor into @oid, @pid -- nasze lokalne zmienne, tez trzeba je zadeklarowac -> patrz wyzej
+
+	while @@fetch_status=0 --mowi o tym, czy sa jeszcze jakies zmienne. to jest zmienna systemowa, dlatego ma dwie malpki
+	begin
+
+	update [order details] set discount=0.1234
+	where orderid=@oid and productid=@pid
+
+	fetch next from kursor into @oid, @pid -- to zwieksza kursor o jeden, wiec potrzeba to na koncu petli 
+	end
+	
+	close kursor
+	deallocate kursor
+end
+
+
+insert into [order details] (orderid, productid) 
+values(10250,54), (10250,56), (10250,57), (10250,58)
+
+-- krok 2a 
+
+-- zeby ten rabat nie byl nadawany tak bez sensu na sztywno
+
+-- zeby wpisac cos do lokalnej zmiennej trzeba zrobic:
+
+-- set @liczba.zam(select count(...))....
+-- update
+
+alter trigger insertdiscount2 on [order details] after insert
+as 
+begin
+	declare @oid int
+	declare @pid int -- nazwe zmiennej zawsze poprzedzamy malpka
+	declare @liczzam int
+
+	declare kursor cursor local for 
+		select orderid, productid 
+		from inserted  -- to jeszcze nic nie robi, to jest tylko delkaracja
+
+	open kursor
+
+	fetch next from kursor into @oid, @pid -- nasze lokalne zmienne, tez trzeba je zadeklarowac -> patrz wyzej
+
+	while @@fetch_status=0 --mowi o tym, czy sa jeszcze jakies zmienne. to jest zmienna systemowa, dlatego ma dwie malpki
+	begin
+
+	set @liczzam=(
+		select count(*)
+		from [order details] as od
+		join orders as o on o.orderid=od.orderid
+		where o.customerid=(
+			select customerid 
+			from orders 
+			where orderid=@oid
+			) and od.productid=@pid
+		)
+
+	if @liczzam=1 or @liczzam=2 
+		begin
+		update [order details] set discount=0.05
+		where orderid=@oid and productid=@pid
+		end
+	else if @liczzam=3
+		begin
+		update [order details] set discount=0.1
+		where orderid=@oid and productid=@pid
+		end
+	else if @liczzam>4
+		begin
+		update [order details] set discount=0.2
+		where orderid=@oid and productid=@pid
+		end
+	else 
+		begin
+		update [order details] set discount=0
+		where orderid=@oid and productid=@pid
+		end
+
+	fetch next from kursor into @oid, @pid -- to zwieksza kursor o jeden, wiec potrzeba to na koncu petli 
+	end
+	
+	close kursor
+	deallocate kursor
+end
+
+
+insert into [order details] (orderid, productid) 
+values(10250,59), (10250,60), (10250,61), (10250,62)
+
+
+
+-- krok 3
+
+alter trigger insertdiscount2 on [order details] instead of insert
+as 
+begin
+
+	declare @oid int
+	declare @pid int
+	declare @liczzam int
+	declare @up int
+	declare @q int
+
+	set @oid=(select orderid from inserted)
+	set @pid=(select productid from inserted)
+	set @up=(select unitprice from inserted)
+	set @q=(select quantity from inserted)
+	set @liczzam=(
+		select count(*)
+		from [order details] as od
+		join orders as o on o.orderid=od.orderid
+		where o.customerid=(
+			select customerid 
+			from orders 
+			where orderid=@oid
+			) and od.productid=@pid
+		)
+
+	if @liczzam=1 or @liczzam=2 
+		begin
+		insert into [order details] (orderid, productid, unitprice, quantity, discount) 
+			values (@oid, @pid, @up, @q, 0.05)
+		end
+	-- tu trzeba jeszcze dopisac ten milion innych warunkow...
+end

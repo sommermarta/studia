@@ -1,0 +1,228 @@
+-- *****************************************************************************************
+
+-- kolokwium:
+
+-- klucze glowne
+-- dodawanie, usuwanie, modyfikacja wierszy
+-- zmiana struktury np. dodac kolumne w tabeli
+-- zaproponowanie indeksow w tabelach
+-- polecenia tworzace indeks
+
+-- zadanie problemowe: do napisania procedura skladowana -> na pewno trzeba bedzie skorzystac z jakiegos kursora
+-- wyzwalacz (trigger) do napisania
+
+-- byc moze gdzies sie przewinie motyw transakcji
+-- poziomow izolacji nie bedzie
+
+-- nie korzystamy z nortwinda
+
+-- ******************************************************************************************
+
+-- zad.1
+
+-- utworz tabele:
+------pacjent(id, imie, nazwisko, data urodzenia, priorytet, ulica, numer, miasto),
+------wizyta (id, data umowienia, data wizyty, cena, id lekarza, id pacjenta)
+-- dodaj klucze glowne i jeden klucz obcy
+-- dodaj dwa wiersze do tabeli pacjent
+-- dodaj kolumne plec w tabeli pacjent
+-- usun pacjentow majacych wiecej niz 100 lat
+
+create table pacjent(
+	id integer not null,
+	imie varchar(30) not null,
+	nazwisko varchar(30) not null,
+	data_urodzenia datetime not null,
+	priorytet bit,
+	ulica varchar(30),
+	numer varchar(10),
+	miasto varchar(30)
+	)
+
+create table wizyta(
+	id integer not null,
+	data_umowienia date not null,
+	data_wizyty date not null,
+	cena money,
+	id_lekarza integer not null,
+	id_pacjenta integer not null
+	)
+	
+alter table pacjent
+add constraint pk_id_pacjenta primary key (id)
+
+alter table wizyta
+add constraint pk_id_wizyty primary key (id)
+
+alter table wizyta
+add constraint fk_wizyta_pacjent foreign key (id_pacjenta) references pacjent (id)
+
+insert into pacjent values (1,'Jan','Kowalski','2000-01-01',0,'Mala',1,'Warszawa')
+insert into pacjent values (4,'Kasia','Kowalski','2000-01-01',0,'Mala',1,'Warszawa'),
+							(2,'Mariusz','Kowalski','2000-01-01',0,'Krotka',1,'Krakow')
+
+select * from pacjent
+
+alter table pacjent 
+add plec bit
+
+select * from pacjent
+
+insert into pacjent values (3,'Jan','Kowalski','1900-01-01',0,'Mala',1,'Warszawa',1)
+
+select * from pacjent
+
+delete from pacjent
+where datediff(yyyy, data_urodzenia, getdate())>100
+
+select * from pacjent
+
+
+-- zad.2
+
+-- Zaproponuj indeksy dla nowo utworzonych tabel wraz z ich wlasciwosciami
+-- (klastrowy/nieklastrowy, unikalny itp.). Napisz kod tworzacy dwa wybrane indeksy
+-- dwoch roznych typow.
+
+-- Kiedy dajemy indeksy?
+-- zbior ma duzo wierszy
+-- chcemy wyszukiwac czegos 
+-- duza roznorodnosc wartosci
+
+-- przymykamy oko na to, ze nasz zbior danych nie jest duzy...
+
+-- pacjent:
+--id -> klastrowy, unikalny
+--imie, nazwisko -> nieklastrowy, nieunikalny
+--data_ur -> nieklastrowy, nieunikalny
+
+--priorytet
+--ulica
+--numer
+--miasto
+--plec
+
+-- wizyta:
+--id -> klastrowy, unikalny
+--data_um
+--data_wizyty -> nieklastr, nieunik
+--cena
+--id_lekarza -> nieklastr, nieunik
+--id_pacjenta -> nieklastr, nieunik
+
+-- na kluczu glownym tworza sie automatycznie, wiec tam nam sql nie pozwoli juz dodac
+
+create unique clustered index id on pacjent(id)
+
+
+
+--zad.3
+
+--dodaj kolumne bonus typu money w tabeli employees
+--napisz procedurê skladowa, ktora dla kazdego pracownika wyznaczy warrtosc premii
+--w zaleznosci od liczby zamowien, ktore nadzorowal
+--0-50 zamowienia -> 100
+--51-100 zamowienia -> 150
+--wiecej niz 100 zamowienia -> 250
+
+
+alter table employees 
+add bonus int
+
+alter procedure bonuski
+as
+begin
+
+declare @pracow int
+declare @liczbazam int
+
+declare pracownik cursor local for select employeeid from employees
+open pracownik
+
+fetch next from pracownik into @pracow
+
+while @@fetch_status=0
+begin
+	
+		set @liczbazam=(select count(*) from orders where employeeid=@pracow)
+		
+		if @liczbazam<=50 and @liczbazam>=0
+		begin 
+		update employees set bonus=100
+		where employeeid=@pracow
+		end
+		
+		else if @liczbazam<=100
+		begin 
+		update employees set bonus=150
+		where employeeid=@pracow
+		end
+		
+		else 
+		begin 
+		update employees set bonus=250
+		where employeeid=@pracow
+		end
+
+		fetch next from pracownik into @pracow
+end
+
+close pracownik
+deallocate pracownik
+
+end
+
+
+execute bonuski
+
+select * from employees
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

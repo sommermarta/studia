@@ -1,0 +1,147 @@
+
+--zad4 -> modyfikacja: avg>20
+SELECT p.ProductName, COUNT(*) OrderCount FROM Products p
+JOIN [Order Details] od ON od.ProductID=p.ProductID
+JOIN Orders o ON o.OrderID=od.OrderID
+JOIN Customers c ON c.CustomerID=o.CustomerID
+WHERE c.Country='Italy' and p.ProductID IN 
+    (select p2.ProductID FROM Products p2
+    JOIN [Order Details] od2 ON od2.ProductID=p2.ProductID
+    GROUP BY p2.ProductID
+    HAVING AVG(od2.Quantity)>=20)
+GROUP BY p.productName
+ORDER BY OrderCount desc
+
+		-- lub
+		select ProductId,ProductName, OrderCount from
+		(
+		select P.ProductId,ProductName, AVG(quantity) as AvgQuantity, COUNT(*) OrderCount from Products P
+		join [order details] od on od.ProductID=p.ProductID
+		GROUP by P.ProductId,ProductName
+		having AVG(quantity)>=20
+		) plist
+		where 
+		exists (select * from [Order Details] od 
+		join orders o on o.OrderID=od.OrderID
+		join Customers c on c.CustomerID=o.CustomerID
+		where  c.Country='Italy' and od.ProductID=plist.ProductID)
+		order by OrderCount desc
+
+	
+
+
+--zad6
+SELECT c.CompanyName as CustomerName, p.ProductName, o.OrderDate, od.Quantity FROM Customers c
+JOIN orders o ON o.CustomerID=c.CustomerID
+JOIN [Order Details] od ON od.OrderID=o.OrderID
+JOIN Products p ON p.ProductID=od.ProductID
+WHERE c.City='Berlin'
+ORDER BY CustomerName, p.ProductName, o.OrderDate
+
+		-- opcja z klientami bez zamówieñ
+		select CompanyName as CustomerName, ProductName, OrderDate, Quantity
+		from orders o
+		join [Order Details] od on od.OrderID=o.OrderID
+		join Products p on p.ProductID=od.ProductID
+		right join Customers c on c.CustomerID=o.CustomerID
+		where c.City='Berlin'
+		order by CustomerName, p.ProductName, o.OrderDate
+
+
+--zad7
+SELECT p.ProductName FROM Products p
+JOIN [Order Details] od ON od.ProductID=p.ProductID
+JOIN Orders o ON o.OrderID=od.OrderID
+WHERE o.ShipCountry='France' and YEAR(o.ShippedDate)=1998
+
+
+
+--zad9 -> modyfikacja: liczba produktow wieksza od 2
+SELECT od.OrderID FROM [Order Details] od
+JOIN Orders o ON od.OrderID=o.OrderID
+JOIN Customers c ON c.CustomerId=o.CustomerID
+WHERE c.Country='France'
+GROUP BY od.OrderID 
+HAVING COUNT(od.ProductID)>2 -- roznosc produktow jest spelniona ze wzgl. na klucz glowny
+
+
+
+--zad11
+select distinct CompanyName,productname,quantity,od.productid from Customers c
+join orders o on o.CustomerID=c.CustomerID
+join [Order Details] od on od.OrderID=o.OrderID
+join products p on p.ProductID=od.ProductID
+where Quantity=(select MAX(quantity) from [Order Details] od2 where od2.ProductID=od.ProductID)	
+ORDER BY p.ProductName
+
+-- lub
+SELECT distinct c.CompanyName, p.ProductName, od.Quantity, od.ProductID  FROM [Order Details] od
+JOIN
+(  SELECT od2.ProductId, MAX(od2.Quantity) AS Maks FROM [Order Details] od2
+   GROUP BY od2.ProductID
+)q ON q.ProductID = od.ProductID AND q.Maks = od.Quantity
+JOIN Orders o ON o.OrderID = od.OrderID
+JOIN Customers c ON c.CustomerID=o.CustomerID
+JOIN Products p ON p.ProductID=od.ProductID
+ORDER BY p.ProductName
+
+
+
+
+--zad12
+
+-- bledne rozwiazanie !!!, bo zaklada blednie, ze kazde zamowienie ma pracownika (patrz dozwolone Nulle dla EmployeeID w orders)
+SELECT e.EmployeeID FROM Employees e
+JOIN Orders o ON o.EmployeeID=e.EmployeeID
+GROUP BY e.employeeID
+HAVING COUNT(o.OrderID)>1.2*((SELECT COUNT(*) FROM Orders)/(SELECT COUNT(*) FROM Employees))  
+
+
+-- rozwiazanie bez dodatkowych zalozen
+SELECT o.EmployeeID FROM Orders o
+GROUP BY o.EmployeeID
+HAVING COUNT(o.OrderID)>1.2*(SELECT AVG(liczbaZam) FROM
+     (SELECT COUNT(*) AS liczbaZam FROM Orders o2     
+      GROUP BY o2.EmployeeID) tab     
+     )
+	
+	--lub	
+	SELECT emp.EmployeeID FROM Employees emp , (SELECT o.EmployeeID, COUNT(*) AS c FROM Orders o									  
+						    GROUP BY o.EmployeeID) oc
+	WHERE oc.EmployeeID=emp.EmployeeID 
+              AND oc.c>(SELECT AVG(ccc.c) FROM (SELECT COUNT(*) c FROM Orders o
+		        GROUP BY o.EmployeeID)As ccc)*1.2	
+
+
+
+
+
+--zad14 -> modyfikacja lat
+-- rozwiazanie bledne - NIE ZGADZAJA SIE WYNIKI!!!!
+SELECT od.ProductID FROM [Order Details] od
+JOIN Orders o ON od.OrderID=o.OrderID
+WHERE YEAR(o.OrderDate)=1997
+GROUP BY od.ProductID
+HAVING COUNT(od.ProductID)> (SELECT COUNT(od2.ProductID) FROM [Order Details] od2
+							JOIN Orders o2 ON o2.OrderID=od2.OrderID														
+							WHERE YEAR(o2.OrderDate)=1996 AND od.ProductID=od2.ProductID
+							GROUP BY od2.ProductID)
+
+		-- rozwiazanie poprawne
+		--to ponizsze daje dodatkowo productid 9, 48 i 61 (sa to produkty nie wystepujace w roku 96 a wystepujace w 97)
+		SELECT od.ProductID FROM [Order Details] od
+		JOIN Orders o ON o.OrderID=od.OrderID
+		GROUP BY od.ProductID
+		HAVING SUM(case when YEAR(o.OrderDate)=1997 then 1 else 0 end)>
+       		       SUM(case when YEAR(o.OrderDate)=1996 then 1 else 0 end)	
+		--ORDER BY p.ProductID ASC
+
+
+							
+
+
+
+
+
+
+

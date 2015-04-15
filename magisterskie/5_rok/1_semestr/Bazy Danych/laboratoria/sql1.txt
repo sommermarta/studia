@@ -1,0 +1,203 @@
+-- sql select - part 1
+
+-- # 1
+
+select *
+from Orders
+;
+
+-- # 2
+
+select *
+from Orders
+where ShipCountry in ('Germany', 'Mexico', 'Brazil')
+;
+
+select *
+from Orders
+where ShipCountry='Germany' or ShipCountry='Mexico' or ShipCountry='Brazil'
+;
+
+-- # 3
+
+select distinct ShipCity
+from Orders
+where ShipCountry='Germany'
+;
+
+-- # 4
+
+select *
+from Orders
+where year(OrderDate)=1996 and month(OrderDate)=7
+;
+
+select *
+from Orders
+where OrderDate>='1996-07-01' and OrderDate<'1996-08-01' 
+;
+
+-- # 5
+
+select distinct upper(substring(CompanyName,1,10)) as company_code
+from Customers
+;
+
+-- # 6
+
+select o.*
+from Orders as o
+join Customers as c on o.CustomerID=c.CustomerID
+where c.Country='France'
+;
+
+-- # 7
+
+select distinct o.ShipCountry
+from Orders as o
+join Customers as c on o.CustomerID=c.CustomerID
+where c.Country='Germany'
+;
+
+-- # 8
+
+select o.*
+from Orders as o
+join Customers as c on o.CustomerID=c.CustomerID
+where o.ShipCountry != c.Country
+;
+
+-- # 9
+
+select distinct CustomerID
+from Customers
+where CustomerID not in(
+	select distinct CustomerID
+	from Orders
+	)
+;
+
+select * 
+from Customers as c
+where not exists(
+	select *
+	from Orders as o
+	where o.CustomerID=c.CustomerID
+	)
+
+-- # 10
+
+select distinct c.CustomerID
+from Customers as c
+where c.CustomerID not in(
+	select distinct o.CustomerID
+	from Orders o
+	join [Order Details] as od on o.OrderID=od.OrderID
+	join Products as p on od.ProductID=p.ProductID
+	where p.ProductName='Chocolade'
+	)
+;
+
+select * 
+from customers as c 
+where not exists(
+	select *
+	from orders as o
+	where o.customerid=c.customerid and exists(
+		select *
+		from [order details] as od
+		join products as p on p.productid=od.productid
+		where od.orderid=o.orderid and p.productname='Chocolade' 
+		)
+	)
+;
+
+-- # 11
+
+select distinct o.customerid
+from orders as o
+join [order details] as od on o.orderid=od.orderid
+join products as p on p.productid=od.productid
+where p.productname='Scottish Longbreads'
+;
+
+select *
+from customers as c
+where exists(
+	select *
+	from orders as o 
+	join [order details] as od on o.orderid=od.orderid
+	join products as p on p.productid=od.productid
+	where p.productname='Scottish Longbreads' and o.customerid=c.customerid
+	)
+;
+
+-- # 12
+
+select * 
+from orders as o
+where exists(
+	select * 
+	from [order details] as od
+	join products as p on p.productid=od.productid
+	where p.productname='Scottish Longbreads' and od.orderid=o.orderid
+	) and not exists(
+		select * 
+		from [order details] as od
+		join products as p on p.productid=od.productid
+		where p.productname='Chocolade' and od.orderid=o.orderid
+		)
+;
+
+-- # 13
+
+select distinct e.firstname as name, e.lastname as surname
+from employees as e
+join orders as o on e.employeeid=o.employeeid
+where o.customerid='ALFKI'
+;
+
+select e.firstname as name, e.lastname as surname
+from employees as e
+where exists(
+	select * 
+	from orders o
+	where o.customerid='ALFKI' and o.employeeid=e.employeeid
+	)
+;
+
+-- # 14
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+select distinct e.firstname, e.lastname, c.companyname, o.orderdate, (case when p.productname='Chocolade' then 1 else 0 end) as statusczekolady
+from employees as e
+left join orders as o on e.employeeid=o.employeeid 
+left join [order details] as od on o.orderid=od.orderid
+left join products as p on p.productid=od.productid 
+left join customers as c on c.customerid=o.customerid
+;
+-----------------------  CO JEST ZLEGO W TYM PODEJSCIU????????????????????????? -------------------------------------------------------------------------------
+
+select e.firstname, e.lastname, c.companyname, o.orderdate, (case when od.orderid is null then 0 else 1 end) as statusczekolady
+from employees as e
+left join orders as o on e.employeeid=o.employeeid 
+left join customers as c on c.customerid=o.customerid
+left join [order details] as od on o.orderid=od.orderid and od.productid in(
+	select productid 
+	from products
+	where productname='Chocolade'
+	)
+;
+
+-- # 15
+
+select e.firstname, e.lastname, c.companyname, o.orderdate, (case when od.orderid is null then 0 else 1 end) as statusczekolady
+from customers as c
+left join orders as o on c.customerid=o.customerid
+left join employees as e on e.employeeid=o.employeeid 
+left join [order details] as od on o.orderid=od.orderid and od.productid in(
+	select productid 
+	from products
+	where productname='Chocolade'
+	)
+;

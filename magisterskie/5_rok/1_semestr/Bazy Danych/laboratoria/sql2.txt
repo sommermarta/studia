@@ -1,0 +1,220 @@
+-- sql select - part II
+
+-- # 1
+
+select od.productid, o.shipcountry, sum(od.quantity) as totalquantity
+from [order details] as od
+join orders as o on od.orderid=o.orderid
+where o.employeeid=2
+group by od.productid, o.shipcountry
+order by od.productid, o.shipcountry
+
+-- # 2
+
+select distinct c.companyname
+from customers as c
+join orders as o on o.customerid=c.customerid
+join [order details] as od on od.orderid=o.orderid
+join products as p on p.productid=od.productid
+where p.productname='Chocolade'
+
+-- # 3 -> zmieniamy 2000 na 1997 i 100 na 20, zeby byly jakies wyniki :D
+
+select e.firstname as imie, e.lastname as nazwisko, sum(od.quantity) as totalquantity
+from employees as e
+join orders as o on e.employeeid=o.employeeid
+join [order details] as od on od.orderid=o.orderid
+join products as p on p.productid=od.productid
+where p.productname='Chocolade' and year(o.orderdate)=1997
+group by e.firstname, e.lastname
+having sum(od.quantity)>20
+
+-- # 4 -> srednio 50 jednostek tego produktu jest zamawiane w jednym zamowieniu -> zmieniam na 25
+
+select p.productname
+from products as p
+join [order details] as od on p.productid=od.productid
+join orders as o on o.orderid=od.orderid
+join customers as c on c.customerid=o.customerid
+where c.country='Italy' and p.productid in (
+	select od2.productid
+	from [order details] as od2
+	group by od2.productid
+	having avg(od2.quantity)>=25
+	)
+group by p.productname
+order by count(*) desc
+
+-- # 5
+
+select distinct p.productname
+from products as p
+join [order details] as od on p.productid=od.productid
+join orders as o on o.orderid=od.orderid
+where exists (
+	select od2.productid
+	from [order details] as od2 
+	join orders as o2 on o2.orderid=od2.orderid 
+	where o2.shipcountry='France' and p.productid=od2.productid
+	) and not exists (
+		select od3.productid
+		from [order details] as od3
+		join orders as o3 on o3.orderid=od3.orderid 
+		where o3.shipcountry='Belgium' and p.productid=od3.productid
+		)
+
+
+select distinct pr.ProductName
+from Products pr
+join [Order Details] od on od.ProductID=pr.ProductID
+join Orders ord on od.OrderID=ord.OrderID
+where ShipCountry='France'
+except
+select distinct pr.ProductName
+from Products pr
+join [Order Details] od on od.ProductID=pr.ProductID
+join Orders ord on od.OrderID=ord.OrderID
+where ShipCountry='Belgium'
+
+
+select distinct pr.ProductName
+from Products pr
+join [Order Details] od on od.ProductID=pr.ProductID
+join Orders ord on od.OrderID=ord.OrderID
+where ShipCountry='France' and pr.ProductName not in (
+	select distinct pr.ProductName
+	from Products pr
+	join [Order Details] od on od.ProductID=pr.ProductID
+	join Orders ord on od.OrderID=ord.OrderID
+	where ShipCountry='Belgium'
+	)
+
+-- # 6
+
+select c.companyname, p.productname, o.orderdate, od.quantity
+from customers as c
+join orders as o on c.customerid=o.customerid
+join [order details] as od on od.orderid=o.orderid
+join products as p on p.productid=od.productid
+where c.city='Berlin'
+order by c.companyname, p.productname, o.orderdate
+
+-- # 7
+
+select distinct p.productname
+from products as p 
+join [order details] as od on p.productid=od.productid
+join orders as o on o.orderid=od.orderid
+where o.shipcountry='France' and year(o.orderdate)=1998
+
+-- # 8
+
+select c.companyname
+from customers as c
+where c.customerid in (
+	select distinct customerid
+	from orders
+	group by customerid
+	having count(customerid)>=5
+	) and c.customerid not in (
+		select distinct customerid
+		from orders as o2
+		join [order details] as od2 on o2.orderid=od2.orderid
+		join products as p2 on p2.productid=od2.productid
+		where p2.productname like 'Ravioli%' 
+		)
+		
+-- # 9
+
+select distinct od.orderid
+from orders as o
+join [order details] as od on od.orderid=o.orderid
+where o.customerid in (
+	select customerid
+	from customers
+	where country='France' 
+	)
+group by od.orderid
+having count(distinct od.productid)>2
+
+-- # 10
+
+select companyname
+from customers 
+where customerid in (
+	select customerid
+	from orders 
+	where shipcountry='France'
+	group by customerid
+	having count(customerid)>=5
+	) and customerid not in (
+		select customerid
+		from orders 
+		where shipcountry='Belgium'
+		group by customerid
+		having count(customerid)>2
+		)
+
+select companyname
+from customers as c
+join orders as o on o.customerid=c.customerid
+group by companyname
+having sum(case when o.shipcountry='France' then 1 else 0 end)>=5 and sum(case when o.shipcountry='Belgium' then 1 else 0 end)<=2
+
+-- # 11
+
+select distinct p.productname, c.companyname
+from customers as c
+join orders as o on o.customerid=c.customerid
+join [order details] as od on od.orderid=o.orderid
+join products as p on p.productid=od.productid
+join (
+	select productid, max(quantity) as maks
+	from [order details] 
+	group by productid
+	) as m on od.quantity=m.maks and od.productid=m.productid
+order by p.productname
+
+-- # 12
+
+select o.employeeid 
+from orders as o
+group by o.employeeid
+having count(o.orderid)>1.2*(
+	select avg(ile)
+	from(
+		select count(*) as ile
+		from orders as o2
+		group by o2.employeeid
+		) as srednia
+	)
+	
+-- # 13
+
+select top 5 orderid, count(distinct productid) as ileroznychproduktow
+from [order details]
+group by orderid
+order by ileroznychproduktow desc
+
+-- # 14
+
+select od.productid
+from [order details] as od
+join orders as o on o.orderid=od.orderid
+group by od.productid
+having sum(case when year(o.orderdate)=1997 then 1 else 0 end)>
+		sum(case when year(o.orderdate)=1996 then 1 else 0 end)
+order by od.productid
+
+-- # 15
+
+select p.productname, 
+	sum(case when year(o.orderdate)=1996 then 1 else 0 end) as nr6, 
+	sum(case when year(o.orderdate)=1997 then 1 else 0 end) as nr7, 
+	sum(case when year(o.orderdate)=1998 then 1 else 0 end) as nr8
+from products as p
+join [order details] as od on od.productid=p.productid
+join orders as o on o.orderid=od.orderid
+group by p.productname
+order by p.productname
+

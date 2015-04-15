@@ -1,0 +1,37 @@
+-- scenario # 1
+
+select *, getdate() as ArchiveDate
+into ArchivedOrders
+from Orders
+where year(orderdate)=1996
+
+select top 10 * 
+from archivedorders -- ok, wszystko dziala
+
+alter table archivedorders
+add constraint PK_ArchivedOrders primary key (orderid)  -- constraint zeby nadac kluczowi nazwe
+
+alter table archivedorders
+add constraint FK_ArchivedOrders_Customers foreign key (customerid) references customers (customerid)
+
+alter table archivedorders
+add constraint FK_ArchivedOrders_Employees foreign key (employeeid) references employees (employeeid)
+
+select od.*
+into ArchivedOrderDetails
+from [order details] as od
+join archivedorders as a on od.orderid=a.orderid
+
+delete from [order details]
+
+delete from [order details]
+where orderid in (select orderid from archivedorders)
+
+delete from orders
+where orderid in (select orderid from archivedorders)
+
+-- tranzakcje -> wykonuj¹ siê wszystkie, albo ¿adne
+
+begin transaction
+-- selecty -> to wszystko, co wczesniej, powinno byc tu w srodku
+commit

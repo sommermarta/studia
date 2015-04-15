@@ -1,0 +1,136 @@
+
+-- szablon
+
+create [unique] clustered/nonclustered index nazwaindeksu on nazwatabeli (kolumna1, [kolumna2,...]) 
+
+-- szablon
+
+-- #scenario 1 - jak stworzyc indeks w kolumnie id dla tabeli produkty
+
+-- create [unique] clustered index idproduktu on produkty (id)
+
+-- zadanie 1
+
+select firstname, lastname 
+from employees e 
+where exists (
+	select * 
+	from orders o 
+	where customerid='ALFKI' and e.employeeid=o.employeeid)
+
+-- query -> display estimated execution plan
+-- indeks jest na shipdate, a nie ma na requireddate -> zobaczmy jaka bedzie roznica w predkosci
+
+select orderid 
+from orders
+where shippeddate='1998-02-02'
+
+select orderid 
+from orders
+where requireddate='1998-03-13'
+
+
+-- zadanie 2
+
+select * 
+from orders o 
+where not exists (
+	select * 
+	from [order details] od 
+	join products p on p.productid=od.productid 
+	where productname='Scottish Longbreads' and od.orderid=o.orderid)
+	and exists (
+		select * 
+		from [order details] od 
+		join products p on p.productid=od.productid 
+		where productname='Chocolade' and od.orderid=o.orderid)
+
+-- jest indeks na productname i wszedzie indziej, wiec juz nic raczej nie przyspieszymy...
+-- a wiec jak przyspieszyc???
+
+select o.* 
+from orders o 
+join [order details] od on od.orderid=o.orderid
+where not exists (
+	select * 
+	from products p 
+	where productname='Scottish Longbreads' and p.productid=od.productid )
+	and exists (
+		select * 
+		from products p  
+		where productname='Chocolade' and p.productid=od.productid)
+
+-- a to byl moj pomysl, ale niestety dziala wolniej... :(
+
+select distinct * from(
+select o.*, (case when  productname='Scottish Longbreads' then 1 else 0 end) as sl,
+	(case when  productname='Chocolade' then 1 else 0 end) as ch
+from orders o
+join [order details] od on od.orderid=o.orderid
+join products p on od.productid=p.productid) as a
+where sl!=1 and ch=1
+
+-- zadanie 3
+
+select * 
+from customers c 
+where not exists (
+	select *
+	from orders o 
+	where o.customerid=c.customerid and exists (
+		select * 
+		from [order details] od 
+		join products p on p.productid=od.productid 
+		where od.orderid=o.orderid and p.productname='Chocolade'
+		)
+	)
+
+-- nie da sie dodac nowych indeksow, to trzeba jakos zmienic zapytanie...
+
+select *
+from customers
+where customerid not in(
+	select o.customerid
+	from orders o
+	join [order details] od on od.orderid=o.orderid
+	join products p on p.productid=od.productid
+	where p.productname='Chocolade'
+	)
+
+-- zadanie 4
+
+select * 
+from orders o 
+where exists (
+	select * 
+	from [order details] od 
+	where od.orderid=o.orderid and productid=59 and quantity>5)
+
+-- pierwsza mysl: dodac indeks na quantity
+-- ale najlepsza poprawe wydajnosci da nam stworzenie indeksu, ktory bedzie opieral sie na trzech kolumnach
+-- na orderid, productid i na quantity
+
+-- zadanie 5
+
+select productname, (
+	select count(*) 
+	from [order details] od
+	join orders o on od.orderid=o.orderid 
+	where od.productid=p.productid and year(orderdate)=1996
+	) as NoOfOrders1996, (
+		select count(*) 
+		from [order details] od 
+		join orders o on od.orderid=o.orderid 
+		where od.productid=p.productid and year(orderdate)=1997
+		) as NoOfOrders1997 
+from products p
+where productname like 'S%'
+
+select p.productname, sum(case when year(o.orderdate)=1996 then 1 else 0 end) as szesc,
+	 sum(case when year(o.orderdate)=1997 then 1 else 0 end) as siedem
+from orders o
+join [order details] od on o.orderid=od.orderid
+join products p on p.productid=od.productid
+where productname like 'S%'
+group by p.productname
+

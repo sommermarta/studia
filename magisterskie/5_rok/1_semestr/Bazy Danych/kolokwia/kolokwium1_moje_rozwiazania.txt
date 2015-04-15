@@ -1,0 +1,72 @@
+-- a)
+
+select count(distinct o.orderid) as ile
+from orders as o
+join customers as c on o.customerid=c.customerid
+where c.country='France' and orderid in(
+	select distinct orderid
+	from [order details]
+	group by orderid
+	having count(distinct productid)>=2
+	) 
+
+-- b)
+
+select distinct c.companyname, p.productname
+from products as p
+join [order details] as od on od.productid=p.productid
+join orders as o on o.orderid=od.orderid
+join customers as c on o.customerid=c.customerid
+join (
+	select customerid, min(quantity) as minimum
+	from [order details] as od
+	join orders as o on o.orderid=od.orderid
+	group by customerid
+	) as m on o.customerid=m.customerid
+where od.quantity=m.minimum
+
+-- c)
+
+select top 3 e.employeeid, e.firstname, e.lastname
+from employees as e
+where e.employeeid in (
+	select distinct employeeid
+	from orders
+	group by employeeid
+	having count(orderid)>=3
+	) and e.employeeid not in (
+		select distinct employeeid
+		from orders
+		where shipcity='Sao Paulo'
+		)
+order by e.birthdate desc
+
+-- d)
+
+select employeeid, sum(case when year(orderdate)=1996 then 1 else 0 end) as rok1996, 
+	sum(case when year(orderdate)=1997 then 1 else 0 end) as rok1997, 
+	sum(case when year(orderdate)=1998 then 1 else 0 end) as rok1998
+from orders
+where employeeid in (
+	select employeeid
+	from employees
+	where lastname like '%e%'
+	) 
+group by employeeid
+
+-- e)
+
+select distinct ca.categoryname
+from categories as ca
+join products as p on p.categoryid=ca.categoryid
+where p.productid in (
+	select distinct productid
+	from [order details] as od
+	join orders as o on o.orderid=od.orderid
+	group by productid
+	having sum(case when year(o.orderdate)=1997 and month(o.orderdate)>=7 then 1 else 0 end) > sum(case when year(o.orderdate)=1998 and month(o.orderdate)<=6 then 1 else 0 end)
+	)
+order by ca.categoryname desc
+
+
+

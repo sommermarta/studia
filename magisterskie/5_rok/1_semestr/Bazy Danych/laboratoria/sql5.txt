@@ -1,0 +1,90 @@
+-- tranzakcje -> wykonuj¹ siê wszystkie, albo ¿adne
+
+begin transaction
+-- selecty -> to wszystko, co wczesniej, powinno byc tu w srodku
+commit
+
+-- read uncommited -> czytamy nawet niezakomitowane
+-- read commited -> czytamy dopiero skonczone
+-- reapeatable read -> plus blokada na nasze dane (ktos inny nie moze pracowac na naszych danych)
+-- snapshot ???? pomijamy
+-- serializable -> zabraniamy robienia insertow danych, na ktorych pracujemy
+
+
+begin transaction
+
+update orders set customerid='alfki'
+where orderid=10263
+
+rollback
+commit
+
+-- zakleszczanie, przyklad:
+
+begin transaction
+
+update employees 
+set firstname='Natalia'
+where employeeid=1
+
+update employees 
+set firstname='Andrzej'
+where employeeid=2
+
+rollback
+
+-- a w innym query:
+
+begin transaction
+
+update employees 
+set firstname='Andrzej'
+where employeeid=2
+
+
+update employees 
+set firstname='Natalia'
+where employeeid=1
+
+rollback
+
+
+-- Scenario #3
+
+create table pricelist(
+	productid int not null,
+	price money,
+	date_from date not null,
+	date_to date
+	)
+
+alter table pricelist
+add constraint pk_pricelist
+primary key (productid, date_from)
+
+alter table pricelist
+add constraint fk_pricelist_prod
+foreign key (productid) references products (productid)
+
+insert into pricelist 
+values (1,30,'1995-05-15','1996-05-15'),
+	(1,30,'1996-05-16','1997-05-15'),
+	(1,30,'1997-05-16','1998-05-15'),
+	(1,30,'1998-05-16','1999-05-15'),
+	(1,30,'1999-05-16','2000-05-15'),
+	(1,30,'2000-05-16','2001-05-15')
+
+alter table orders
+add totalvalue money
+
+update orders
+set totalvalue
+
+select sum(od.quantity*pl.price)
+from [order details] as od
+join products as p on p.productid=od.productid
+join pricelist as pl on pl.productid=p.productid
+group by orderid
+
+
+
