@@ -1,0 +1,8 @@
+model {
+	for (i in 1:n) {
+		y[i] ~ dnorm(beta*x[i] + alfa, tau)
+	}
+	tau ~ dgamma(.001, .001)
+	alfa ~ dnorm(0, .0001)
+	beta ~ dnorm(0, .0001)
+}
