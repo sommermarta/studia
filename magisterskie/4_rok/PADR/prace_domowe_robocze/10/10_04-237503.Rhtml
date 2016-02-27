@@ -1,0 +1,64 @@
+<html>
+<head>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>Numerowanie rysunkow</title>
+
+</head>
+
+<body>
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE
+library("stringi")
+end.rcode-->
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE
+a <- normalizePath(stri_paste("C:\\Users\\Marta\\Desktop\\Marta",
+            "\\studia\\rok4\\PADR\\prace_domowe_robocze\\10\\rysunki.html",
+                              collapse=""))
+end.rcode-->
+
+<!--begin.rcode results='asis', echo=FALSE, warning=FALSE, message=FALSE
+
+z <- readLines(a)
+zz <- stri_paste(z, collapse="\n")
+ocho <- unlist(stri_split_regex(zz,"<img "))
+ile <- length(ocho)-1
+
+ochooo <- character(ile)
+gg <- character(ile)
+
+for(i in 1:ile){
+   ochooo[i] <- stri_paste(ocho[i],"<a name='r",i,
+                           "'/>\n<p>Rysunek ",i,":</p>\n<img ",
+                           collapse="")
+   gg[i] <- stri_paste(c("<li><a href='#r",i,"'>Rysunek ",i,"</a></li>"),
+                       collapse="")
+}
+
+g <- stri_paste(c("<ul>",gg,"</ul>"),collapse="")
+u <- stri_paste(c(ochooo,ocho[length(ocho)]), collapse="")
+m <- stri_replace_all_regex(u,"<body>",g)
+
+cat(m)
+
+end.rcode-->
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

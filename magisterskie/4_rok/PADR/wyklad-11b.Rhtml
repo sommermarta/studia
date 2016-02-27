@@ -1,0 +1,141 @@
+<!-- RSTUDIO
+Tools -> Global Options -> Sweave
+Weave..... with: KNITR
+
+Kompilacja: CTRL+SHIFT+H
+
+http://yihui.name/knitr/options
+-->
+
+<html>
+<head>
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>Mój pierwszy raport w RHTML</title>
+</head>
+<body>
+<h1>Raport</h1>
+
+<p>Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet</p>
+
+<!--begin.rcode
+"1"
+"2"
+"3"
+2+2
+x <- sum(1:10) # wyznacz sume 10 p l c
+print(x)
+end.rcode-->
+
+Sam output:
+
+<!--begin.rcode echo=FALSE
+library('stringi')
+stri_length("ąśæŋśðŋśð")
+end.rcode-->
+
+Bez pierwszego polecenia
+
+<!--begin.rcode echo=-1
+library('stringi')
+stri_length("ąśæŋśðŋśð")
+end.rcode-->
+
+Kilka wybranych:
+
+<!--begin.rcode echo=c(1,4,2)
+1
+2
+3
+4
+5
+end.rcode-->
+
+
+
+
+<!--begin.rcode
+hist(rnorm(100))
+end.rcode-->
+
+
+
+<!--begin.rcode results='hide'
+print("aaa")
+end.rcode-->
+
+<!--begin.rcode results='asis',echo=FALSE
+cat("<ol>")
+for (i in 1:10)
+   cat("<li>", i, "</li>")
+cat("</ol>")
+end.rcode-->
+
+
+Warto wlaczyc czasem pamiec podreczna, zeby raz policzone wyniki
+zostaly zachowane
+
+<!--begin.rcode results='asis',echo=FALSE,cache=TRUE
+n <- c(10, 25, 30)
+
+for (i in n) {
+   cat('<h2>n=', i, '</h2>')
+   replicate(100000, {
+      x <- rnorm(i)
+      mean(x)
+   }) -> res
+   hist(res)
+   cat('Srednia to: ', mean(res))
+}
+
+end.rcode-->
+
+
+kolejne komentarze....
+
+
+wstawki nazwane:
+
+<!--begin.rcode wst1,eval=FALSE,echo=FALSE
+print("ala ma kota")
+end.rcode-->
+
+<!--begin.rcode
+<<wst1>>
+<<wst1>>
+<<wst1>>
+end.rcode-->
+
+<!--begin.rcode ustawienia,cache=TRUE
+n <- 100
+end.rcode-->
+   
+<!--begin.rcode cache=TRUE,dependson='ustawienia'
+hist(rnorm(n))
+end.rcode-->
+   
+   
+<!--begin.rcode
+sum(gsdgsd) # takiej zmiennej nie ma
+log(-1)
+end.rcode-->
+
+
+<!--begin.rcode warning=FALSE,message=FALSE
+sum(gsdgsd) # takiej zmiennej nie ma
+log(-1)
+end.rcode-->
+
+<!--begin.rcode tidy=FALSE
+for(i in 1:       10) print(
+   i)
+end.rcode-->
+
+
+
+</body>
+   

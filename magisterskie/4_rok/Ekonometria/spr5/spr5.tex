@@ -1,0 +1,348 @@
+\documentclass[11pt,a4paper]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{listings}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 5 \\ EKONOMETRIA \\ MARTA SOMMER -- BSMAD}
+
+Bêdziemy rozwa¿aæ dane zawieraj¹ce szeregi czasowe przedstawiaj¹ce notowania gie³dowe g³ównych indeksów œwiatowych. W moim sprawozdaniu biorê pod uwagê cztery indeksy -- WIG (gie³da polska), DAX (gie³da niemiecka), CAC40 (gie³da francuska) oraz FTSE (gie³da angielska). Przeprowadzê analizê w ten sposób, ¿eby zobaczyæ, które rynki s¹ ze sob¹ skointegrowane, czyli maj¹ na siebie krótko lub d³ugookresowy wp³yw. Zatem do dzie³a!
+
+
+
+
+Po usuniêciu braków danych nasze dane wygl¹dajê nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##     WIG  DAX CAC40 FTSE
+## 1 13752 3156  3121 4413
+## 2 13740 3015  2992 4392
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Konstruujê równie¿ dla nich logarytmiczne stopy zwrotu, które wygl¹daj¹ nastêpuj¹co:
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##       logWIG   logDAX logCAC40   logFTSE
+## 1 -0.0008883 -0.04556 -0.04214 -0.004906
+## 2 -0.0007463  0.02444  0.02733  0.003546
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Korzystaj¹c z testu Duckeya-Fullera otrzymaliœmy, ¿e szeregi WIG (p-value $=0.84$), DAX (p-value~$=0.59$), CAC40 (p-value $=0.81$) oraz FTSE (p-value $=0.69$) nie s¹ stacjonarne. Natomiast ju¿ wszystkie logarytmiczne stopy zwrotu s¹ stacjonarne (ka¿de p-value testu D-F wysz³o mniejsze ni¿ $0.01$).
+
+\bigskip
+
+Skonstruujmy teraz 4-wymiarowy model VAR dla naszych stóp zwrotu. Zanim to jednak zrobimy musimy znaæ jego rz¹d opóŸnienia. Policzmy go przy u¿yciu dwóch kryteriów: AIC i BIC. AIC wskazuje na opóŸnienie rzêdu $5$, zaœ BIC na opóŸnienie rzêdu $1$. Bierzemy wiêc minimum i dopasowujemy model VAR($1$), a nastêpnie testem Ljunga-Boxa sprawdzam, czy reszty w modelu s¹ niezale¿ne. P-value tego testu dla kolejnych reszt wysz³o du¿e, zatem przyjmujemy hipotezê o tym, ¿e reszty nie s¹ skorelowane. Model jest wiêc poprawnie dopasowany.
+
+
+
+
+
+
+
+PrzeprowadŸmy zatem analizê przyczynowoœci w modelu. ¯eby stwierdziæ, ¿e dany rynek wp³ywa na inny wystarczy stwierdziæ, czy odpowiadaj¹cy mu wspó³czynnik w modelu jest istotny (p-value t-testu). Spójrzmy na uzyskane rezultaty (wartoœci przedstawione ni¿ej to jest wspomniane p-value t-testów):
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## $logWIG
+##   logWIG.l1   logDAX.l1 logCAC40.l1  logFTSE.l1       const 
+##   1.554e-03   1.511e-08   2.867e-06   5.284e-01   2.371e-01 
+## 
+## $logDAX
+##   logWIG.l1   logDAX.l1 logCAC40.l1  logFTSE.l1       const 
+##   2.764e-02   8.799e-04   4.973e-06   5.409e-01   4.507e-01 
+## 
+## $logCAC40
+##   logWIG.l1   logDAX.l1 logCAC40.l1  logFTSE.l1       const 
+##   2.266e-01   3.397e-10   4.882e-09   4.767e-01   8.177e-01 
+## 
+## $logFTSE
+##   logWIG.l1   logDAX.l1 logCAC40.l1  logFTSE.l1       const 
+##   5.708e-01   1.143e-09   1.517e-04   5.393e-01   1.923e-01
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ zatem, ¿e na notowania WIG-u w dniu dzisiejszym maj¹ wp³yw notowania WIG-u z dnia poprzedniego, jak równie¿ notowania z dnia poprzedniego DAX-u i CAC40. Na to co dzieje siê na gie³dzie polskiej ma wp³yw gie³da niemiecka i francuska. Jest to oczywiœcie prognoza krótkookresowa. Przyjrzyjmy siê dalej naszym rezultatom. Na notowania DAX-u w dniu dzisiejszym wp³yw maj¹ notowania WIG-u, DAX-u i CAC40 z dnia poprzedniego. Na notowania CAC40 maj¹ wp³yw notowania DAX-u i CAC40 z dnia poprzedniego. I wreszcie na notowania FTSE maj¹ wp³yw notowania DAX-u i CAC40 z dnia poprzedniego. 
+
+Najwa¿niejsze dla nas wnioski s¹ wiêc takie, ¿e na Polskê maj¹ wp³yw Niemcy i Francjê, natomiamiast Polska wp³ywa krótkookresowo tylko na Niemcy. Jest to niejako intuicyjne -- polska s³aba gospodarka nie mo¿e mieæ wielkiego wp³ywu na europejskie potêgi gospodarcze. Z drugiej strony Anglia te¿ na nikogo nie wp³ywa. To mo¿e byæ jednak wynikiem jej niezale¿noœci gospodarczej.
+
+\bigskip
+
+Zbudujmy teraz model VAR dla niestacjonarnych notowañ indeksów. Dziêki niemu bêdziemy mogli wyznaczyæ liczbê relacji kointegruj¹cych. Znów na podstawie kryteriów AIC i BIC wyznaczam liczbê opóŸnieñ w modelu. AIC wskaza³o na $10$, zaœ BIC na $2$. Dopasujemy zatem model VAR($2$). Korzystaj¹c z testu Ljunga-Boxa dostajemy równie¿, ¿e reszty w tym modelu s¹ nieskorelowane, zatem model jest dobrze dopasowany.
+
+
+
+
+W celu wyznaczenia liczby relacji kointegruj¹cych trzeba wyznaczyæ pierwiastki jednostkowe równania:
+
+$$
+\det(A-A_1L-A_2L^2-\ldots-A_pL^p)=0
+$$
+
+Równanie to mo¿na rozwi¹zaæ przy pomocy funkcji \texttt{roots}:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## [1] 1.00043 0.99624 0.99624 0.97223 0.11864 0.11367 0.11367 0.05779
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e mamy tak naprawdê dwa pierwiastki jesnostkowe, czyli z twierdzenia Grangera o reprezentacji wiemy wiêc, ¿e bêdziemy mieæ $K-r$ relacji kointegruj¹cych, czyli w naszym przypadku dwie ($4-2=2$). Mo¿na to te¿ rozwi¹zaæ innym sposobem, mianowicie korzystaj¹c z testu Johansena:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## 
+## ###################### 
+## # Johansen-Procedure # 
+## ###################### 
+## 
+## Test type: trace statistic , with linear trend 
+## 
+## Eigenvalues (lambda):
+## [1] 0.0155755 0.0101150 0.0031631 0.0002159
+## 
+## Values of teststatistic and critical values of test:
+## 
+##           test 10pct  5pct  1pct
+## r <= 3 |  0.53  6.50  8.18 11.65
+## r <= 2 |  8.34 15.66 17.95 23.52
+## r <= 1 | 33.40 28.71 31.52 37.22
+## r = 0  | 72.10 45.23 48.28 55.43
+## 
+## Eigenvectors, normalised to first column:
+## (These are the cointegration relations)
+## 
+##           WIG.l2 DAX.l2 CAC40.l2   FTSE.l2
+## WIG.l2     1.000  1.000    1.000   1.00000
+## DAX.l2   -10.269  2.731  -12.351   0.03332
+## CAC40.l2  -2.384 -5.626    9.671  20.05509
+## FTSE.l2    1.177 -5.508    9.469 -12.55014
+## 
+## Weights W:
+## (This is the loading matrix)
+## 
+##           WIG.l2     DAX.l2   CAC40.l2    FTSE.l2
+## WIG.d   0.008956 -0.0111756 -3.404e-04 -1.255e-04
+## DAX.d   0.003159 -0.0002655 -1.913e-05 -1.754e-05
+## CAC40.d 0.002117 -0.0002092 -5.829e-05 -2.327e-06
+## FTSE.d  0.002577 -0.0002567 -1.401e-04 -4.651e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Poniewa¿ interesuje nas przedzia³ ufnoœci $95\%$ patrzymy na kolumnê z napisem $5pct$. Moment, w którym odrzucamy hipotezê œwiadczy o tym, ¿e rz¹d macierzy (r) jest równy $2$, zatem relacji kointegruj¹cych znów jest $4-2$, czyli dwie. Dwoma metodami wysz³y nam wiêc dwie relacje kointegruj¹ce. 
+
+\bigskip
+
+Dopasujmy wiêc wreszcie model VECM.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## $rlm
+## 
+## Call:
+## lm(formula = substitute(form1), data = data.mat)
+## 
+## Coefficients:
+##            WIG.d      DAX.d      CAC40.d    FTSE.d   
+## ect1        -0.00222    0.00289    0.00191    0.00232
+## ect2        -0.12248   -0.03316   -0.02232   -0.02716
+## constant   -31.57125   56.01779   36.07501   46.36179
+## WIG.dl1      0.06556    0.00761    0.00309    0.00266
+## DAX.dl1      1.40288    0.21148    0.18884    0.31684
+## CAC40.dl1   -1.64979   -0.40981   -0.31257   -0.37618
+## FTSE.dl1    -0.05237    0.01397   -0.00967    0.02402
+## 
+## 
+## $beta
+##            ect1    ect2
+## WIG.l2    1.000  0.0000
+## DAX.l2    0.000  1.0000
+## CAC40.l2 -4.945 -0.2494
+## FTSE.l2  -4.104 -0.5142
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Na relacje kointegruj¹ce wskazuje wektor beta, który nale¿y interpretowaæ w nastêpuj¹cy sposób:
+
+\begin{eqnarray*}
+WIG_{t-1} &=& 4,94\cdot CAC40_{t-1}+4,1\cdot FTSE_{t-1}\\
+DAX_{t-1} &=& 0,24\cdot CAC40_{t-1}+0,51\cdot FTSE_{t-1}
+\end{eqnarray*}
+
+Interpretacja tym razem jest d³ugookresowa. Jeœli CAC40 wzroœnie o $1$ punkt procentowy, to WIG powinien wzrosn¹æ o $4,94$ procenty. Podobnie, jeœli wzroœnie FTSE, to WIG powinien wzrosn¹æ o $4,1$. Dla drugiego równania analogicznie. Z tym, ¿e widaæ, ¿e w perspektywie d³ugookresowej gie³da francuska i angielska maj¹ niewielki wp³yw na gie³dê niemieck¹. Za to Polska bardzo jest od tamtych gospodarek zale¿na. 
+
+\section*{\textbf{Kod Ÿród³owy}}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"quantmod"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"tseries"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"fUnitRoots"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"vars"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"urca"}\hlstd{)}
+
+\hlstd{dane} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr5\textbackslash{}\textbackslash{}wybrane2.csv"}\hlstd{,}
+    \hlkwc{header} \hlstd{= T,} \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{,} \hlkwc{dec} \hlstd{=} \hlstr{","}\hlstd{)}
+\hlstd{dane} \hlkwb{<-} \hlstd{dane[}\hlopt{-}\hlkwd{c}\hlstd{(}\hlnum{2468}\hlopt{:}\hlnum{2472}\hlstd{), ]}
+\hlstd{dane} \hlkwb{<-} \hlkwd{na.approx}\hlstd{(dane)}
+\hlstd{dane} \hlkwb{<-} \hlkwd{as.data.frame}\hlstd{(dane)}
+\hlkwd{attach}\hlstd{(dane)}
+
+\hlkwd{head}\hlstd{(dane,} \hlnum{2}\hlstd{)}
+
+\hlstd{logprice} \hlkwb{<-} \hlkwd{apply}\hlstd{(dane,} \hlnum{2}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlkwd{log}\hlstd{(}\hlkwd{Lag}\hlstd{(x,} \hlkwc{k} \hlstd{=} \hlnum{0}\hlstd{)}\hlopt{/}\hlkwd{Lag}\hlstd{(x,} \hlkwc{k} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlstd{\})[}\hlopt{-}\hlnum{1}\hlstd{, ]}
+\hlstd{logprice} \hlkwb{<-} \hlkwd{as.data.frame}\hlstd{(logprice)}
+\hlkwd{names}\hlstd{(logprice)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"logWIG"}\hlstd{,} \hlstr{"logDAX"}\hlstd{,} \hlstr{"logCAC40"}\hlstd{,} \hlstr{"logFTSE"}\hlstd{)}
+
+\hlkwd{head}\hlstd{(logprice,} \hlnum{2}\hlstd{)}
+
+\hlstd{p} \hlkwb{<-} \hlnum{1}\hlopt{:}\hlnum{10}
+\hlstd{crit} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(p),} \hlkwc{dimnames} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwa{NULL}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"AIC"}\hlstd{,}
+    \hlstr{"BIC"}\hlstd{)))}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlstd{p) \{}
+    \hlstd{var} \hlkwb{<-} \hlkwd{VAR}\hlstd{(logprice,} \hlkwc{p} \hlstd{= i)}
+    \hlstd{crit[i,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlkwd{AIC}\hlstd{(var)}
+    \hlstd{crit[i,} \hlnum{2}\hlstd{]} \hlkwb{<-} \hlkwd{BIC}\hlstd{(var)}
+\hlstd{\}}
+\hlstd{crit}
+\hlkwd{which}\hlstd{(crit[,} \hlnum{1}\hlstd{]} \hlopt{==} \hlkwd{min}\hlstd{(crit[,} \hlnum{1}\hlstd{]))}
+\hlkwd{which}\hlstd{(crit[,} \hlnum{2}\hlstd{]} \hlopt{==} \hlkwd{min}\hlstd{(crit[,} \hlnum{2}\hlstd{]))}
+
+\hlstd{var1} \hlkwb{<-} \hlkwd{VAR}\hlstd{(logprice,} \hlkwc{p} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{res1} \hlkwb{<-} \hlkwd{residuals}\hlstd{(var1)}
+\hlkwd{apply}\hlstd{(res1,} \hlnum{2}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlkwd{Box.test}\hlstd{(x,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}\hlopt{$}\hlstd{p.value}
+\hlstd{\})}
+
+\hlkwd{lapply}\hlstd{(}\hlkwd{summary}\hlstd{(var1)}\hlopt{$}\hlstd{varresult,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) x}\hlopt{$}\hlstd{coeff[,} \hlnum{4}\hlstd{])}
+
+\hlstd{p} \hlkwb{<-} \hlnum{1}\hlopt{:}\hlnum{10}
+\hlstd{crit2} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(p),} \hlkwc{dimnames} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwa{NULL}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"AIC"}\hlstd{,}
+    \hlstr{"BIC"}\hlstd{)))}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlstd{p) \{}
+    \hlstd{var} \hlkwb{<-} \hlkwd{VAR}\hlstd{(dane,} \hlkwc{p} \hlstd{= i)}
+    \hlstd{crit[i,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlkwd{AIC}\hlstd{(var)}
+    \hlstd{crit[i,} \hlnum{2}\hlstd{]} \hlkwb{<-} \hlkwd{BIC}\hlstd{(var)}
+\hlstd{\}}
+\hlstd{crit}
+\hlkwd{which}\hlstd{(crit[,} \hlnum{1}\hlstd{]} \hlopt{==} \hlkwd{min}\hlstd{(crit[,} \hlnum{1}\hlstd{]))}
+\hlkwd{which}\hlstd{(crit[,} \hlnum{2}\hlstd{]} \hlopt{==} \hlkwd{min}\hlstd{(crit[,} \hlnum{2}\hlstd{]))}
+\hlstd{var2} \hlkwb{<-} \hlkwd{VAR}\hlstd{(dane,} \hlkwc{p} \hlstd{=} \hlnum{2}\hlstd{)}
+
+\hlstd{res2} \hlkwb{<-} \hlkwd{residuals}\hlstd{(var2)}
+\hlkwd{head}\hlstd{(res2)}
+\hlkwd{apply}\hlstd{(res2,} \hlnum{2}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{) \{}
+    \hlkwd{Box.test}\hlstd{(x,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\hlstd{\})}
+\hlstd{var2} \hlkwb{<-} \hlkwd{VAR}\hlstd{(dane,} \hlkwc{p} \hlstd{=} \hlnum{2}\hlstd{)}
+
+\hlkwd{abs}\hlstd{(}\hlkwd{roots}\hlstd{(var2))}
+
+\hlstd{joh} \hlkwb{<-} \hlkwd{ca.jo}\hlstd{(dane,} \hlkwc{type} \hlstd{=} \hlstr{"trace"}\hlstd{,} \hlkwc{K} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{ecdet} \hlstd{=} \hlstr{"none"}\hlstd{)}
+\hlkwd{summary}\hlstd{(joh)}
+
+\hlstd{vecm} \hlkwb{<-} \hlkwd{cajorls}\hlstd{(joh,} \hlkwc{r} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlstd{vecm}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+
+\end{document}

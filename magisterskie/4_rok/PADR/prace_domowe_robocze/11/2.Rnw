@@ -1,0 +1,52 @@
+\documentclass[12pt]{report}
+
+\usepackage[MeX,OT4,plmath]{polski}
+\usepackage[utf8]{inputenc} 
+\usepackage[OT4]{fontenc}
+\usepackage[polish]{babel}
+\selectlanguage{polish}
+\let\lll\undefined
+\usepackage{amssymb,amsmath,amsfonts}
+\usepackage{graphicx}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1cm, bmargin=1cm, lmargin=1cm, rmargin=1cm}
+\pagestyle{empty}
+
+\begin{document}
+
+<<results='asis', cache=FALSE, echo=FALSE, message=FALSE, warning=FALSE>>=
+library("stringi")
+
+tab2latex <- function(b){
+
+b <- normalizePath(b)
+a <- read.csv2(b)
+nam <- names(a)
+wier <- dim(a)[1]
+
+tab <- numeric(wier)
+for(i in 1:wier){
+   tab[i] <- stri_paste(c("\\hline\n",i," & ",stri_paste(as.matrix(a[i,]),collapse="& ")," \\\\\n"),collapse="")
+}
+
+il <- stri_paste(rep("c",length(nam)+1),collapse="|")
+
+cat("\\begin{table}[ht!]\n\\centering\n",stri_paste(c("\\begin{tabular}{",il,"}"),collapse=""),"\n & ",stri_paste(nam,collapse=" & "),"\\\\",tab,"\\end{tabular}\n\\end{table}")
+}
+
+
+a <- "C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\PADR\\prace_domowe_robocze\\11\\Crime.csv"
+
+b <- "C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\PADR\\prace_domowe_robocze\\11\\daneSoc.csv"
+
+c <- "C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\PADR\\prace_domowe_robocze\\11\\samochody2.csv"
+
+tab2latex(a)
+tab2latex(b)
+tab2latex(c)
+
+
+@
+
+\end{document}

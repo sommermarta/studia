@@ -1,0 +1,12 @@
+\beamer@endinputifotherversion {3.27pt}
+\select@language {polish}
+\beamer@sectionintoc {1}{O czym b\IeC {\k e}dzie mowa?}{2}{0}{1}
+\beamer@sectionintoc {2}{Wst\IeC {\k e}p}{6}{0}{2}
+\beamer@sectionintoc {3}{UDL i LDL}{9}{0}{3}
+\beamer@subsectionintoc {3}{1}{Przyk\IeC {\l }ad}{10}{0}{3}
+\beamer@subsectionintoc {3}{2}{ZA\IeC {\L }O\IeC {\.Z}ENIA}{13}{0}{3}
+\beamer@sectionintoc {4}{FRAKCJE}{14}{0}{4}
+\beamer@subsectionintoc {4}{1}{Przyk\IeC {\l }ad}{14}{0}{4}
+\beamer@sectionintoc {5}{DANE DYSKRETNE}{19}{0}{5}
+\beamer@subsectionintoc {5}{1}{Przyk\IeC {\l }ad}{19}{0}{5}
+\beamer@sectionintoc {6}{!!!!!!!!}{30}{0}{6}

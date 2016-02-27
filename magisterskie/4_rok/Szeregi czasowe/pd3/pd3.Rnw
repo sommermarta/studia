@@ -1,0 +1,142 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 3\\ ASC - 22 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Analizujemy zbiór danych zawierajacy notowania indeksu Dow Jones od pocz¹tku tego roku.
+
+\bigskip
+
+Trajektoria szeregu i wykres ACF przedstawiaj¹ siê nastêpuj¹co:
+
+<<echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
+library("tseries")
+
+DJ <- get.hist.quote(instrument="dow",start="2014-01-01",
+                  quote="AdjClose",retclass="zoo")
+DJ <- ts(as.numeric(DJ))
+@
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+plot(DJ,type="l")
+acf(DJ)
+@
+
+Z wykresów od razu widaæ trend w danych. Zró¿nicujmy wiêc szereg i znów przeanalizujmy wykresy ACF, PACF i jego trajektorii:
+
+<<echo=FALSE,fig.align='center',fig.height=3.6,fig.width=8>>=
+ddj <- diff(DJ)
+ts.plot(ddj)
+acf(ddj)
+pacf(ddj)
+@
+
+Tym razem ju¿ szereg wygl¹da na stacjonarny.
+
+\bigskip
+
+Patrz¹c na wykresy proponujê dopasowaæ model ARIMA($1$,$1$,$3$). Dopasujê go wiêc i przeprowadzê test Ljunga-Boxa. Oto rezultat:
+
+<<>>=
+model_moj <- arima(ddj, c(1,0,3))
+Box.test(model_moj$resid,lag=20,type="Ljung")
+@
+
+Widaæ, ¿e model jest bardzo dobrze dopasowany.
+
+\bigskip
+
+Spróbujmy jeszcze dopasowaæ ró¿ne inne modele automatycznymi funkcjami, które oferuje R.
+
+Na pocz¹tek stwórzmy model przy u¿yciu funkcji \texttt{ar()}.
+
+<<>>=
+model_ar <- ar(ddj, aic=TRUE, method="mle", order.max=NULL)
+Box.test(model_ar$resid,lag=20,type="Ljung") 
+@
+
+Test Ljunga-Boxa przeprowadzony na tym modelu wskazuje na doœæ dobre dopasowanie modelu, jednak gorsze ni¿ to dopasowane przeze mnie "na oko".
+
+\bigskip
+
+Teraz dopasujê jeszcze ca³¹ rodzinê modeli ARMA($p$,$q$) i wybiorê dwa -- jeden, korzystaj¹c z kryterium AIC, a drugi korzystaj¹c z kryterium BIC. Oto rezultaty:
+
+<<echo=FALSE,results='hide',cache=TRUE>>=
+aic <- matrix(0,7,7)
+bic <- matrix(0,7,7)
+
+for(p in 0:6){
+   for(q in 0:6){
+      model <- arima(ddj, c(p,0,q),method="ML",
+                     optim.control=list(maxit=10^5))
+      aic[p+1,q+1] <- AIC(model)
+      bic[p+1,q+1] <- AIC(model,k=log(length(ddj)))
+   }
+}
+
+wym_aic <- which(aic==min(aic),arr.ind=TRUE)-1
+wym_bic <- which(bic==min(bic),arr.ind=TRUE)-1
+
+wym_aic
+wym_bic
+@
+
+<<>>=
+model_aic <- arima(ddj,c(wym_aic[1],0,wym_aic[2]))
+model_bic <- arima(ddj,c(wym_bic[1],0,wym_bic[2]))
+
+Box.test(model_aic$resid,lag=20,type="Ljung")
+Box.test(model_bic$resid,lag=20,type="Ljung")
+@
+
+Widaæ wiêc, ¿e kryterium AIC wybra³o nam model ARIMA($1$,$1$,$3$), a kryterium BIC wybra³o model ARIMA($0$,$1$,$0$). Z testów Ljunga-Boxa wynika zaœ, ¿e model AIC (równowa¿ny z wybranym przeze mnie na pocz¹tku modelem) jest du¿o lepiej dopasowany. 
+
+\bigskip
+
+Dokonajmy teraz predykcji kolejnych piêciu obserwacji. Oto wykresy predykcji oraz przedzia³ów ufnoœci dla trzech zaproponowanych przeze mnie modeli (ar, aic i bic):
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+pr_bic <- predict(model_bic,n.ahead=5)$pred
+se_bic <- predict(model_bic,n.ahead=5)$se
+
+ts.plot(pr_bic, pr_bic + 2*se_bic, pr_bic - 2*se_bic,
+        col=c("red","red","red"), lty=c(1,3,3), main="BIC")
+
+pr_aic <- predict(model_aic,n.ahead=5)$pred
+se_aic <- predict(model_aic,n.ahead=5)$se
+
+ts.plot(pr_aic, pr_aic + 2*se_aic, pr_aic - 2*se_aic,
+        col=c("red","red","red"), lty=c(1,3,3), main="AIC")
+
+pr_ar <- predict(model_ar,n.ahead=5)$pred
+se_ar <- predict(model_ar,n.ahead=5)$se
+
+ts.plot(pr_ar, pr_ar + 2*se_ar, pr_ar - 2*se_ar,
+        col=c("red","red","red"), lty=c(1,3,3), main="AR")
+@
+
+
+\end{document}
+
+
+

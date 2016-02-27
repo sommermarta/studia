@@ -1,0 +1,254 @@
+\documentclass[10pt,a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 3\\ ASC - 22 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Analizujemy zbiór danych zawierajacy notowania indeksu Dow Jones od pocz¹tku tego roku.
+
+\bigskip
+
+Trajektoria szeregu i wykres ACF przedstawiaj¹ siê nastêpuj¹co:
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-21} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-22} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Z wykresów od razu widaæ trend w danych. Zró¿nicujmy wiêc szereg i znów przeanalizujmy wykresy ACF, PACF i jego trajektorii:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-31} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-32} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-33} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Tym razem ju¿ szereg wygl¹da na stacjonarny.
+
+\bigskip
+
+Patrz¹c na wykresy proponujê dopasowaæ model ARIMA($1$,$1$,$3$). Dopasujê go wiêc i przeprowadzê test Ljunga-Boxa. Oto rezultat:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model_moj} \hlkwb{<-} \hlkwd{arima}\hlstd{(ddj,} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{3}\hlstd{))}
+\hlkwd{Box.test}\hlstd{(model_moj}\hlopt{$}\hlstd{resid,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  model_moj$resid
+## X-squared = 10.42, df = 20, p-value = 0.9598
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ, ¿e model jest bardzo dobrze dopasowany.
+
+\bigskip
+
+Spróbujmy jeszcze dopasowaæ ró¿ne inne modele automatycznymi funkcjami, które oferuje R.
+
+Na pocz¹tek stwórzmy model przy u¿yciu funkcji \texttt{ar()}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model_ar} \hlkwb{<-} \hlkwd{ar}\hlstd{(ddj,} \hlkwc{aic} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"mle"}\hlstd{,} \hlkwc{order.max} \hlstd{=} \hlkwa{NULL}\hlstd{)}
+\hlkwd{Box.test}\hlstd{(model_ar}\hlopt{$}\hlstd{resid,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  model_ar$resid
+## X-squared = 14.25, df = 20, p-value = 0.8177
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Test Ljunga-Boxa przeprowadzony na tym modelu wskazuje na doœæ dobre dopasowanie modelu, jednak gorsze ni¿ to dopasowane przeze mnie "na oko".
+
+\bigskip
+
+Teraz dopasujê jeszcze ca³¹ rodzinê modeli ARMA($p$,$q$) i wybiorê dwa -- jeden, korzystaj¹c z kryterium AIC, a drugi korzystaj¹c z kryterium BIC. Oto rezultaty:
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model_aic} \hlkwb{<-} \hlkwd{arima}\hlstd{(ddj,} \hlkwd{c}\hlstd{(wym_aic[}\hlnum{1}\hlstd{],} \hlnum{0}\hlstd{, wym_aic[}\hlnum{2}\hlstd{]))}
+\hlstd{model_bic} \hlkwb{<-} \hlkwd{arima}\hlstd{(ddj,} \hlkwd{c}\hlstd{(wym_bic[}\hlnum{1}\hlstd{],} \hlnum{0}\hlstd{, wym_bic[}\hlnum{2}\hlstd{]))}
+
+\hlkwd{Box.test}\hlstd{(model_aic}\hlopt{$}\hlstd{resid,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  model_aic$resid
+## X-squared = 10.42, df = 20, p-value = 0.9598
+\end{verbatim}
+\begin{alltt}
+\hlkwd{Box.test}\hlstd{(model_bic}\hlopt{$}\hlstd{resid,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  model_bic$resid
+## X-squared = 24.09, df = 20, p-value = 0.2384
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e kryterium AIC wybra³o nam model ARIMA($1$,$1$,$3$), a kryterium BIC wybra³o model ARIMA($0$,$1$,$0$). Z testów Ljunga-Boxa wynika zaœ, ¿e model AIC (równowa¿ny z wybranym przeze mnie na pocz¹tku modelem) jest du¿o lepiej dopasowany. 
+
+\bigskip
+
+Dokonajmy teraz predykcji kolejnych piêciu obserwacji. Oto wykresy predykcji oraz przedzia³ów ufnoœci dla trzech zaproponowanych przeze mnie modeli (ar, aic i bic):
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-81} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-82} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-83} 
+
+}
+
+
+
+\end{knitrout}
+
+
+
+\end{document}
+
+
+

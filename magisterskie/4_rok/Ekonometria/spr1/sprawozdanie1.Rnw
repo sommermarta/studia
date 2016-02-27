@@ -1,0 +1,265 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 1\\ EKONOMETRIA - 14 lutego 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Wczytajmy dane i dopasujmy model liniowy (zmienna \textit{liniowa}):
+$$ pop=\beta_0+\beta_1\cdot cena + \beta_2\cdot doch $$
+przy uwzglêdnieniu inflacji i ludnoœci kraju.
+
+<<>>=
+
+a <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr1\\lab1_zad1.csv", sep=";", header=TRUE)
+
+y <- a$pop/(a$CPI*a$ludnosc)
+x <- matrix(c(a$cena/a$CPI,a$doch/a$CPI),ncol=2)
+colnames(x) <- c("cena2","dochod2")
+
+liniowa <- lm(y~x)
+summary(liniowa)
+@
+
+$P-value$ testu $F$ wynosi $0,3435$, jest zatem bardzo du¿e, czyli nie mamy podstaw do odrzucenia hipotezy o nieistotnoœci ca³ego modelu. W praktyce oznacza to, ¿e popyt na alkohol nie zale¿y od ceny i dochodu. Wynik mo¿e nieco dziwiæ, ale wnosi on tyle, ¿e alkohol jest dobrem pierwszej potrzeby i ¿e zawsze bêdzie na niego popyt (w pewnym sensie i w pewnych granicach niezale¿nie od jego ceny i od dochodów ludnoœci).
+
+\bigskip
+
+Przyjrzyjmy siê jednak elastycznoœci, która wska¿e pewn¹ tendencjê przydatn¹ w interpretacji. Elastycznoœæ cenowa w modelu liniowym (\textit{elast\_cen\_liniowy}) wyra¿a siê wzorem: 
+$$ \varepsilon^{C}=\beta_1\cdot \dfrac{cena}{pop} $$
+zaœ elastycznoœæ dochodowa (\textit{elast\_dochod\_potegowy}) wzorem:
+$$ \varepsilon^{I}=\beta_2\cdot \dfrac{doch}{pop} $$
+S¹ to wektory, tak wiêc je uœredniamy.
+
+<<>>=
+
+elast_cen_liniowy <- (liniowa$coefficients[2]*x[,"cena2"])/y
+elast_dochod_liniowy <- (liniowa$coefficients[3]*x[,"dochod2"])/y
+mean(elast_cen_liniowy); mean(elast_dochod_liniowy)
+
+@
+
+Elastycznoœæ cenowa wynosi $-0,1482$, czyli przy wzroœcie ceny o $1\%$, popyt maleje o $0,15\%$. 
+Elastycznoœæ dochodowa wynosi $0,4198$, czyli przy wzroœcie dochodu o $1\%$, popyt roœnie o $0,42\%$.
+Obie tendencje wydaj¹ siê sensowne.
+
+\bigskip
+
+Dopasujmy teraz model potêgowy (zmienna \textit{potegowa}):
+$$ pop=\beta_0\cdot cena^{\beta1}\cdot doch^{\beta_2} $$
+
+<<>>=
+potegowa <- lm(log(y)~log(x))
+summary(potegowa)
+@
+
+Z testu $F$ wynika, ¿e w tym modelu zmienne równie¿ nie s¹ istotne ($p-value=0,433$). 
+
+\bigskip
+
+Zbadajmy jeszcze elastycznoœæ, która dla modelu potêgowego wyra¿a siê wzorami, odpowiednio:
+$$\varepsilon^C=\beta_1$$
+$$\varepsilon^I=\beta_2$$
+
+<<>>=
+elast_cen_potegowy <- potegowa$coefficients[2]
+elast_dochod_potegowy <- potegowa$coefficients[3]
+elast_cen_potegowy; elast_dochod_potegowy
+@
+
+Elastycznoœæ cenowa wynosi $-0,1111$, czyli przy wzroœcie ceny o $1\%$, popyt maleje o $0,11\%$.  
+Elastycznoœæ dochodowa wynosi $0,3692$, czyli przy wzroœcie dochodu o $1\%$, popyt roœnie o $0,37\%$.
+Wyniki s¹ wiêc bardzo zbli¿one do tych z modelu liniowego. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Dopasujmy model potêgowy:
+$$ \ln{q}=\beta_0+\beta_1\ln{p}+\beta_2\ln{doch} $$
+
+<<>>=
+zywn <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr1\\lab1_zad2.csv", 
+                   sep=";", header=TRUE)
+attach(zywn)
+
+l <- lm(log(q)~log(p)+log(doch),data=zywn)
+summary(l)
+@
+
+$P-value$ testu $F$ jest ma³e i wynosi $<2e-16$, zatem odrzucamy hipotezê o nieistotnoœci zmiennych w modelu (krótko mówi¹c - model ma sens). Poza tym zmodyfikowany wspó³czynnik $R^2$ jest równy $0,971$, jest zatem bardzo du¿y, co œwiadczy o dobrym dopasowaniu modelu.
+
+\bigskip
+
+Elastycznoœæ cenowa i dochodowa tego modelu to, odpowiednio, wspó³czynniki $\beta_1 (=-0,1189)$ i~$\beta_2~(=0,2412)$. Tak wiêc, gdy cena roœnie, to popyt na ¿ywnoœæ minimalnie maleje, a gdy dochód roœnie, to popyt mimimalnie roœnie. Fakt, ¿e nie jest to du¿y spadek (lub wzrost) mo¿na t³umaczyæ tym, ¿e ¿ywnoœæ jest produktem pierwszej potrzeby. 
+
+\bigskip
+
+Dopasujmy teraz model z interakcjami:
+$$ \ln{q}=\beta_0+\beta_1\ln{p}+\beta_2\ln{doch} +\beta_3\ln{p}\ln{doch} $$
+
+<<>>=
+ll <- lm(log(q)~log(p)*log(doch),data=zywn)
+summary(ll)
+@
+
+Tutaj model równie¿ ma sens (zmienne s¹ istotne), a zmodyfikowany wspó³czynnik $R^2$ jest nawet nieco lepszy ni¿ w zwyk³ym modelu potêgowym (wynosi $0,975$). Przyjrzyjmy siê elastycznoœci cenowej i dochodowej w tym modelu. Bêdzie ona wynosi³a, odpowiednio:
+\begin{eqnarray*}
+\varepsilon^C&=&\beta_1+\beta_3\ln(doch)\\
+\varepsilon^I&=&\beta_2+\beta_3\ln(p) \\
+\end{eqnarray*}
+i równie¿ bêdzie wektorem, wiêc rozpatrzymy jej œredni¹.
+
+<<>>=
+elast_cen <- ll$coefficients[2]+ll$coefficients[4]*log(zywn$doch)
+elast_doch <- ll$coefficients[3]+ll$coefficients[4]*log(zywn$p)
+mean(elast_cen); mean(elast_doch) 
+@
+
+Widaæ wiêc, ¿e elastycznoœæ jest bardzo zbli¿ona do tej z modelu bez interakcji i odpowiednia tendencja jest zachowana.
+
+\bigskip
+
+Wróæmy do zwyk³ego modelu potêgowego. Zbadajmy stabilnoœæ funkcji popytu przy pomocy testu Chowa.
+
+<<warning=FALSE, message=FALSE>>=
+library("strucchange")
+sctest(log(q)~log(p)+log(doch),data=zywn, type="Chow")
+@
+
+$P-value$ testu wysz³o bardzo ma³e ($0,004913$), wiêc odrzucamy hipotezê o stabilnoœci, zatem funkcja popytu dla tego modelu nie jest stabilna. Rozwa¿my wiêc podokresy (przed i po wojnie) i przekonajmy siê, czy taki model bêdzie lepiej dopasowany.
+
+<<>>=
+l_przed_wojna <- lm(log(q)~log(p)+log(doch),data=zywn[1:15,])
+summary(l_przed_wojna)
+
+l_po_wojnie <- lm(log(q)~log(p)+log(doch),data=zywn[16:30,])
+summary(l_po_wojnie)
+@
+
+Oba modele maj¹ sens ($p-value$ testu $F$ ma³e). Zmodyfikowany wspó³czynnik $R^2$ jest nieco gorszy ni¿ w modelu dopasowanym dla wszystkich danych, mo¿e to jednak byæ skutkiem mniejszej o po³owê liczby danych, jak równie¿ ewentualnego wp³ywu obserwacji odstaj¹cych. 
+
+\bigskip
+
+Zbadajmy jeszcze stabilnoœæ w podokresach:
+
+<<>>=
+sctest(log(q)~log(p)+log(doch),data=zywn[1:15,], type="Chow")
+sctest(log(q)~log(p)+log(doch),data=zywn[16:30,], type="Chow")
+@
+
+W okresie przed wojn¹ $p-value$ jest równe $0,0416$, czyli wskazuje na niestabilnoœæ funkcji popytu, jednak w okresie po wojnie ju¿ zdecydowanie tê stabilnoœæ mamy ($p-value$ du¿e, równe $0,7794$).  
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Wczytajmy dane i dopasujmy model potêgowy:
+$$ \ln{\dfrac{G}{Pop}}=\beta_0+\beta_1\ln{Y}+\beta_2\ln{Pg}+\beta_3\ln{Pnc}+\beta_4\ln{Puc} $$
+
+<<>>=
+gas <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr1\\lab1_zad3.csv",
+                 sep=";",header=TRUE)
+attach(gas)
+
+l <- lm(log(G/Pop)~log(Y)+log(Pg)+log(Pnc)+log(Puc),data=gas)
+summary(l)
+@
+
+$P-value$ testu $F$ jest ma³e (wynosi $<2e-16$), zatem model ma sens (zmienne s¹ istotne). Wspó³czynnik $R^2$ modelu jest du¿y (0,9526), wiêc model jest dobrze dopasowany. Z testu $t$ wynika, ¿e istotne s¹ tylko zmienne $Pg$ i $Y$. 
+
+\bigskip
+
+Jest to model potêgowy, wiêc elastycznoœci to po prostu wspó³czynniki stoj¹ce przy odpowiednich zmiennych. Tak wiêc elastycznoœæ cenowa dotycz¹ca nowych samochodów wynosi $-0,13$. Czyli gdy cena nowych samochodów roœnie, to popyt na benzynê maleje. Elastycznoœæ cenowa dotycz¹ca samochodów u¿ywanych wynosi $-0,12$, czyli gdy cena samochodów u¿ywanych roœnie, to popyt nieznacznie maleje. Elastycznoœæ cenowa dotycz¹ca ceny benzyny wynosi $-0,06$, czyli przy wzroœcie ceny benzyny popyt na ni¹ maleje. I wreszcie elastycznoœæ dochodowa wynosi $1,37$, czyli przy wzroœcie dochodów ludnoœci, popyt na benzynê te¿ roœnie. Wyniki wydaj¹ siê wiêc intuicyjne. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 4.}}}
+
+Dla modelu z zadania 3. zbadajmy charakter elastycznoœci popytu na benzynê. Przypomnijmy, jak wygl¹da \textit{summary} naszego modelu, a tym samym (poniewa¿ to by³ model potêgowy) jego elastycznoœci:
+
+<<>>=
+summary(l)
+@
+
+Zajmijmy siê elastycznoœci¹ dochodow¹. Z testu $t$ wynika, ¿e jest ona istotna, czyli nie jest równa $0$. Widzimy, ¿e jest równa $1,3734$, sprawdŸmy zatem hipotezê:
+\begin{eqnarray*}
+H: \textrm{elastycznoœæ dochodowa} &=& 1\\
+K: \textrm{elastycznoœæ dochodowa} &>& 1\\
+\end{eqnarray*}
+
+<<>>=
+tabela <- summary(l)$coefficients
+t.value <- (tabela[2,1]-1)/tabela[2,2]
+p.value <- pt(t.value,36-5,lower.tail=FALSE)
+p.value
+@
+
+$P-value$ testu $t$ dla tej hipotezy wynosi $1,285e-05$, jest zatem bardzo ma³e, czyli hipotezê odrzucamy. Zatem rzeczywiœcie elastycznoœæ dochodowa jest wiêksza od $1$. Popyt jest wiêc elastyczny (wzrost dochodów ludnoœci bêdzie mieæ faktyczny wp³yw na zwiêkszenie popytu na benzynê).
+
+\bigskip
+
+Z testu $t$ dla elastycznoœci cenowej benzyny wynika, ¿e popyt jest doskonale sztywny. $P-value$ tego testu wysz³o jednak stosunkowo niewielkie ($0,0786$). SprawdŸmy wiêc jeszcze hipotezê jednostronn¹:
+
+\begin{eqnarray*}
+H: \textrm{elastycznoœæ cenowa benzyny} &=& 0\\
+K: \textrm{elastycznoœæ cenowa benzyny} &>& 0\\
+\end{eqnarray*}
+
+<<>>=
+t.value <- (tabela[3,1]-1)/tabela[3,2]
+p.value <- 2*min(pt(t.value,36-5,lower.tail=FALSE),pt(t.value,31))
+p.value
+@
+
+$P-value$ wysz³o bardzo ma³e, zatem rzeczywiœcie mo¿emy przypuszczaæ, ¿e elastycznoœæ cenowa benzyny jest wiêksza od zera, zatem popyt nie jest elastyczny. Oznacza to tyle, ¿e wzrost ceny benzyny nie ma znacz¹cego wp³ywu na popyt.
+
+\bigskip
+
+Z testu $t$ z \textit{summary} wnioskujemy natomiast, ¿e zarówno elastycznoœæ cenowa nowych samochodów, jak i elastycznoœæ cenowa samochodów u¿ywanych s¹ doskonale nieelastyczne. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 5.}}}
+
+Przeanalizujmy nastêpuj¹ce wykresy:
+
+<<results='hide',eval=FALSE>>=
+plot(G/Pop~Year,col=c(rep("black",14),rep("red",22)), main="Zale¿noœæ popytu od czasu")
+plot(G/Pop~Pg,col=c(rep("black",14),rep("red",22)), main="Zale¿noœæ popytu od ceny benzyny")
+@
+
+\begin{figure}[h]
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{2.pdf}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{1.pdf}
+\end{minipage}
+\end{figure}
+
+Funkcja popytu nie jest stabilna, a punkt ,,prze³¹czenia'' nastêpuje oko³o 1974 roku (widaæ to wyraŸnie na powy¿szych wykresach, gdzie dane powy¿ej roku 1974 zaznaczone s¹ kolorem czerwonym). SprawdŸmy to jeszcze formalnie testem Chowa: 
+
+<<>>=
+sctest(log(G/Pop)~log(Y)+log(Pg)+log(Pnc)+log(Puc),data=gas,type="Chow",point=15)
+@
+
+Rzeczywiœcie, $p-value$ jest bardzo ma³e ($1,008e-08$), wiêc odrzucamy hipotezê o stabilnoœci. 
+
+\end{document}

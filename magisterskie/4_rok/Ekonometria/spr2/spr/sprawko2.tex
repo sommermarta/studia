@@ -1,0 +1,883 @@
+\documentclass[10pt,a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering EKONOMETRIA -- SPRAWOZDANIE 2\\ MARTA SOMMER -- BSMAD}
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Wczytajmy nasze dane:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{a} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr2\textbackslash{}\textbackslash{}zad1.csv"}\hlstd{,}
+    \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{)}
+\hlkwd{names}\hlstd{(a)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"wydatki"}\hlstd{,} \hlstr{"dochod"}\hlstd{)}
+\hlkwd{attach}\hlstd{(a)}
+\hlkwd{head}\hlstd{(a)}
+\end{alltt}
+\begin{verbatim}
+##   wydatki dochod
+## 1    19.9   22.3
+## 2    31.2   32.3
+## 3    31.8   36.6
+## 4    12.1   12.1
+## 5    40.7   42.3
+## 6     6.1    6.2
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zbudujmy model liniowy (zale¿noœæ zmiennej \textit{wydatki} od zmiennej \textit{dochod}) stosuj¹c metodê MNK:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(wydatki} \hlopt{~} \hlstd{dochod,} \hlkwc{data} \hlstd{= a)}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = wydatki ~ dochod, data = a)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.3679 -0.9205  0.0096  1.2252  1.8838 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   0.8921     0.6852     1.3     0.21    
+## dochod        0.8966     0.0247    36.4   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.28 on 18 degrees of freedom
+## Multiple R-squared:  0.987,	Adjusted R-squared:  0.986 
+## F-statistic: 1.32e+03 on 1 and 18 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Z \textit{summary} widaæ, ¿e model jest dobrze dopasowany ($p-value$ testu $F$ jest ma³e -- równe $2e-16$). Wspó³czynnik $R^2$ równy $0,9858$ równie¿ œwiadczy o dobrym dopasowaniu modelu. 
+
+Wspó³czynniki $\alpha$ i $\beta$ w naszym modelu 
+$$ wydatki = \alpha + \beta \cdot dochod $$ 
+s¹ równe odpowiednio $0,89$ i $0,9$. Z testu $t$, wynika równie¿, ¿e zmienna dochód jest rzeczywiœcie istotna w modelu ($p-value<2e-16$).
+
+Przedstawmy reszty z modelu na wykresie:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(l,} \hlnum{1}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{1.png}
+\end{figure}
+
+Widaæ wyraŸnie, ¿e rezidua nie s¹ losowo rozrzucone wokó³ zera, tylko jest miêdzy nimi jakaœ zale¿noœæ. Podejrzewamy wiêc wystêpowanie heteroskedastycznoœci w modelu.
+
+\bigskip
+
+Powtórzmy rozumowanie dla modelu potêgowego tzn.
+$$ \ln{(wydatki)}=\alpha+\beta\cdot\ln{(dochod)} $$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{l2} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(wydatki)} \hlopt{~} \hlkwd{log}\hlstd{(dochod),} \hlkwc{data} \hlstd{= a)}
+\hlkwd{summary}\hlstd{(l2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(wydatki) ~ log(dochod), data = a)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.0573 -0.0468  0.0146  0.0398  0.0513 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   0.0789     0.0565     1.4     0.18    
+## log(dochod)   0.9549     0.0180    53.1   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.045 on 18 degrees of freedom
+## Multiple R-squared:  0.994,	Adjusted R-squared:  0.993 
+## F-statistic: 2.82e+03 on 1 and 18 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+I tutaj równie¿, podobnie jak w modelu liniowym, model ma sens ($p-value$ testu $F$ ma³e) oraz jest doœæ dobrze dopasowany ($R^2=0,9937$). Z testu $t$ wynika, ¿e zmienna \textit{dochod} jest istotna. Przyjrzyjmy siê jeszcze wykresowi reszt z modelu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(l2,} \hlnum{1}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{2.png}
+\end{figure}
+
+Widaæ, ¿e rezidua wydl¹daj¹ nieco lepiej ni¿ w modelu liniowym (s¹ bardziej sp³aszczone). Heteroskedastycznoœæ jest jakby mniejsza, niemniej jednak i tak jest zauwa¿alna.
+
+\bigskip
+
+PrzejdŸmy teraz do formalnego sprawdzenia heteroskedastycznoœci dla obu modeli. Wykorzystamy do tego testy White'a, Breuscha-Pagana oraz Goldfelda-Quandta.
+
+Zacznijmy od modelu liniowego:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"lmtest"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"bstats"}\hlstd{)}
+
+\hlkwd{white.test}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	White test for constant variance
+## 
+## data:  
+## White = 16.73, df = 2, p-value = 0.0002323
+\end{verbatim}
+\begin{alltt}
+\hlkwd{bptest}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	studentized Breusch-Pagan test for homoscedasticity
+## 
+## data:  l
+## BP = 15.39, df = 1, p-value = 8.766e-05
+\end{verbatim}
+\begin{alltt}
+\hlkwd{gqtest}\hlstd{(wydatki} \hlopt{~} \hlstd{dochod,} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{dochod)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Goldfeld-Quandt test
+## 
+## data:  wydatki ~ dochod
+## GQ = 19.38, df1 = 5, df2 = 4, p-value = 0.006608
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ ka¿dego z trzech testów jest mniejsze ni¿ $0,05$, wiêc w ka¿dym z testów hipotezê o równoœci wariancji odrzucamy. Mamy wiêc do czynienia z heteroskedastycznoœci¹. A w przypadku testu Breuscha-Pagana, znamy nawet charakter heteroskedastycznoœci, a mianowicie, wraz ze wzrostem dochodu, roœnie wariancja wydatków.
+
+\bigskip
+
+Zróbmy analogiczne testy dla modelu potêgowego:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{white.test}\hlstd{(l2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	White test for constant variance
+## 
+## data:  
+## White = 19.87, df = 2, p-value = 4.837e-05
+\end{verbatim}
+\begin{alltt}
+\hlkwd{bptest}\hlstd{(l2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	studentized Breusch-Pagan test for homoscedasticity
+## 
+## data:  l2
+## BP = 10.57, df = 1, p-value = 0.001148
+\end{verbatim}
+\begin{alltt}
+\hlkwd{gqtest}\hlstd{(}\hlkwd{log}\hlstd{(wydatki)} \hlopt{~} \hlkwd{log}\hlstd{(dochod),} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{dochod)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Goldfeld-Quandt test
+## 
+## data:  log(wydatki) ~ log(dochod)
+## GQ = 2.248, df1 = 5, df2 = 4, p-value = 0.2263
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Analizuj¹c $p-value$ testów widzimy, ¿e hipotezê odrzucimy w przypadku testów White'a i Breuscha-Pagana, zaœ w przypadku testu Goldfelda-Quandta hipotezê przyjmiemy. Jako ¿e wiêkszoœæ testów (dwa z trzech) wskazuje na obecnoœæ heteroskedastycznoœci, wiêc w modelu tym równie¿ bêdziemy sk³onni uwa¿aæ, ¿e rzeczywiœcie jest ona obecna. Widaæ jednak, ¿e bêdzie ju¿ w takim razie mniejsza ni¿ w przypadku modelu liniowego.
+
+\bigskip
+
+Jakie wiêc wyci¹gniemy wnioski? Przede wszystkim stwierdzamy, ¿e model potêgowy bêdzie lepiej dopasowany ni¿ liniowy. Po drugie, ¿e w modelu obecna jest heteroskedastycznoœæ (wariancja nie jest sta³a, a nawet jest funkcj¹ monotoniczn¹). Widzimy wiêc, ¿e wraz ze wzrostem dochodów, wariancja wydatków równie¿ roœnie. Interpretowaæ nale¿y to w ten sposób, ¿e osoby zarabiaj¹ce ma³o, bardziej pilnuj¹ i planuj¹ wydatki, zaœ osoby zamo¿ne mniej przejmuj¹ siê tym, czy w danym miesi¹cu wydadz¹ mniej, czy wiêcej, gdy¿ mog¹ sobie na to finansowo pozwoliæ.  
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Zbudujmy nastêpuj¹cy model regresji:
+$$ y_t=\alpha+\beta x_t + \varepsilon_t, \hspace{2cm} t=1,\ldots,500, $$
+gdzie $\alpha,\beta \in \mathbb{R}$, $x_t$ s¹ dowolnymi obserwacjami (w moim przypadku z rozk³adu jednostajnego $U[1,6]$) oraz zaburzenie $\varepsilon_t$ jest zdefiniowane, jako:
+$$ \varepsilon_t=\eta_t \cdot \sqrt{a_0+a_1\varepsilon_{t-1}^2}, $$
+gdzie $\eta_t\sim\mathrm{N}(0,1)$, a za $a_0$ i $a_1$ przyjmiemy odpowiednio liczby $12,5$ oraz $0,5$. 
+
+\bigskip
+
+W zwi¹zku z tym, ¿e wzór na $\varepsilon_t$ jest rekurencyjny bez podanej  wartoœci pocz¹tkowej, przyjmiemy $\varepsilon_1=\eta_1$, ale ¿eby unikn¹æ b³êdu wynikaj¹cego z takiego za³o¿enia, zamiast $500$ obserwacji, wygenerujemy ich $600$, a nastêpnie obetniemy $100$ pierwszych, jako tych obarczonych b³êdem powy¿szego za³o¿enia. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{x} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{6}\hlstd{)}
+\hlstd{a0} \hlkwb{<-} \hlnum{12.5}
+\hlstd{a1} \hlkwb{<-} \hlnum{0.5}
+\hlstd{eta} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{600}\hlstd{)}
+\hlstd{eps} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{600}\hlstd{)}
+
+\hlstd{eps[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{eta[}\hlnum{1}\hlstd{]}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{600}\hlstd{) \{}
+    \hlstd{eps[i]} \hlkwb{<-} \hlstd{eta[i]} \hlopt{*} \hlkwd{sqrt}\hlstd{(a0} \hlopt{+} \hlstd{a1} \hlopt{*} \hlstd{(eps[i} \hlopt{-} \hlnum{1}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{\}}
+\hlstd{eps} \hlkwb{<-} \hlstd{eps[}\hlnum{101}\hlopt{:}\hlnum{600}\hlstd{]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+Przyjrzyjmy siê, jak wygl¹daj¹ nasze $\varepsilon_t$ na wykresie:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(eps,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-9} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Rzeczywiœcie, widaæ, ¿e wariancja ,,dziœ'', zale¿y od tej ,,wczoraj".
+
+\bigskip
+
+Stosuj¹c MNK, bêdziemy teraz chcieli oszacowaæ parametry $\alpha$ i $\beta$. ¯eby to jednak zrobiæ, musimy wygenerowaæ sobie obserwacje. Przyjmijmy wiêc $\alpha=5$ i $\beta=6$, wygenerumy dane, dopasujmy model liniowy, a nastêpnie sprawdŸmy, czy nasz model poda³ zbli¿one do prawdziwych wartoœci $\alpha$ i $\beta$.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b0} \hlkwb{<-} \hlnum{5}
+\hlstd{b1} \hlkwb{<-} \hlnum{6}
+\hlstd{y} \hlkwb{<-} \hlstd{b0} \hlopt{+} \hlstd{b1} \hlopt{*} \hlstd{x} \hlopt{+} \hlstd{eps}
+\hlkwd{plot}\hlstd{(y} \hlopt{~} \hlstd{x)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-10} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Na powy¿szym rysunku widaæ, ¿e waraiancja $y_t$ jest zmienna. Dopasujmy model liniowy:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x)}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -19.572  -2.739   0.018   2.688  19.755 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    4.749      0.524    9.07   <2e-16 ***
+## x              6.083      0.138   43.98   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.41 on 498 degrees of freedom
+## Multiple R-squared:  0.795,	Adjusted R-squared:  0.795 
+## F-statistic: 1.93e+03 on 1 and 498 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Z \textit{summary} widaæ, ¿e model jest dobrze dopasowany oraz zmienna $x$ jest istotna. Model oszacowa³ nam parametry nastêpuj¹co: $\alpha=4,749, \beta=6,083$. Ich wartoœci s¹ wiêc bardzo zbli¿one do wartoœci prawdziwych. 
+
+Obliczmy jeszcze b³¹d œredniokwadratowy dla tego modelu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{((l}\hlopt{$}\hlstd{coefficients} \hlopt{-} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{6}\hlstd{))}\hlopt{^}\hlnum{2}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.03499
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zbudujmy teraz model metod¹ najwiêkszej wiarogodnoœci. Zmaksymalizujmy wiêc logarytm funkcji wiarogodnoœci dany wzorem:
+$$ \ln{L}=-\dfrac{n}{2}\ln{2\pi}-\dfrac{1}{2}\sum^n_{t=1}\ln{(a_0+a_1(y_{t-1}-\alpha-\beta x_{t-1})^2)}-\dfrac{1}{2}\sum^n_{t=1}\dfrac{(y_{t}-\alpha-\beta x_{t})^2}{a_0+a_1(y_{t-1}-\alpha-\beta x_{t-1})^2} $$
+
+W tym celu u¿yjemy funkcji \textit{optim()}, korzystaj¹cej z metody optymalizacji quasi-Newtona.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{n} \hlkwb{<-} \hlnum{500}
+
+\hlstd{f} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{a}\hlstd{) \{}
+
+    \hlstd{a0} \hlkwb{<-} \hlstd{a[}\hlnum{1}\hlstd{]}
+    \hlstd{a1} \hlkwb{<-} \hlstd{a[}\hlnum{2}\hlstd{]}
+    \hlstd{alfa} \hlkwb{<-} \hlstd{a[}\hlnum{3}\hlstd{]}
+    \hlstd{beta} \hlkwb{<-} \hlstd{a[}\hlnum{4}\hlstd{]}
+
+    \hlstd{m} \hlkwb{<-} \hlkwd{numeric}\hlstd{(n} \hlopt{-} \hlnum{1}\hlstd{)}
+    \hlkwa{for} \hlstd{(t} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{n) \{}
+        \hlstd{m[t} \hlopt{-} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlnum{1}\hlopt{/}\hlnum{2} \hlopt{*} \hlkwd{log}\hlstd{(a0} \hlopt{+} \hlstd{a1} \hlopt{*} \hlstd{(y[t} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{-} \hlstd{alfa} \hlopt{-} \hlstd{beta} \hlopt{*} \hlstd{x[t} \hlopt{-} \hlnum{1}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)} \hlopt{+}
+            \hlstd{(}\hlnum{1}\hlopt{/}\hlnum{2} \hlopt{*} \hlstd{(y[t]} \hlopt{-} \hlstd{alfa} \hlopt{-} \hlstd{beta} \hlopt{*} \hlstd{x[t])}\hlopt{^}\hlnum{2}\hlstd{)}\hlopt{/}\hlstd{(a0} \hlopt{+} \hlstd{a1} \hlopt{*} \hlstd{(y[t} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{-} \hlstd{alfa} \hlopt{-}
+                \hlstd{beta} \hlopt{*} \hlstd{x[t} \hlopt{-} \hlnum{1}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
+    \hlstd{\}}
+    \hlkwd{sum}\hlstd{(m)} \hlopt{+} \hlstd{n}\hlopt{/}\hlnum{2} \hlopt{*} \hlkwd{log}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi)}
+\hlstd{\}}
+
+\hlstd{op} \hlkwb{<-} \hlkwd{optim}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{4.749}\hlstd{,} \hlnum{6.083}\hlstd{), f,} \hlkwc{method} \hlstd{=} \hlstr{"BFGS"}\hlstd{)}\hlopt{$}\hlstd{par}
+\hlstd{op}
+\end{alltt}
+\begin{verbatim}
+## [1] 11.9748  0.3979  4.9489  6.0025
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Dziêki metodzie najwiêkszej wiarogodnoœci, otrzymujemy wiêc nastêpuj¹ce rezultaty: $a_0=11,97$, $a_1=0,4$, $\alpha=4,95$, $\beta=6,00$. Na pierwszy rzut oka, rezultaty s¹ wiêc lepsze od tych otrzymanych metod¹ najmniejszych kwadratów. Przekonajmy siê jeszcze o tym formalnie, licz¹c b³¹d œredniokwadratowy metody najwiêkszej wiarogodnoœci:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{((op[}\hlnum{3}\hlopt{:}\hlnum{4}\hlstd{]} \hlopt{-} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{6}\hlstd{))}\hlopt{^}\hlnum{2}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.001306
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widzimy zatem, ¿e dla MNK b³¹d œreniokwadratowy wynosi $0,03499$, zaœ dla MNW $0.001306$. Jest on o rz¹d wielkoœci mniejszy w przypadku metody najwiêkszej wiarogodnoœci, wiêc to ona w naszym modelu lepiej estymuje parametry $\alpha$ i $\beta$. 
+
+\bigskip
+
+Zróbmy jeszcze krótk¹ symulacjê. Wybierzmy $5$ losowych ci¹gów zmiennych i oszacujmy parametry $\alpha$ i $\beta$ dwiema metedami. Dla ka¿dej z metod obliczmy b³¹d œredniokwadratowy, a nastêpnie policzmy jego œredni¹:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{blad_mnk} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{5}\hlstd{)}
+\hlstd{blad_mnw} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{5}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{) \{}
+    \hlstd{x2} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{6}\hlstd{)}
+    \hlstd{eta2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{600}\hlstd{)}
+    \hlstd{eps2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{600}\hlstd{)}
+
+    \hlstd{eps2[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{eta2[}\hlnum{1}\hlstd{]}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{600}\hlstd{) \{}
+        \hlstd{eps2[j]} \hlkwb{<-} \hlstd{eta2[j]} \hlopt{*} \hlkwd{sqrt}\hlstd{(a0} \hlopt{+} \hlstd{a1} \hlopt{*} \hlstd{(eps2[j} \hlopt{-} \hlnum{1}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
+    \hlstd{\}}
+    \hlstd{eps2} \hlkwb{<-} \hlstd{eps2[}\hlnum{101}\hlopt{:}\hlnum{600}\hlstd{]}
+    \hlstd{y2} \hlkwb{<-} \hlstd{b0} \hlopt{+} \hlstd{b1} \hlopt{*} \hlstd{x2} \hlopt{+} \hlstd{eps2}
+    \hlstd{l2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y2} \hlopt{~} \hlstd{x2)}
+
+    \hlstd{blad_mnk[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{((l2}\hlopt{$}\hlstd{coefficients} \hlopt{-} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{6}\hlstd{))}\hlopt{^}\hlnum{2}\hlstd{)}
+    \hlstd{op2} \hlkwb{<-} \hlkwd{optim}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{, l2}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{], l2}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]), f,} \hlkwc{method} \hlstd{=} \hlstr{"BFGS"}\hlstd{)}\hlopt{$}\hlstd{par}
+    \hlstd{blad_mnw[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{((op2[}\hlnum{3}\hlopt{:}\hlnum{4}\hlstd{]} \hlopt{-} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{6}\hlstd{))}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{\}}
+
+\hlkwd{mean}\hlstd{(blad_mnk)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1331
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(blad_mnw)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.001256
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wyraŸnie, ¿e b³¹d œredniokwadratowy metody najwiêkszej wiarogodnoœci ($0,001256$) jest du¿o mniejszy, ni¿ b³¹d œredniokwadratowy metody najmniejszych kwadratów ($0,1331$). Metoda ta jest wiêc efektywniejsza.
+
+\bigskip
+
+PrzejdŸmy teraz do trochê innego modelu. Bêdzie to model autoregresyjny $AR(1)$:
+$$ \varepsilon_t=\rho \varepsilon_{t-1}+\eta_t, $$
+gdzie $\rho \in (0,1)$, $x_t\sim \mathrm{U}[1,2]$ a $y_t$ oraz $\eta_t$ s¹ zdefiniowane tak, jak w poprzednim modelu.
+
+\bigskip
+
+Oszacujmy parametry $\alpha$ i $\beta$ stosuj¹c MNK:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{x} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{)}
+
+\hlstd{rho} \hlkwb{<-} \hlnum{0.5}
+\hlstd{eta} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{600}\hlstd{)}
+
+\hlstd{eps} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{600}\hlstd{)}
+\hlstd{eps[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{eta[}\hlnum{1}\hlstd{]}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{600}\hlstd{) \{}
+    \hlstd{eps[i]} \hlkwb{<-} \hlstd{rho} \hlopt{*} \hlstd{eps[i} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{eta[i]}
+\hlstd{\}}
+
+\hlstd{eps} \hlkwb{<-} \hlstd{eps[}\hlnum{101}\hlopt{:}\hlnum{600}\hlstd{]}
+
+\hlkwd{plot}\hlstd{(eps,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-16} 
+
+}
+
+
+
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b0} \hlkwb{<-} \hlnum{5}
+\hlstd{b1} \hlkwb{<-} \hlnum{6}
+
+\hlstd{y} \hlkwb{<-} \hlstd{b0} \hlopt{+} \hlstd{b1} \hlopt{*} \hlstd{x} \hlopt{+} \hlstd{eps}
+\hlkwd{plot}\hlstd{(y} \hlopt{~} \hlstd{x)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-17} 
+
+}
+
+
+\begin{kframe}\begin{alltt}
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x)}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -3.011 -0.800 -0.077  0.755  3.279 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    4.629      0.272    17.0   <2e-16 ***
+## x              6.097      0.179    34.1   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.17 on 498 degrees of freedom
+## Multiple R-squared:   0.7,	Adjusted R-squared:   0.7 
+## F-statistic: 1.16e+03 on 1 and 498 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Estymatory $\alpha$ i $\beta$ w tym modelu s¹ zatem równe, odpowiednio, $4,629$ i $6,097$. A ich odchylenie standardowe to odpowiednio: $0.272$ i $0.179$. Policzmy b³¹d œredniokwadratowy naszego dopasowania, przeprowadzaj¹c krótk¹ symulacjê:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{blad_mnk} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{50}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{50}\hlstd{) \{}
+    \hlstd{x3} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{)}
+    \hlstd{eta3} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{600}\hlstd{)}
+    \hlstd{eps3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{600}\hlstd{)}
+
+    \hlstd{eps3[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{eta3[}\hlnum{1}\hlstd{]}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{600}\hlstd{) \{}
+        \hlstd{eps3[j]} \hlkwb{<-} \hlstd{rho} \hlopt{*} \hlstd{eps3[j} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{eta3[j]}
+    \hlstd{\}}
+    \hlstd{eps3} \hlkwb{<-} \hlstd{eps3[}\hlnum{101}\hlopt{:}\hlnum{600}\hlstd{]}
+    \hlstd{y3} \hlkwb{<-} \hlstd{b0} \hlopt{+} \hlstd{b1} \hlopt{*} \hlstd{x3} \hlopt{+} \hlstd{eps3}
+    \hlstd{l3} \hlkwb{<-} \hlkwd{lm}\hlstd{(y3} \hlopt{~} \hlstd{x3)}
+
+    \hlstd{blad_mnk[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{((l3}\hlopt{$}\hlstd{coefficients} \hlopt{-} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{6}\hlstd{))}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{\}}
+
+\hlkwd{mean}\hlstd{(blad_mnk)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.05251
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+B³¹d œredniokwadratowy wynosi $0.05251$. Nie jest wiêc dostatecznie ma³y, ale du¿o mniejszy, ni¿ b³¹d dla MNK z poprzedniego modelu. 
+
+\bigskip
+
+Z symulacji przeprowadzonych w tym æwiczeniu widaæ wiêc, ¿e MNK nie zachowuje siê efektywnie, gdy mamy do czynienia z autokorelacj¹ b³êdów, czyli pewnym odstêpstwem od za³o¿eñ. Lepsz¹ metod¹ szacowania parametrów wydaje siê zatem metoda najwiêkszej wiarogodnoœci. Jest ona jednak du¿o bardziej skomplikowana obliczeniowo i numerycznie ni¿ metoda najmniejszych kwadratów.
+
+\newpage
+
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Bêdziemy w tym zadaniu rozwa¿aæ kursy zamkniêcia spó³ki PZU na gie³dzie. W tym celu œci¹gnêliœmy z internetu potrzebne dane -- kursy zamkniêcia spó³ki PZU w latach $12.05.2010-13.03.2014$ i odpowiednie notowania WIG-u, równie¿ w tych latach. 
+
+\bigskip
+
+Dla naszej spó³ki utwórzmy logarytmiczne stopy zwrotu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{wig} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr2\textbackslash{}\textbackslash{}wig_d.csv"}\hlstd{,}
+    \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{","}\hlstd{)}
+\hlkwd{head}\hlstd{(wig,} \hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##         Date    Open    High     Low   Close   Volume
+## 1 2010-05-12   41522 41971.3 41440.2 41896.6 58682559
+## 2 2010-05-13 42283.1 42390.1 41741.5 41914.8 83412680
+## 3 2010-05-14 41781.8 41855.6 41075.4 41075.4 57561466
+\end{verbatim}
+\begin{alltt}
+\hlstd{pzu} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr2\textbackslash{}\textbackslash{}pzu_d.csv"}\hlstd{,}
+    \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{","}\hlstd{)}
+\hlkwd{head}\hlstd{(pzu,} \hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##         Date      Open      High       Low     Close  Volume
+## 1 2010-05-12 263.59874 271.90696 262.91891 271.90696 9566251
+## 2 2010-05-13 270.39636 273.34201 267.37516 269.64106 2394317
+## 3 2010-05-14 268.35704 271.90696 266.84653 268.13046 1399531
+\end{verbatim}
+\begin{alltt}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(pzu)}
+\hlkwd{attach}\hlstd{(pzu)}
+\hlstd{kurs_zamkn} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(}\hlkwd{as.vector}\hlstd{(pzu}\hlopt{$}\hlstd{Close))}
+
+\hlstd{stop_zwr} \hlkwb{<-} \hlkwd{numeric}\hlstd{(n} \hlopt{-} \hlnum{1}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlkwd{length}\hlstd{(kurs_zamkn)) \{}
+    \hlstd{stop_zwr[i]} \hlkwb{<-} \hlkwd{log}\hlstd{(kurs_zamkn[i]}\hlopt{/}\hlstd{kurs_zamkn[i} \hlopt{-} \hlnum{1}\hlstd{])}
+\hlstd{\}}
+
+\hlstd{kurs_zamkn_wig} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(}\hlkwd{as.vector}\hlstd{(wig}\hlopt{$}\hlstd{Close))}
+
+\hlstd{stop_zwr_wig} \hlkwb{<-} \hlkwd{numeric}\hlstd{(n} \hlopt{-} \hlnum{1}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlkwd{length}\hlstd{(kurs_zamkn_wig)) \{}
+    \hlstd{stop_zwr_wig[i]} \hlkwb{<-} \hlkwd{log}\hlstd{(kurs_zamkn_wig[i]}\hlopt{/}\hlstd{kurs_zamkn_wig[i} \hlopt{-} \hlnum{1}\hlstd{])}
+\hlstd{\}}
+
+\hlkwd{mean}\hlstd{(stop_zwr)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.0004248
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Œrednia logarytmiczna stopa zwrotu w tych latach wynosi $0.0004248$. Widaæ wiêc, ¿e œrednio PZU zyska³o.
+
+\bigskip
+
+Policzmy teraz wspó³czynnik agresywnoœci dla naszej spó³ki, korzystaj¹c z modelu:
+$$ (R_t-r_f)=\alpha+\beta(RM_t-r_f)+\eta_t, $$
+gdzie $RM_t$ jest logarytmiczn¹ stop¹ zwrotu WIG-u, $R_t$ logarytmiczn¹ stop¹ zwrotu naszej spó³ki, $r_f$ wynosi $5\%$ w skali roku, a $\eta_t$ to b³¹d losowy. Oszacujemy wiêc wspó³czynnik agresywnoœci $\beta$ metod¹ najmniejszych kwadratów:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{rf} \hlkwb{<-} \hlnum{0.05}\hlopt{/}\hlnum{365}
+\hlstd{y} \hlkwb{<-} \hlstd{stop_zwr} \hlopt{-} \hlstd{rf}
+\hlstd{x} \hlkwb{<-} \hlstd{stop_zwr_wig} \hlopt{-} \hlstd{rf}
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x)}
+
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.03530 -0.00721 -0.00026  0.00683  0.04487 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.000247   0.000358    0.69     0.49    
+## x           0.909118   0.032770   27.74   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.0111 on 959 degrees of freedom
+## Multiple R-squared:  0.445,	Adjusted R-squared:  0.445 
+## F-statistic:  770 on 1 and 959 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e wspó³czynnik agresywnoœci $\beta=0.91$, jest wiêc mniejszy ni¿ $1$. Oznacza to, ¿e spó³ka nie zachowywa³a siê agresywnie na gie³dzie, czyli gra³a raczej asekuracyjnie -- niewiele ryzykowa³a, ale te¿ niewiele traci³a.
+
+\bigskip
+
+PrzeprowadŸmy test Engle'a, ¿eby sprawdziæ, czy w modelu wystêpuje heteroskedastycznoœæ drugiego rodzaju:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"FinTS"}\hlstd{)}
+\hlkwd{ArchTest}\hlstd{(l}\hlopt{$}\hlstd{residuals,} \hlnum{2}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	ARCH LM-test; Null hypothesis: no ARCH effects
+## 
+## data:  l$residuals
+## Chi-squared = 6.045, df = 2, p-value = 0.04869
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu jest ma³e, zatem odrzucamy hipotezê, czyli wystêpuje heteroskedastycznoœæ drugiego rodzaju. 
+
+\bigskip
+
+Zróbmy jeszcze test na wystêpowanie heteroskedastycznoœci pierwszego rodzaju:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{white.test}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	White test for constant variance
+## 
+## data:  
+## White = 28.97, df = 2, p-value = 5.131e-07
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu White'a jest ma³e, zatem heteroskedastycznoœæ pierwszego rodzaju wystêpuje. 
+
+\bigskip 
+
+Nie mamy zatem jednorodnoœci wariancji (zale¿y ona od dnia) oraz to co dziœ zale¿y od tego, co by³o wczoraj.
+
+\bigskip
+
+SprawdŸmy teraz, czy w modelu wystêpuje autokorelacja:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"stats"}\hlstd{)}
+\hlkwd{Box.test}\hlstd{(l}\hlopt{$}\hlstd{residuals,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung-Box"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  l$residuals
+## X-squared = 6.981, df = 1, p-value = 0.008237
+\end{verbatim}
+\begin{alltt}
+\hlkwd{dwtest}\hlstd{(l,} \hlkwc{alternative} \hlstd{=} \hlstr{"two.sided"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Durbin-Watson test
+## 
+## data:  l
+## DW = 2.168, p-value = 0.009223
+## alternative hypothesis: true autocorrelation is not 0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zarówno test Ljunga-Boxa, jak i test Durbina-Watsona wskazuje na obecnoœæ autokorelacji. WprowadŸmy wiêc poprawkê Newey'a-Westa na wariancjê estymatorów MNK i sprawdŸmy testem $t$, czy wtedy parametry s¹ istotne:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"sandwich"}\hlstd{)}
+\hlstd{nw} \hlkwb{<-} \hlkwd{NeweyWest}\hlstd{(l)}
+
+\hlstd{co} \hlkwb{<-} \hlstd{l}\hlopt{$}\hlstd{coefficients}
+
+\hlstd{T1} \hlkwb{<-} \hlstd{(co[}\hlnum{1}\hlstd{]} \hlopt{-} \hlnum{0}\hlstd{)}\hlopt{/}\hlkwd{sqrt}\hlstd{(nw[}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{])}
+\hlnum{2} \hlopt{*} \hlkwd{min}\hlstd{(}\hlkwd{pt}\hlstd{(T1, n} \hlopt{-} \hlnum{2}\hlstd{),} \hlkwd{pt}\hlstd{(T1, n} \hlopt{-} \hlnum{2}\hlstd{,} \hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.3765
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu na istotnoœæ parametru $\alpha$ jest wiêc ma³e i wskazuje na nieistotnoœæ parametru. SprawdŸmy, czy istotne jest $\beta$:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{T2} \hlkwb{<-} \hlstd{(co[}\hlnum{2}\hlstd{]} \hlopt{-} \hlnum{0}\hlstd{)}\hlopt{/}\hlkwd{sqrt}\hlstd{(nw[}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{])}
+\hlnum{2} \hlopt{*} \hlkwd{min}\hlstd{(}\hlkwd{pt}\hlstd{(T2, n} \hlopt{-} \hlnum{2}\hlstd{),} \hlkwd{pt}\hlstd{(T2, n} \hlopt{-} \hlnum{2}\hlstd{,} \hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 1.197e-70
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu na istotnoœæ parametru $\beta$ jest ma³e i wskazuje na istotnoœæ parametru $\beta$ (wspó³czynnik agresywnoœci). Jako, ¿e w modelu wysz³o nam, ¿e $\beta=0.91$, sprawdŸmy jeszcze, czy nasz parametr jest istotnie mniejszy od~$1$:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{T3} \hlkwb{<-} \hlstd{(co[}\hlnum{2}\hlstd{]} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{/}\hlkwd{sqrt}\hlstd{(nw[}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{])}
+\hlkwd{pt}\hlstd{(T3, n} \hlopt{-} \hlnum{2}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##       x 
+## 0.02671
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ tego testu znowu jest ma³e, zatem rzeczywiœcie przyjmujemy hipotezê, ¿e nasz wspó³czynnik agresywnoœci jest istotnie mniejszy od jedynki. Potwierdzaj¹ siê wiêc wnioski, ¿e spó³ka PZU nie gra³a agresywnie na gie³dzie -- zachowywa³a siê raczej asekuracyjnie.
+
+\end{document}

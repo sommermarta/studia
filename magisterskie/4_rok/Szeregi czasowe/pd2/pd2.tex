@@ -1,0 +1,232 @@
+\documentclass[10pt,a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 2\\ ASC - 17 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Analizujemy zbiór SUNSPOTS opisuj¹cy liczbê plam na s³oñcu w kolejnych latach.
+Wykres przebiegu szeregu wygl¹da nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-1} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Na powy¿szym wykresie wyraŸnie widaæ sezonowoœæ danych. Przyjrzyjmy siê jeszcze wykresowi funkcji ACF:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-2} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Tu równie¿ widoczna jest sezonowoœæ. 
+
+\bigskip
+
+Dopasujmy model AR($1$) i przyjrzyjmy siê reziduom z tego modelu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-31} 
+
+}
+
+
+
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-32} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Z wykresów widaæ, ¿e nie s¹ one raczej bia³ym szumem. SprawdŸmy to jeszcze jednak formalnie u¿ywaj¹c testu Ljunga-Boxa:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{Box.test}\hlstd{(ar1}\hlopt{$}\hlstd{residuals,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  ar1$residuals
+## X-squared = 122.5, df = 20, p-value < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+P-value testu wysz³o bardzo ma³e, zatem odrzucamy hipotezê o byciu bia³ym szumem. Model wiêc jest Ÿle dopasowany.
+
+\bigskip
+
+Dopasujmy wiêc odpowiedni model ARIMA($2$,$0$,$0$) o sezonowoœci $6$. Wykres ACF reziduów dla tego modelu wygl¹da nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-5} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Widaæ, ¿e tu ju¿ jest znacznie lepiej ni¿ w poprzednim modelu. SprawdŸmy jeszcze, czy rezidua modelu s¹ bia³ym szumem:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{Box.test}\hlstd{(mod}\hlopt{$}\hlstd{residuals,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  mod$residuals
+## X-squared = 17.22, df = 20, p-value = 0.6383
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+P-value wysz³o du¿e, wiêc przyjmujemy hipotezê o bia³oszumowoœci reziduów. Model jest wiêc ca³kiem dobry.
+
+\bigskip
+
+Dla porównania dopasujmy jeszcze model ARIMA($2$,$0$,$0$) o sezonowoœci $12$. I znowu przeanalizujmy wykres reziduów i test Ljunga-Boxa:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7} 
+
+}
+
+
+
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{Box.test}\hlstd{(mod2}\hlopt{$}\hlstd{residuals,} \hlkwc{lag} \hlstd{=} \hlnum{20}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"Ljung"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Box-Ljung test
+## 
+## data:  mod2$residuals
+## X-squared = 15.19, df = 20, p-value = 0.7657
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Lepszy jest wiêc model o sezonowoœci $12$. Na jego podstawie dokonajmy predykcji dla przysz³ych $14$ wartoœci:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-9} 
+
+}
+
+
+
+\end{knitrout}
+
+
+\end{document}

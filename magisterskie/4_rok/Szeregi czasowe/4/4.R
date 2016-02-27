@@ -1,0 +1,160 @@
+library("quantmod")
+
+# gestosc spektralna sluzy do wykrywania istotnych czestotliwosci 
+# (czyli pewnej sezonowosci)
+# T = 1/f (gdzie T to okres)
+# wiec jesli pik w gestosci jest w omega, to okres przyjmiemy 1/omega
+
+# zad.1
+
+x <- sin(seq(0,8*pi,0.01)) + cos(5*seq(0,8*pi,0.01))  
+# ta funkca ma okres 2/5*pi
+x <- ts(x,frequency=100)
+plot(x,type="l")
+S <- spectrum(x,ci=0)       # rysuje periodogram
+S$freq[which.max(S$spec)]   # czestotliwosc, dla ktorej osiagane 
+                            # jest maksimum gestosci
+1/(S$freq[order(-S$spec)[1:2]])   # interesuja nas okresy, czyli jeden nad 
+                                  # czestotliwosc, szukamy dwoch 
+                                  # najwiekszych wartosci
+                                  # dwa istotne okresy to to powyzej
+c(2*pi,2/5*pi)   # a teoretycznie powinnismy dostac to
+
+# periodogram: dlaczego na osi x jest od zera do 50? 
+# odp: po³owa czestotliwosci, które bralismy
+# widzimy tu dwa maksima
+
+# zad.2
+
+data(co2)
+co2
+plot(co2)
+# szereg z trendem i okresowy
+
+cod <- diff(co2)
+plot(cod)   # pozbylismy sie trendu, a okresowosc zostala
+
+sp <- spectrum(co2)       # maksimum w jedynce i dwojce
+sp.diff <- spectrum(cod)  # maksima zostaja, ale pozbylismy sie trendu, ktory moglby nam przeszkodzic przy estymacji czesci sezonewej
+
+# ta niebieska kreska to przedzial ufnosci, niekoniecznie symetryczny, 
+# tam gdzie kropka to srodek
+
+# jak to interpretowac? maksimum rowne 1? to okres 1/1, czyli 1, ale czego? 
+# jakiej jednostki? 1 rok! dlatego konczy sie na 6, bo wtedy okres to 1/6, 
+# czyli dwa miesiace, a czesciej juz sie nie da
+
+cpgram(cod)  
+# dystrybuanta spektralna (dwa skoki, czyli mamy dwie skladowe okresowe 
+# (najprawdopodobniej)
+# pasek na srodku to pasy ufnosci dla hipotezy o bialym szumie 
+# (czyli sprawdzamy, czy jest to bialy szum: tak, jesli caly wykres miesci
+# sie w niebieskich paskach)
+
+# istotne czestotliwosci (w latach):
+sp.diff$freq[order(-sp.diff$spec)[1:2]]
+# istotne okresy:
+1/sp.diff$freq[order(-sp.diff$spec)[1:2]]   
+
+d <- decompose(co2)
+plot(d)   
+# robi dekompozycje na czesc sezonowa, trend, czesc losowa i takie tam
+
+# zajmijmy sie skladowa sezonowa:
+
+sp.sez <- spectrum(d$seasonal)
+cpgram(d$seasonal) 
+sp.sez$freq[order(-sp.sez$spec)[1]]   # czyli jeden rok (co 12 obserwacji)
+
+# mamy trzy skladowe okresowe -> chcemy znalezc odpowiadajace im 
+#                                czestotliwosci
+
+# uwaga! szukamy maksimum lokalnego!
+
+loc.max.coor <- function(x) {
+  
+   n <- length(x)
+   Znak <- diff(x)*Lag(diff(x))
+   ex_indices <- c(1,which(Znak<0 & diff(x)<0 ), n)   # maksima + brzegi
+   return (ex_indices)
+}
+
+loc.max.coor(c(0,3,2,6,0,-1,9,10,1))  # maly test na tej funkcji -> 
+                                      # rzeczywiscie zwraca maksima i brzegi
+
+ist.czest <- sp.diff$freq[loc.max.coor(sp.diff$spec)] 
+# istotne czestotliwosci
+
+ist.czest[order(-sp.diff$spec[loc.max.coor(sp.diff$spec)])] 
+# posortowane istotne czestotliwosci
+
+# jeszcze raz:
+
+plot(d)
+# czemu sa braki danych? bo byla srednia ruchoma, wiec czesc danych tracimy
+# dlaczego czesc sezonowa jest dluzsza mimo, ze braki danych? bo obserwacje 
+# sa doliczane zgodnie z sezonowoscia 
+
+# zajmiemy sie czescia losowa:
+
+sp.rand <- spectrum(window(d$random,start=c(1959,7),end=c(1997,6)))
+cpgram(d$random)  # to nie jest bialy szum, a raczej powienien byc
+                  # ale to jeszcze nie koniec swiata, byc moze mozemy 
+                  # dopasowac do tego jakis model arma
+
+# predykcja kolejnych 50 elementow:
+
+m <- HoltWinters(co2,seasonal="additive")
+m$coefficients
+
+# X_{12k+i}=a+b(12k+2)+si
+# s odpowiada za sezonowosc, zas a i b za trend 
+
+# predykcja:
+
+p <- predict(m,n.ahead=50,prediction.interval=TRUE)
+plot(m,p)   # ladnie :D
+
+# a teraz bez czesci sezonowej (parametr gamma za to odpowiada):
+
+m <- HoltWinters(co2,seasonal="additive",gamma=FALSE) 
+p <- predict(m,n.ahead=50,prediction.interval=TRUE)
+plot(m,p)  # tragiczna predykcja, czyli ta czesc sezonowa 
+           # byla rzeczywiscie potrzebna
+
+# zad.3
+
+n <- 60
+eps <- rnorm(n)
+x <- numeric(n)
+y <- numeric(n)
+
+# w przod:
+
+x[1] <- 0
+for(i in 2:n){
+   x[i] <- 2*x[i-1] + eps[i]
+}
+
+# w tyl:
+
+y[60] <- 0
+for(i in n:2){
+   y[i-1] <- (y[i]-eps[i])/2
+}
+
+plot(x)
+plot(y)
+
+# równe
+
+x[1] <- y[1]
+for(i in 2:n){
+   x[i] <- 2*x[i-1] + eps[i]
+}
+
+plot(x)
+
+# powinny byc sobie rowne, wiec skad sie bierze roznica? 
+# odp: z bledow numerycznych
+

@@ -1,0 +1,422 @@
+\documentclass[11pt,a4paper]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{listings}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 4 \\ EKONOMETRIA \\ MARTA SOMMER -- BSMAD}
+
+Będziemy analizować dane AIDS zawierające następujące zmienne:
+\begin{enumerate}
+\item[*] WFOOD -- procentowy udział wydatków na jedzenie\\
+\item[*] WCLOTH -- procentowy udział wydatków na ubranie\\
+\item[*] WHOUSE-- procentowy udział wydatków na mieszkanie\\
+\item[*] WSO -- procentowy udział wydatków na usługi\\
+\item[*] WNDO -- procentowy udział wydatków na inne dobra nietrwałe\\
+\item[*] PFOOD -- wskaźnik cen jedzenia (per capita)\\
+\item[*] PCLOTH -- wskaźnik cen ubrań (per capita)\\
+\item[*] PHOUSE -- wskaźnik cen mieszkań (per capita)\\
+\item[*] PSO -- wskaźnik cen usług (per capita)\\
+\item[*] PNDO -- wskaźnik cen innych dóbr nietrwałych (per capita)\\
+\item[*] LREXP -- $\dfrac{\textrm{całkowite wydatki}}{\textrm{indeks cen}}$\\
+\end{enumerate}
+
+Dla naszych danych oszacujmy parametry modelu AIDS:
+$$
+u_i=\alpha_i+\sum_{j=1}^n \gamma_{ij}\log{p_j}+\beta_i\log{\frac{m}{P}}+ \varepsilon_i,
+$$
+gdzie $u_i$ to wydatki, $p_j$ to wskaźniki cen, $m$ to całkowite wydatki, a $P$ jest indeksem cen.
+ 
+Współczynniki w modelu wyglądają następująco:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+& $\alpha$  & $\gamma_{pfood}$  & $\gamma_{pcloth}$  & $\gamma_{pso}$  & $\gamma_{phouse}$  & $\gamma_{pndo}$  & $\beta$  \\  \hline
+food  & $ 0.425 $ & $ 0.1334 $ & $ 0.0201 $ & $ -0.0618 $ & $ -0.0385 $ & $ -0.0332 $ & $ -0.2821 $ \\  \hline 
+cloth  & $ 0.1156 $ & $ 0.068 $ & $ 0.0494 $ & $ -0.1104 $ & $ 0.0487 $ & $ -0.0258 $ & $ -0.0633 $ \\  \hline 
+so  & $ 0.3256 $ & $ -0.0538 $ & $ 0.0262 $ & $ 0.1337 $ & $ 0.0332 $ & $ -0.0708 $ & $ 0.0955 $ \\  \hline 
+house  & $ 0.09 $ & $ -0.1062 $ & $ -0.0595 $ & $ 0.0776 $ & $ 0.0147 $ & $ 0.0209 $ & $ 0.1192 $ \\  \hline 
+\end{tabular}
+\end{center}
+
+Ponieważ przy budowaniu modelu pominęliśmy zmienną WNDO, należy teraz wyliczyć parametry modelu dla tej zmiennej, biorąc pod uwagę poniższe ograniczenia:
+
+$$
+\sum_{i=1}^n \alpha_i=1, \hspace{1cm} \sum_{i=1}^n \beta_i=0,  \hspace{1cm} \sum_{i=1}^n \gamma_{ij}=0.
+$$
+
+Współczynniki w modelu (tym razem już pełnym) wyglądają więc, jak w poniższej tabeli:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+& $\alpha$  & $\gamma_{pfood}$  & $\gamma_{pcloth}$  & $\gamma_{pso}$  & $\gamma_{phouse}$  & $\gamma_{pndo}$  & $\beta$  \\  \hline
+food  & $ 0.425 $ & $ 0.1334 $ & $ 0.0201 $ & $ -0.0618 $ & $ -0.0385 $ & $ -0.0332 $ & $ -0.2821 $ \\  \hline 
+cloth  & $ 0.1156 $ & $ 0.068 $ & $ 0.0494 $ & $ -0.1104 $ & $ 0.0487 $ & $ -0.0258 $ & $ -0.0633 $ \\  \hline 
+so  & $ 0.3256 $ & $ -0.0538 $ & $ 0.0262 $ & $ 0.1337 $ & $ 0.0332 $ & $ -0.0708 $ & $ 0.0955 $ \\  \hline 
+house  & $ 0.09 $ & $ -0.1062 $ & $ -0.0595 $ & $ 0.0776 $ & $ 0.0147 $ & $ 0.0209 $ & $ 0.1192 $ \\  \hline 
+ndo  & $ 0.0438 $ & $ -0.0415 $ & $ -0.0363 $ & $ -0.0391 $ & $ -0.0581 $ & $ 0.1088 $ & $ 0.1306 $ \\  \hline 
+\end{tabular}
+\end{center}
+
+Mamy jeszcze jednak dwa inne ograniczenia, które powinny być spełnione:
+
+$$
+\sum_{j=1}^n \gamma_{ij}=0 \hspace{1cm} \textrm{oraz} \hspace{1cm} \gamma_{ij}=\gamma_{ji} \hspace{0.5cm} \forall_{i\neq j}
+$$
+
+Robiąc test na powyższe restrykcje w naszym modelu, p-value wyszło niestety bardzo małe, czyli model nie spełnia warunków. No trudno - spróbujmy mimo wszystko analizować go dalej.
+
+\bigskip
+
+Zanim zacznę liczyć elastyczności cenowe i dochodowe w naszym modelu, sprawdzę stacjonarność i kointegrację naszych szeregów tak, by móc potem wyciągać od razu odpowiednie wnioski.
+
+Korzystając z testu Dickey'a-Fullera wnioskujemy, że tylko szereg WHOUSE jest stacjonarny, cała reszta natomiast już nie. Po jednym zróżnicowaniu, wszystkie szeregi wyszły już jednak stacjonarne. Zatem (przymykając oko na szereg WHOUSE) możemy stwierdzić, że wszystkie szeregi są I($1$).
+
+\bigskip
+
+Z testu Engle'a-Grangera wynika, że skoro wszystkie szeregi są I($1$), to, by wnioskować o kointegracji, wystarczy jednynie sprawdzić stacjonarność reszt z dopasowanego modelu. W naszym przypadku, tylko jedne rezidua są niestacjonarne, zatem możemy stwierdzić, że kointegracja między naszymi szeregami występuje.
+
+\bigskip
+
+Skoro wiemy, że występuje kointegracja, to elastyczność cenowa i dochodowa w naszym modelu będzie miała interpretację długotrwałą. Policzmy zatem elastyczności i zobaczmy, jakie wnioski z nich płyną:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{ELASTYCZNOŚĆ DOCHODOWA}  \\ \hline 
+food  & cloth  & so  & house  & ndo  \\ \hline
+-0.0584  & 0.2998  & 1.2846  & 1.7221  & 1.9181  \\ \hline
+\end{tabular}
+\end{center}
+
+\bigskip
+
+Widać więc, że przy wzroście dochodu o jeden procent, procentowy udział wydatków na jedzenie nieznacznie maleje, natomiast wszystko inne rośnie. Największy wzrost odnotowuje procentowy udział wydatków na inne dobra nietrwałe oraz procentowy udział wydatków na dom. Należy to interpretować w ten sposób, że jeśli nagle zaczynamy zarabiać więcej, to w perspektywie długookresowej więcej pieniędzy niż dotychczas, przeznaczymy przede wszystkim na mieszkanie.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multicolumn{6}{|c|}{ELASTYCZNOŚĆ CENOWA}  \\ \hline 
+& pfood  & pcloth  & pso  & phouse  & pndo  \\  \hline
+food  & $ -0.2172 $ & $ 0.1712 $ & $ 0.1233 $ & $ 0.0303 $ & $ 0.0261 $ \\  \hline 
+cloth  & $ 0.9388 $ & $ -0.3896 $ & $ -0.9863 $ & $ 0.6549 $ & $ -0.1855 $ \\  \hline 
+so  & $ -0.2361 $ & $ 0.0523 $ & $ -0.6971 $ & $ 0.0518 $ & $ -0.2513 $ \\  \hline 
+house  & $ -0.8355 $ & $ -0.4257 $ & $ 0.2274 $ & $ -1.0303 $ & $ 0.0239 $ \\  \hline 
+ndo  & $ -0.5363 $ & $ -0.338 $ & $ -0.5831 $ & $ -0.5599 $ & $ -0.3656 $ \\  \hline 
+\end{tabular}
+\end{center}
+
+Widać, że tendencja jest poprawna -- na przekątnej są liczy ujemne (Jeśli rośnie cena jakiegoś dobra, to popyt na nie maleje). Co innego możemy odczytać? Na przykład, że jeśli rośnie cena jedzenia, to maleje popyt na wszystko oprócz ubrań. Jeśli rośnie cena mieszkań, to rośnie popyt na ubrania (być może dlatego, że skoro i tak nas nie stać na mieszkanie, to kupimy sobie za to więcej ubrań itp.). Więcej podobnych zależności można wyczytać analizując powyższą tabelkę, pamiętając o tym, że ma ona interpretację długoterminową. Interpretację krótkoterminową będą miały elastyczności będące następstwem modelu korekty błędem, do którego teraz przejdę:
+
+$$
+\Delta u_{i,t}= \delta + \alpha_i\cdot e_{i,t-1}  +\sum_{j=1}^n \gamma_{ij}\cdot \Delta\log{p_{j,t}} + \beta_i\cdot\Delta\log{(\frac{m}{P})_t}+ \varepsilon_{i,t},
+$$
+gdzie $e_i$ to reszty z modelu regresji w pierwszym modelu AIDS.
+
+\bigskip
+
+Po dopasowaniu modelu korekty błędem otrzymujemy następujące współczynniki:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+& $\delta$ & $\alpha$  & $\gamma_{pfood}$  & $\gamma_{pcloth}$  & $\gamma_{pso}$  & $\gamma_{phouse}$  & $\gamma_{pndo}$  & $\beta$  \\  \hline
+food  & $ -0.0016 $ & $ -0.1158 $ & $ 0.087 $ & $ 0.0079 $ & $ 0.0287 $ & $ -0.0426 $ & $ -0.0255 $ & $ 0.0426 $ \\  \hline 
+cloth  & $ -9e-04 $ & $ -0.0634 $ & $ 0.0145 $ & $ 0.0311 $ & $ -0.0444 $ & $ 0.0406 $ & $ -0.0074 $ & $ 0.1242 $ \\  \hline 
+so  & $ 0.0011 $ & $ -0.0886 $ & $ -0.065 $ & $ 0.0212 $ & $ 0.103 $ & $ -0.018 $ & $ -0.0403 $ & $ -0.0268 $ \\  \hline 
+house  & $ 0.0013 $ & $ -0.0455 $ & $ -0.0375 $ & $ -0.0256 $ & $ -0.0148 $ & $ 0.0417 $ & $ -0.0106 $ & $ -0.2106 $ \\  \hline 
+\end{tabular}
+\end{center}
+
+Znów przy budowaniu modelu pominęliśmy zmienną WNDO, a jej współczynniki policzyliśmy patrząc na analogiczne ograniczenia, co w modelu AIDS. 
+
+\bigskip
+
+Współczynnik $\alpha$ w modelu ECM (model korekty błędem) jest miarą szybkości dostosowywania się do stanu równowagi. Ujemny znak tego parametru oznacza, że odchylenia od modelu były korygowane. Chcielibyśmy zatem, żeby $\alpha$ wyszła ujemna. I w naszym modelu tak też się dzieje.
+
+\bigskip
+
+Po zrobieniu analogicznego, co w modelu AIDS, testu na restrykcje znów, niestety, założenia te nie są spełnione. Mimo wszystko przeprowadźmy analizę elastyczności.
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{ELASTYCZNOŚĆ DOCHODOWA}  \\ \hline 
+food  & cloth  & so  & house  & ndo  \\ \hline
+1.1599  & 2.3743  & 0.9203  & -0.2754  & 1.4958 \\ \hline
+\end{tabular}
+\end{center}
+
+Zatem, w perspektywie krótkookresowej, jeśli dochód się zwiększy, to wzrosną nasze wydatki przede wszystkim na ubranie, jedzenie i inne dobra nietrwałe. Krótko mówiąc, po nagłym dopływie gotówki, pierwsze co robimy to idziemy na zakupy i do restauracji. Cieszymy się naszą wypłatą nie planując wydatków na przyszłość.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multicolumn{6}{|c|}{ELASTYCZNOŚĆ CENOWA}  \\ \hline 
+& pfood  & pcloth  & pso  & phouse  & pndo  \\  \hline
+food  & $ -0.7161 $ & $ 0.0152 $ & $ 0.0541 $ & $ -0.1861 $ & $ -0.1183 $ \\  \hline 
+cloth  & $ -0.2058 $ & $ -0.7803 $ & $ -0.9525 $ & $ 0.2221 $ & $ -0.2775 $ \\  \hline 
+so  & $ -0.1723 $ & $ 0.0703 $ & $ -0.6665 $ & $ -0.0406 $ & $ -0.1086 $ \\  \hline 
+house  & $ 0.1127 $ & $ -0.0395 $ & $ 0.3385 $ & $ -0.5371 $ & $ 0.1175 $ \\  \hline 
+ndo  & $ -0.1254 $ & $ -0.2879 $ & $ -0.6763 $ & $ -0.2339 $ & $ -0.482 $ \\  \hline
+\end{tabular}
+\end{center}
+
+Znów na przekątnej są liczby ujemne, co dobrze świadczy o naszym modelu. Jak interpretować pozostałe wartości? Otóż na przykład, jeśli rośnie cena jedzenia, to zaczynamy oszczędzać i zmniejszamy tym samym wydatki na ubrania i rozrywki.
+
+\newpage
+
+\underline{Kod źródłowy:}
+
+\lstset{language=R} 
+\begin{small}
+\begin{lstlisting}
+library("systemfit")
+library("tseries")
+
+# 1
+
+w <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr4\\AIDS.csv")
+head(w)
+
+w <- cbind(w[,1:3],WHOUSE=w[,5],WNDO=w[,4],w[,6:8],PHOUSE=w[,10],
+           PNDO=w[,9],LREXP=w[,11])
+head(w)
+
+food <- w$WFOOD ~ log(w$PFOOD)+log(w$PCLOTH)+log(w$PSO)+log(w$PHOUSE)+
+   log(w$PNDO)+log(w$LREXP)
+cloth <- w$WCLOTH ~ log(w$PFOOD)+log(w$PCLOTH)+log(w$PSO)+log(w$PHOUSE)+
+   log(w$PNDO)+log(w$LREXP)
+so <- w$WSO ~ log(w$PFOOD)+log(w$PCLOTH)+log(w$PSO)+log(w$PHOUSE)+
+   log(w$PNDO)+log(w$LREXP)
+house <- w$WHOUSE ~ log(w$PFOOD)+log(w$PCLOTH)+log(w$PSO)+log(w$PHOUSE)+
+   log(w$PNDO)+log(w$LREXP)
+
+lista <- as.list(c(food,cloth,so,house))
+lista
+names(lista) <- c("food","cloth","so","house")
+
+model <- systemfit(lista,method="SUR")
+
+# 2
+
+co <- model$coefficients
+coef <- matrix(co,ncol=7,nrow=4,byrow=TRUE)
+rownames(coef) <- c("food","cloth","so","house")
+colnames(coef) <- c("alfa","gamma_pfood","gamma_pcloth","gamma_pso",
+                    "gamma_phouse","gamma_pndo","beta")
+coef
+
+ndo <- numeric(7)
+suma <- apply(coef,2,sum)
+ndo[1] <- 1-suma[1]
+ndo[7] <- 0-suma[7]
+ndo[2:6] <- 0-suma[2:6]
+ndo
+coef <- rbind(coef,ndo=ndo)
+coef
+
+m <- matrix(0,nrow=10,ncol=28)
+m[1,3] <- 1
+m[1,9] <- -1
+m[2,4] <- 1
+m[2,16] <- -1
+m[3,5] <- 1
+m[3,23] <- -1
+m[4,11] <- 1
+m[4,17] <- -1
+m[5,12] <- 1
+m[5,24] <- -1
+m[6,19] <- 1
+m[6,25] <- -1
+m[7,2:6] <- 1
+m[8,9:13] <- 1
+m[9,16:20] <- 1
+m[10,23:27] <- 1
+
+d <- numeric(10)
+linearHypothesis(model,m,d)   # hipoteza niestety nie jest spelniona
+
+# 3
+
+wsr <- apply(w[,1:5],2,mean)
+wsr
+
+# elastycznosc dochodowa:
+
+ed <- 1+coef[,7]/wsr
+ed
+
+# elastycznosc cenowa:
+
+ec <- matrix(0,ncol=5,nrow=5)
+for(i in 1:5){
+   for(j in 1:5){
+      delta <- ifelse(i==j,1,0)
+      ec[i,j] <- -delta+coef[i,j+1]/wsr[i]-coef[i,7]/wsr[i]*wsr[j]
+   }
+}
+ec
+rownames(ec) <- c("food","cloth","so","house","ndo")
+colnames(ec) <- c("pfood","pcloth","pso","phouse","pndo")
+ec   # popyt na i-te dobro ze wzgledu na wzrost ceny dobra j-tego
+
+# 4
+
+adf.test(w$WFOOD,k=0)
+adf.test(w$WCLOTH,k=0)
+adf.test(w$WSO,k=0)
+adf.test(w$WHOUSE,k=0)   # TYLKO TO WYSZLO STACJONARNE (trzeba przymknac na to oko)
+adf.test(w$WNDO,k=0)
+
+adf.test(w$PFOOD,k=0)
+adf.test(w$PCLOTH,k=0)
+adf.test(w$PSO,k=0)
+adf.test(w$PHOUSE,k=0)  
+adf.test(w$PNDO,k=0)
+adf.test(w$LREXP,k=0) 
+
+# sprawdzmy zatem, czy sa I(1):
+
+adf.test(diff(w$WFOOD),k=0)
+adf.test(diff(w$WCLOTH),k=0)
+adf.test(diff(w$WSO),k=0)
+adf.test(diff(w$WHOUSE),k=0)
+adf.test(diff(w$WNDO),k=0)   
+
+adf.test(diff(w$PFOOD),k=0)
+adf.test(diff(w$PCLOTH),k=0)
+adf.test(diff(w$PSO),k=0)       
+adf.test(diff(w$PHOUSE),k=0)
+adf.test(diff(w$PNDO),k=0)   # wszystkie wyszly stacjonarne, czyli szeregi
+                             # sa I(1)
+
+re <- residuals(model)
+re
+
+adf.test(re[,1],k=0) 
+adf.test(re[,2],k=0)
+adf.test(re[,3],k=0)
+adf.test(re[,4],k=0)   # jedno tylko wychodzi niestacjonarne :D
+
+# czyli miedzy szeregami wystepuje kointegracja 
+
+# 6
+
+lista2 <- as.list(c(diff(w$WFOOD) ~ re[-length(re[,1]),1]+diff(log(w$PFOOD))+
+                       diff(log(w$PCLOTH))+diff(log(w$PSO))+diff(log(w$PHOUSE))+
+                       diff(log(w$PNDO))+diff(log(w$LREXP)),
+                   diff(w$WCLOTH) ~ re[-length(re[,1]),2]+diff(log(w$PFOOD))+
+                      diff(log(w$PCLOTH))+diff(log(w$PSO))+diff(log(w$PHOUSE))+
+                      diff(log(w$PNDO))+diff(log(w$LREXP)),
+                   diff(w$WSO) ~ re[-length(re[,1]),3]+diff(log(w$PFOOD))+
+                      diff(log(w$PCLOTH))+diff(log(w$PSO))+diff(log(w$PHOUSE))+
+                      diff(log(w$PNDO))+diff(log(w$LREXP)),
+                   diff(w$WHOUSE) ~ re[-length(re[,1]),4]+diff(log(w$PFOOD))+
+                      diff(log(w$PCLOTH))+diff(log(w$PSO))+diff(log(w$PHOUSE))+
+                      diff(log(w$PNDO))+diff(log(w$LREXP))))
+lista2
+
+names(lista2) <- c("food","cloth","so","house")
+lista2
+
+model2 <- systemfit(lista2,method="SUR")
+
+co2 <- model2$coefficients
+coef2 <- matrix(co2, ncol=8,nrow=4,byrow=TRUE)
+rownames(coef2) <- c("food","cloth","so","house")
+colnames(coef2) <- c("intercept","alfa","gamma_pfood","gamma_pcloth","gamma_pso",
+                    "gamma_phouse","gamma_pndo","beta")
+coef2
+
+# alfy wyszly ujemne -> odchylenie od stanu rownowagi mniejsze niz zero
+
+m2 <- matrix(0,nrow=10,ncol=32)
+m2[1,4] <- 1
+m2[1,11] <- -1
+m2[2,5] <- 1
+m2[2,19] <- -1
+m2[3,6] <- 1
+m2[3,27] <- -1
+m2[4,13] <- 1
+m2[4,20] <- -1
+m2[5,14] <- 1
+m2[5,28] <- -1
+m2[6,22] <- 1
+m2[6,29] <- -1
+m2[7,3:7] <- 1
+m2[8,11:15] <- 1
+m2[9,19:23] <- 1
+m2[10,27:31] <- 1
+
+d2 <- numeric(10)
+linearHypothesis(model2,m2,d2)   # hipoteza niestety nie jest spelniona
+
+
+wsr <- apply(w[,1:5],2,mean)
+wsr
+
+# elastycznosc dochodowa:
+
+beta <- c(coef2[,8],ndo=-sum(coef2[,8]))
+beta
+
+ed <- 1+beta/wsr
+ed
+
+# elastycznosc cenowa:
+
+gamma <- coef2[,3:7]
+suma <- apply(coef2,2,sum)
+gamma_ndo <- 0-suma[3:7]
+gamma <- rbind(gamma,ndo=gamma_ndo)
+gamma
+
+ec <- matrix(0,ncol=5,nrow=5)
+for(i in 1:5){
+   for(j in 1:5){
+      delta <- ifelse(i==j,1,0)
+      ec[i,j] <- -delta+gamma[i,j]/wsr[i]-beta[i]/wsr[i]*wsr[j]
+   }
+}
+ec
+rownames(ec) <- c("food","cloth","so","house","ndo")
+colnames(ec) <- c("pfood","pcloth","pso","phouse","pndo")
+ec   # popyt na i-te dobro ze wzgledu na wzrost ceny dobra j-tego
+\end{lstlisting} 
+\end{small} 
+
+\end{document}
+
+
+
+

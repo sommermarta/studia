@@ -1,0 +1,242 @@
+\documentclass[11pt,a4paper]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{listings}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 5 \\ EKONOMETRIA \\ MARTA SOMMER -- BSMAD}
+
+Bêdziemy rozwa¿aæ dane zawieraj¹ce szeregi czasowe przedstawiaj¹ce notowania gie³dowe g³ównych indeksów œwiatowych. W moim sprawozdaniu biorê pod uwagê cztery indeksy -- WIG (gie³da polska), DAX (gie³da niemiecka), CAC40 (gie³da francuska) oraz FTSE (gie³da angielska). Przeprowadzê analizê w ten sposób, ¿eby zobaczyæ, które rynki s¹ ze sob¹ skointegrowane, czyli maj¹ na siebie krótko lub d³ugookresowy wp³yw. Zatem do dzie³a!
+
+<<echo=FALSE,results='hide',warning=FALSE,message=FALSE>>=
+library("zoo")
+library("quantmod")
+library("tseries")
+library("fUnitRoots")
+library("vars")
+library("urca")
+
+dane <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr5\\wybrane2.csv",
+                   header=T, sep=";", dec=",")
+dane <- dane[-c(2468:2472), ]
+dane <- na.approx(dane)
+dane <- as.data.frame(dane)
+attach(dane)
+@
+
+Po usuniêciu braków danych nasze dane wygl¹dajê nastêpuj¹co:
+
+<<echo=FALSE>>=
+head(dane,2)
+@
+
+Konstruujê równie¿ dla nich logarytmiczne stopy zwrotu, które wygl¹daj¹ nastêpuj¹co:
+
+<<echo=FALSE,results='hide'>>=
+logprice <- apply(dane, 2, function(x){
+                  log(Lag(x, k = 0)/Lag(x, k = 1))
+                  })[-1, ]
+logprice <- as.data.frame(logprice)
+names(logprice) <- c("logWIG", "logDAX", "logCAC40", "logFTSE")
+@
+
+<<echo=FALSE>>=
+head(logprice,2)
+@
+
+Korzystaj¹c z testu Duckeya-Fullera otrzymaliœmy, ¿e szeregi WIG (p-value $=0.84$), DAX (p-value~$=0.59$), CAC40 (p-value $=0.81$) oraz FTSE (p-value $=0.69$) nie s¹ stacjonarne. Natomiast ju¿ wszystkie logarytmiczne stopy zwrotu s¹ stacjonarne (ka¿de p-value testu D-F wysz³o mniejsze ni¿ $0.01$).
+
+\bigskip
+
+Skonstruujmy teraz 4-wymiarowy model VAR dla naszych stóp zwrotu. Zanim to jednak zrobimy musimy znaæ jego rz¹d opóŸnienia. Policzmy go przy u¿yciu dwóch kryteriów: AIC i BIC. AIC wskazuje na opóŸnienie rzêdu $5$, zaœ BIC na opóŸnienie rzêdu $1$. Bierzemy wiêc minimum i dopasowujemy model VAR($1$), a nastêpnie testem Ljunga-Boxa sprawdzam, czy reszty w modelu s¹ niezale¿ne. P-value tego testu dla kolejnych reszt wysz³o du¿e, zatem przyjmujemy hipotezê o tym, ¿e reszty nie s¹ skorelowane. Model jest wiêc poprawnie dopasowany.
+
+<<echo=FALSE,results='hide'>>=
+p <- 1:10
+crit <- matrix(0, ncol = 2, nrow = length(p), dimnames = list(NULL, c("AIC", "BIC")))
+for (i in p) {
+var <- VAR(logprice, p = i)
+crit[i, 1] <- AIC(var)
+crit[i, 2] <- BIC(var)
+}
+crit
+which(crit[, 1] == min(crit[, 1]))
+which(crit[, 2] == min(crit[, 2]))
+@
+
+<<echo=FALSE,results='hide'>>=
+var1 <- VAR(logprice, p = 1)
+res1 <- residuals(var1)
+apply(res1, 2, function(x) {
+      Box.test(x, type = "Ljung")$p.value
+      })
+@
+
+PrzeprowadŸmy zatem analizê przyczynowoœci w modelu. ¯eby stwierdziæ, ¿e dany rynek wp³ywa na inny wystarczy stwierdziæ, czy odpowiadaj¹cy mu wspó³czynnik w modelu jest istotny (p-value t-testu). Spójrzmy na uzyskane rezultaty (wartoœci przedstawione ni¿ej to jest wspomniane p-value t-testów):
+
+<<echo=FALSE>>=
+lapply(summary(var1)$varresult, function(x) x$coeff[, 4])
+@
+
+Widaæ zatem, ¿e na notowania WIG-u w dniu dzisiejszym maj¹ wp³yw notowania WIG-u z dnia poprzedniego, jak równie¿ notowania z dnia poprzedniego DAX-u i CAC40. Na to co dzieje siê na gie³dzie polskiej ma wp³yw gie³da niemiecka i francuska. Jest to oczywiœcie prognoza krótkookresowa. Przyjrzyjmy siê dalej naszym rezultatom. Na notowania DAX-u w dniu dzisiejszym wp³yw maj¹ notowania WIG-u, DAX-u i CAC40 z dnia poprzedniego. Na notowania CAC40 maj¹ wp³yw notowania DAX-u i CAC40 z dnia poprzedniego. I wreszcie na notowania FTSE maj¹ wp³yw notowania DAX-u i CAC40 z dnia poprzedniego. 
+
+Najwa¿niejsze dla nas wnioski s¹ wiêc takie, ¿e na Polskê maj¹ wp³yw Niemcy i Francjê, natomiamiast Polska wp³ywa krótkookresowo tylko na Niemcy. Jest to niejako intuicyjne -- polska s³aba gospodarka nie mo¿e mieæ wielkiego wp³ywu na europejskie potêgi gospodarcze. Z drugiej strony Anglia te¿ na nikogo nie wp³ywa. To mo¿e byæ jednak wynikiem jej niezale¿noœci gospodarczej.
+
+\bigskip
+
+Zbudujmy teraz model VAR dla niestacjonarnych notowañ indeksów. Dziêki niemu bêdziemy mogli wyznaczyæ liczbê relacji kointegruj¹cych. Znów na podstawie kryteriów AIC i BIC wyznaczam liczbê opóŸnieñ w modelu. AIC wskaza³o na $10$, zaœ BIC na $2$. Dopasujemy zatem model VAR($2$). Korzystaj¹c z testu Ljunga-Boxa dostajemy równie¿, ¿e reszty w tym modelu s¹ nieskorelowane, zatem model jest dobrze dopasowany.
+
+<<echo=FALSE, results='hide'>>=
+p <- 1:10
+crit2 <- matrix(0, ncol = 2, nrow = length(p), dimnames = list(NULL, c("AIC", "BIC")))
+for (i in p) {
+var <- VAR(dane, p = i)
+crit[i, 1] <- AIC(var)
+crit[i, 2] <- BIC(var)
+}
+crit
+which(crit[, 1] == min(crit[, 1]))
+which(crit[, 2] == min(crit[, 2]))
+var2 <- VAR(dane, p = 2)
+
+res2 <- residuals(var2)
+head(res2)
+apply(res2, 2, function(x) {
+      Box.test(x, type = "Ljung")
+      })
+var2 <- VAR(dane, p = 2)
+@
+
+W celu wyznaczenia liczby relacji kointegruj¹cych trzeba wyznaczyæ pierwiastki jednostkowe równania:
+
+$$
+\det(A-A_1L-A_2L^2-\ldots-A_pL^p)=0
+$$
+
+Równanie to mo¿na rozwi¹zaæ przy pomocy funkcji \texttt{roots}:
+
+<<echo=FALSE>>=
+abs(roots(var2))
+@
+
+Widaæ wiêc, ¿e mamy tak naprawdê dwa pierwiastki jesnostkowe, czyli z twierdzenia Grangera o reprezentacji wiemy wiêc, ¿e bêdziemy mieæ $K-r$ relacji kointegruj¹cych, czyli w naszym przypadku dwie ($4-2=2$). Mo¿na to te¿ rozwi¹zaæ innym sposobem, mianowicie korzystaj¹c z testu Johansena:
+
+<<echo=FALSE>>=
+joh <- ca.jo(dane, type = "trace", K = 2, ecdet = "none")
+summary(joh)
+@
+
+Poniewa¿ interesuje nas przedzia³ ufnoœci $95\%$ patrzymy na kolumnê z napisem $5pct$. Moment, w którym odrzucamy hipotezê œwiadczy o tym, ¿e rz¹d macierzy (r) jest równy $2$, zatem relacji kointegruj¹cych znów jest $4-2$, czyli dwie. Dwoma metodami wysz³y nam wiêc dwie relacje kointegruj¹ce. 
+
+\bigskip
+
+Dopasujmy wiêc wreszcie model VECM.
+
+<<echo=FALSE>>=
+vecm <- cajorls(joh, r = 2)
+vecm
+@
+
+Na relacje kointegruj¹ce wskazuje wektor beta, który nale¿y interpretowaæ w nastêpuj¹cy sposób:
+
+\begin{eqnarray*}
+WIG_{t-1} &=& 4,94\cdot CAC40_{t-1}+4,1\cdot FTSE_{t-1}\\
+DAX_{t-1} &=& 0,24\cdot CAC40_{t-1}+0,51\cdot FTSE_{t-1}
+\end{eqnarray*}
+
+Interpretacja tym razem jest d³ugookresowa. Jeœli CAC40 wzroœnie o $1$ punkt procentowy, to WIG powinien wzrosn¹æ o $4,94$ procenty. Podobnie, jeœli wzroœnie FTSE, to WIG powinien wzrosn¹æ o $4,1$. Dla drugiego równania analogicznie. Z tym, ¿e widaæ, ¿e w perspektywie d³ugookresowej gie³da francuska i angielska maj¹ niewielki wp³yw na gie³dê niemieck¹. Za to Polska bardzo jest od tamtych gospodarek zale¿na. 
+
+\section*{\textbf{Kod Ÿród³owy}}
+
+<<eval=FALSE, warning=FALSE,message=FALSE>>=
+
+library("quantmod")
+library("tseries")
+library("fUnitRoots")
+library("vars")
+library("urca")
+
+dane <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr5\\wybrane2.csv",
+                   header=T, sep=";", dec=",")
+dane <- dane[-c(2468:2472), ]
+dane <- na.approx(dane)
+dane <- as.data.frame(dane)
+attach(dane)
+
+head(dane,2)
+
+logprice <- apply(dane, 2, function(x){
+                  log(Lag(x, k = 0)/Lag(x, k = 1))
+                  })[-1, ]
+logprice <- as.data.frame(logprice)
+names(logprice) <- c("logWIG", "logDAX", "logCAC40", "logFTSE")
+
+head(logprice,2)
+
+p <- 1:10
+crit <- matrix(0, ncol = 2, nrow = length(p), dimnames = list(NULL, c("AIC", "BIC")))
+for (i in p) {
+var <- VAR(logprice, p = i)
+crit[i, 1] <- AIC(var)
+crit[i, 2] <- BIC(var)
+}
+crit
+which(crit[, 1] == min(crit[, 1]))
+which(crit[, 2] == min(crit[, 2]))
+
+var1 <- VAR(logprice, p = 1)
+res1 <- residuals(var1)
+apply(res1, 2, function(x) {
+      Box.test(x, type = "Ljung")$p.value
+      })
+
+lapply(summary(var1)$varresult, function(x) x$coeff[, 4])
+
+p <- 1:10
+crit2 <- matrix(0, ncol = 2, nrow = length(p), dimnames = list(NULL, c("AIC", "BIC")))
+for (i in p) {
+var <- VAR(dane, p = i)
+crit[i, 1] <- AIC(var)
+crit[i, 2] <- BIC(var)
+}
+crit
+which(crit[, 1] == min(crit[, 1]))
+which(crit[, 2] == min(crit[, 2]))
+var2 <- VAR(dane, p = 2)
+
+res2 <- residuals(var2)
+head(res2)
+apply(res2, 2, function(x) {
+      Box.test(x, type = "Ljung")
+      })
+var2 <- VAR(dane, p = 2)
+
+abs(roots(var2))
+
+joh <- ca.jo(dane, type = "trace", K = 2, ecdet = "none")
+summary(joh)
+
+vecm <- cajorls(joh, r = 2)
+vecm
+@
+
+
+\end{document}

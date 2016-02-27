@@ -1,0 +1,377 @@
+\documentclass[10pt,a4paper]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.8cm, bmargin=0.8cm, lmargin=0.8cm, rmargin=0.8cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+\section*{\centering BIOSTATYSTYKA -- PRACA DOMOWA 2\\ MARTA SOMMER -- BSMAD}
+
+Dla danych \textit{newcyfra.dta} analizujemy wp³yw markera CYFRA na czas prze¿ycia bezobjawowego. Bêdziemy robiæ to dwiema metodami - nieparametryczn¹ (model proporcjonalnych hazardow) i parametryczn¹ (model Weibulla i lognormalny). Na koñcu przeanalizujemy, który z tych modeli okaza³ siê najlepszy.
+
+\subsection*{Model PH}
+
+\textit{cyfra} jest zmienn¹ ci¹g³¹. Trudno jest wiêc sprawdziæ na wykresie, czy ma ona wp³yw na czas prze¿ycia. Dlatego spróbujemy -- w sposób lekko sztuczny -- zrobiæ z niej zmienn¹ dyskretn¹. W tym celu budujemy pusty model PH i rysujemy jego reszty martynga³owe (Rysunek 1). Z Rysunku 1 widaæ, ¿e dobrym przekszta³ceniem zmiennej \textit{cyfra} bêdzie przekszta³cenie logarytmiczne. Narysujmy wykres jeszcze raz, uwzglêdniaj¹c to przekszta³cenie (Rysunek 2).
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-2} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Na podstawie Rysunku 2 mo¿na zauwa¿yæ, ¿e $\log(\textit{cyfra})$ uk³ada siê w trzy pasy, których granic¹ jest $1$ i $2$, co w jêzyku \textit{cyfry} przek³ada siê na liczby $\exp(1)=2,72$ oraz $\exp(2)=7,39$. Stworzê wiêc now¹ dyskretn¹ zmienn¹ objaœniaj¹c¹ \textit{cyfra.new}, która przyjmuje wartoœci $1,2$ i $3$, gdy zmienna ci¹g³a \textit{cyfra} wpada do przedzia³ów $(-\infty; 2,72],(2,72;7,39], (7,39;\infty]$, odpowiednio. W ten sposób choæ w przybli¿eniu bêdziemy mogli okreœliæ wp³yw tej zmiennej na funkcjê prze¿ycia.  
+
+
+
+
+Narysujmy krzywe prze¿ycia wyznaczone metod¹ Kaplana-Meiera dla trzech poziomów zmiennej \textit{cyfra.new}. Z rysunku widaæ, ¿e ró¿ni¹ siê one istotnie. Zmienna \textit{cyfra} ma wiêc wp³yw na czas prze¿ycia.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-4} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Zbudujmy teraz model proporcjonalnych hazardów dla wszystkich zmiennych objaœniaj¹cych oprócz \textit{adeno, large, plano, tnm1, tnm2} i \textit{tnm3}, gdy¿ by³yby one wspó³liniowe ze zmiennymi \textit{histpat} i \textit{newtnm}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(dftime, dfree) ~ log(cyfra) + wiek + plec + 
+##     ps + histpat + newtnm, data = dane)
+## 
+## 
+##                coef exp(coef) se(coef)      z      p
+## log(cyfra)  1.03060     2.803   0.3180  3.241 0.0012
+## wiek        0.00708     1.007   0.0324  0.218 0.8300
+## plec        0.10455     1.110   0.5805  0.180 0.8600
+## ps          0.69307     2.000   0.3827  1.811 0.0700
+## histpat    -0.66222     0.516   0.2208 -2.999 0.0027
+## newtnm      0.05986     1.062   0.0282  2.123 0.0340
+## 
+## Likelihood ratio test=46.1  on 6 df, p=2.82e-08  n= 94, number of events= 39
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Z testu Walda wynika, ¿e zmienne \textit{wiek, plec} i \textit{ps} nie s¹ istotne. Zmienna \textit{ps} jest na granicy istotnoœci tego testu. Rysuj¹c dla niej krzywe Kaplana-Meiera widaæ jednak, ¿e zmienna jest istotna. Brak jej wp³ywu w naszym modelu mo¿e byæ spowodowany wspó³liniowoœci¹ ze zmienn¹ \textit{cyfra}. Zbudujmy wiêc model bez niej i bez \textit{wiek} i \textit{plec}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(dftime, dfree) ~ log(cyfra) + histpat + 
+##     newtnm, data = dane)
+## 
+## 
+##               coef exp(coef) se(coef)     z       p
+## log(cyfra)  1.1785      3.25    0.248  4.76 1.9e-06
+## histpat    -0.6539      0.52    0.209 -3.12 1.8e-03
+## newtnm      0.0599      1.06    0.028  2.14 3.2e-02
+## 
+## Likelihood ratio test=42.6  on 3 df, p=2.94e-09  n= 94, number of events= 39
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Teraz ju¿ wszystkie trzy zmienne s¹ istotne. Interpretacja wyników jest taka, ¿e gdy zmienna logarytm zmiennej \textit{cyfra} zwiêkszy siê o jeden, to ryzyko œmierci zwiêkszy siê u nas $3,25$ raza. Jest to wiêc wp³yw znacz¹cy. 
+
+PrzejdŸmy teraz do sprawdzenia, czy spe³nione jest za³o¿enie proporcjonalnych hazardów, czy w ogóle z tego modelu mogliœmy skorzystaæ. Z wykresu $\log(-\log)$ dla zmiennej \textit{cyfra.new} (Rysunek 3) widaæ, ¿e za³o¿enie PH niekoniecznie jest spe³nione. SprawdŸmy jeszcze za³o¿enia testem opartym na skalowanych resztach Schoenfelda:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##               rho  chisq       p
+## log(cyfra)  0.372  5.456 0.01950
+## histpat     0.108  0.418 0.51806
+## newtnm     -0.298  5.055 0.02456
+## GLOBAL         NA 11.355 0.00996
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ, ¿e niestety zmienna \textit{cyfra} nie spe³nia za³o¿eñ, bo mamy podstawy do odrzucenia hipotezy testu. Podobnie w przypadku zmiennej \textit{newtnm}. Potwierdza to wykres skalowanych reszt Schoenfelda dla zmiennej \textit{cyfra}. Niestety model PH nie jest wiêc ca³kowicie adekwatny. Niemniej jednak daje jakieœ wyobra¿enie o czasie prze¿ycia. Spróbujmy wiêc dopasowaæ model parametryczny.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-8} 
+
+}
+
+
+
+\end{knitrout}
+
+
+\subsection*{ATF}
+
+\subsubsection*{Model Weibulla}
+
+Dopasujmy model Weibulla do wszystkich zmiennych. Wartoœci wspó³czynników na skali czasu wygl¹daj¹ nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## (Intercept)        wiek        plec          ps       cyfra       adeno 
+##     18.4275      1.0110      1.0932      0.7332      0.9906      0.7699 
+##       large       plano        tnm1        tnm2        tnm3 
+##      0.7835      1.0000      1.5599      1.3941      1.0000
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zmienne, które s¹ bliskie $1$ bêd¹ nieistotne, tak wiêc dopasujemy nowy model tylko ze zmiennymi \textit{ps,cyfra,adeno,large,tnm1} i \textit{tnm2}. Teraz wartoœci wspó³czynników na skali czasu wygl¹daj¹ nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## (Intercept)          ps       cyfra       adeno       large        tnm1 
+##     41.6049      0.7331      0.9847      0.7698      0.7863      1.5216 
+##        tnm2 
+##      1.3460
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Wszystkie (niestety oprocz \textit{cyfra}) s¹ istotne. SprawdŸmy, czy za³o¿enia modelu s¹ spe³nione. W tym celu porównajmy krzyw¹ prze¿ycia dla standaryzowanych reszt z modelu z krzyw¹ prze¿ycia odpowiadaj¹c¹ rozk³adowi Gumbela (Rysunek 5) oraz wykres kwantylowy dla reszt (Rysunek 6). Na wykresach widaæ, ¿e w przybli¿eniu za³o¿enia s¹ spe³nione.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-11} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Spróbujmy jeszcze zrobiæ przekszta³cenie logarytmiczne na zmiennej \textit{cyfra}. Otrzymujemy wtedy takie wartoœci wspó³czynników:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## (Intercept)          ps       cyfra       adeno       large        tnm1 
+##     63.8214      0.8354      0.7341      0.6781      0.6875      1.2832 
+##        tnm2 
+##      1.2738
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Cyfra jest ju¿ istotna, a za³o¿enia równie¿ s¹ spe³nione.
+
+\subsubsection*{Model log-normalny}
+
+Dopasujmy model log-normalny dla tych samych zmiennych, co w modelu Weibulla. Wartoœci wspó³czynników na skali czasu wygl¹daj¹ nastêpuj¹co:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## (Intercept)          ps       cyfra       adeno       large        tnm1 
+##     36.4353      0.8285      0.9755      0.7408      0.7816      1.5757 
+##        tnm2 
+##      1.3978
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Wspó³czynniki s¹ bardzo zbli¿one do tych uzyskanych z modelu Weibulla. SprawdŸmy za³o¿enia modelu log-normlnego (Rysunki 7 i 8). Widaæ, ¿e za³o¿enia s¹ spe³nione.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-14} 
+
+}
+
+
+
+\end{knitrout}
+
+
+Gdy zrobimy jeszcze przekszta³cenie logarytmiczne na zmiennej \textit{cyfra}, otrzymamy:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## (Intercept)          ps       cyfra       adeno       large        tnm1 
+##     53.1896      0.8611      0.7255      0.6962      0.7429      1.4286 
+##        tnm2 
+##      1.3453
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\subsection*{Wnioski}
+
+W modelu proporcjonalnych hazardów zmienna \textit{cyfra} by³a bardzo istotna -- zwiêksza³a ryzyko zdarzenia ponad trzy razy. Model ten nie by³ jednak do koñca adekwatny, gdy¿ nie spe³nia³ za³o¿eñ (by³ zale¿ny od czasu). 
+
+\bigskip
+
+Dwa rozpatrzone przeze mnie modele parametryczne - model Weibulla i log-normalny za³o¿enia spe³niaj¹ ju¿ bardzo dobrze. Wskazuj¹ jednak na brak istotnoœci interesuj¹cej nas zmiennej \textit{cyfra}. Gdy jednak zrobimy na tej zmiennej przekszta³cenie logarytmiczne i ponownie dopasujemy model, oka¿e siê, ¿e ta zmienna jest ju¿ istotna, a za³o¿enia modelu nadal s¹ spe³nione.
+
+Ostatecznie uwa¿am wiêc, ¿e nale¿a³oby zastosowaæ jeden z modeli parametrycznych.
+
+\subsection*{Syntaks R-a}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"foreign"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"survival"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"rms"}\hlstd{)}
+\hlstd{dane} \hlkwb{<-} \hlkwd{read.dta}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}2\textbackslash{}\textbackslash{}newcyfra.dta"}\hlstd{)[,}
+    \hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{m0} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlnum{1}\hlstd{,} \hlkwc{data} \hlstd{= dane)}
+\hlstd{mart} \hlkwb{<-} \hlkwd{resid}\hlstd{(m0)}
+\hlkwd{plot}\hlstd{(dane}\hlopt{$}\hlstd{cyfra, mart,} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 1"}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{lowess}\hlstd{(dane}\hlopt{$}\hlstd{cyfra, mart,} \hlkwc{iter} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{f} \hlstd{=} \hlnum{0.6}\hlstd{))}
+\hlkwd{plot}\hlstd{(}\hlkwd{log}\hlstd{(dane}\hlopt{$}\hlstd{cyfra), mart,} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 2"}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{lowess}\hlstd{(}\hlkwd{log}\hlstd{(dane}\hlopt{$}\hlstd{cyfra), mart,} \hlkwc{iter} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{f} \hlstd{=} \hlnum{0.6}\hlstd{))}
+\hlstd{cyfra.new} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlkwd{length}\hlstd{(dane}\hlopt{$}\hlstd{cyfra))}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(dane}\hlopt{$}\hlstd{cyfra)) \{}
+    \hlkwa{if} \hlstd{(dane}\hlopt{$}\hlstd{cyfra[i]} \hlopt{<=} \hlkwd{exp}\hlstd{(}\hlnum{1}\hlstd{))}
+        \hlstd{cyfra.new[i]} \hlkwb{<-} \hlnum{0} \hlkwa{else if} \hlstd{(dane}\hlopt{$}\hlstd{cyfra[i]} \hlopt{<=} \hlkwd{exp}\hlstd{(}\hlnum{2}\hlstd{))}
+        \hlstd{cyfra.new[i]} \hlkwb{<-} \hlnum{1} \hlkwa{else} \hlstd{cyfra.new[i]} \hlkwb{<-} \hlnum{2}
+\hlstd{\}}
+\hlstd{dane} \hlkwb{<-} \hlkwd{cbind}\hlstd{(dane, cyfra.new)}
+\hlstd{km} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{cyfra.new,} \hlkwc{data} \hlstd{= dane)}
+\hlkwd{plot}\hlstd{(km,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"black"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{4}\hlstd{))}
+\hlstd{m2} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlkwd{log}\hlstd{(cyfra)} \hlopt{+} \hlstd{wiek} \hlopt{+} \hlstd{plec} \hlopt{+} \hlstd{ps} \hlopt{+} \hlstd{histpat} \hlopt{+}
+    \hlstd{newtnm,} \hlkwc{data} \hlstd{= dane)}
+\hlstd{m3} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlkwd{log}\hlstd{(cyfra)} \hlopt{+} \hlstd{histpat} \hlopt{+} \hlstd{newtnm,} \hlkwc{data} \hlstd{= dane)}
+\hlstd{m3s} \hlkwb{<-} \hlkwd{cox.zph}\hlstd{(m3,} \hlkwc{transform} \hlstd{=} \hlstr{"identity"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"green"}\hlstd{),} \hlkwc{fun} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 3"}\hlstd{,}
+    \hlkwc{log} \hlstd{=} \hlstr{"x"}\hlstd{,} \hlkwc{firstx} \hlstd{=} \hlnum{10}\hlstd{)}
+\hlkwd{plot}\hlstd{(m3s,} \hlkwc{df} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{nsmo} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{se} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{var} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 4"}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\hlstd{w1} \hlkwb{<-} \hlkwd{survreg}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{wiek} \hlopt{+} \hlstd{plec} \hlopt{+} \hlstd{ps} \hlopt{+} \hlstd{cyfra} \hlopt{+} \hlstd{adeno} \hlopt{+} \hlstd{large} \hlopt{+}
+    \hlstd{plano} \hlopt{+} \hlstd{tnm1} \hlopt{+} \hlstd{tnm2} \hlopt{+} \hlstd{tnm3,} \hlkwc{data} \hlstd{= dane,} \hlkwc{dist} \hlstd{=} \hlstr{"weibull"}\hlstd{)}
+\hlstd{p} \hlkwb{<-} \hlnum{1}\hlopt{/}\hlstd{w1}\hlopt{$}\hlstd{scale}
+\hlstd{time.w1} \hlkwb{<-} \hlkwd{exp}\hlstd{(w1}\hlopt{$}\hlstd{coefficients)}
+\hlstd{w2} \hlkwb{<-} \hlkwd{psm}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{ps} \hlopt{+} \hlstd{cyfra} \hlopt{+} \hlstd{adeno} \hlopt{+} \hlstd{large} \hlopt{+} \hlstd{tnm1} \hlopt{+} \hlstd{tnm2,} \hlkwc{data} \hlstd{= dane,}
+    \hlkwc{dist} \hlstd{=} \hlstr{"weibull"}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlstd{time.w2} \hlkwb{<-} \hlkwd{exp}\hlstd{(w2}\hlopt{$}\hlstd{coefficients)}
+\hlstd{res.w2} \hlkwb{<-} \hlkwd{resid}\hlstd{(w2,} \hlkwc{type} \hlstd{=} \hlstr{"cens"}\hlstd{)}
+\hlkwd{plot}\hlstd{(}\hlkwd{survfit}\hlstd{(res.w2} \hlopt{~} \hlnum{1}\hlstd{),} \hlkwc{conf} \hlstd{=} \hlstr{"none"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Survival probability (Gumbel)"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"Residual"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 5"}\hlstd{)}
+\hlkwd{lines}\hlstd{(res.w2,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\hlkwd{qqnorm}\hlstd{(res.w2[,} \hlnum{1}\hlstd{],} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 6"}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlopt{-}\hlnum{1.5}\hlstd{,} \hlnum{1}\hlstd{)}
+\hlstd{w3} \hlkwb{<-} \hlkwd{psm}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{ps} \hlopt{+} \hlkwd{log}\hlstd{(cyfra)} \hlopt{+} \hlstd{adeno} \hlopt{+} \hlstd{large} \hlopt{+} \hlstd{tnm1} \hlopt{+} \hlstd{tnm2,}
+    \hlkwc{data} \hlstd{= dane,} \hlkwc{dist} \hlstd{=} \hlstr{"weibull"}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlstd{time.w3} \hlkwb{<-} \hlkwd{exp}\hlstd{(w3}\hlopt{$}\hlstd{coefficients)}
+\hlstd{time.w3}
+\hlstd{l1} \hlkwb{<-} \hlkwd{psm}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{ps} \hlopt{+} \hlstd{cyfra} \hlopt{+} \hlstd{adeno} \hlopt{+} \hlstd{large} \hlopt{+} \hlstd{tnm1} \hlopt{+} \hlstd{tnm2,} \hlkwc{data} \hlstd{= dane,}
+    \hlkwc{dist} \hlstd{=} \hlstr{"lognormal"}\hlstd{)}
+\hlstd{time.l1} \hlkwb{<-} \hlkwd{exp}\hlstd{(l1}\hlopt{$}\hlstd{coefficients)}
+\hlstd{res.l1} \hlkwb{<-} \hlkwd{resid}\hlstd{(l1,} \hlkwc{type} \hlstd{=} \hlstr{"cens"}\hlstd{)}
+\hlkwd{plot}\hlstd{(}\hlkwd{survfit}\hlstd{(res.l1} \hlopt{~} \hlnum{1}\hlstd{),} \hlkwc{conf} \hlstd{=} \hlstr{"none"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Survival probability (Normal)"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"Residual"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 7"}\hlstd{)}
+\hlkwd{lines}\hlstd{(res.l1,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\hlkwd{qqnorm}\hlstd{(res.l1[,} \hlnum{1}\hlstd{],} \hlkwc{main} \hlstd{=} \hlstr{"Rysunek 8"}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlopt{-}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{)}
+\hlstd{l3} \hlkwb{<-} \hlkwd{psm}\hlstd{(}\hlkwd{Surv}\hlstd{(dftime, dfree)} \hlopt{~} \hlstd{ps} \hlopt{+} \hlkwd{log}\hlstd{(cyfra)} \hlopt{+} \hlstd{adeno} \hlopt{+} \hlstd{large} \hlopt{+} \hlstd{tnm1} \hlopt{+} \hlstd{tnm2,}
+    \hlkwc{data} \hlstd{= dane,} \hlkwc{dist} \hlstd{=} \hlstr{"lognormal"}\hlstd{,} \hlkwc{y} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlstd{time.l3} \hlkwb{<-} \hlkwd{exp}\hlstd{(l3}\hlopt{$}\hlstd{coefficients)}
+\hlstd{time.l3}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\end{document}
+
+

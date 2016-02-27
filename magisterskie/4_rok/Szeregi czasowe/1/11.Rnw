@@ -1,0 +1,211 @@
+\documentclass[10pt,a4paper,noindentfirst]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.9cm, bmargin=0.9cm, lmargin=0.9cm, rmargin=0.9cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+<<warning=FALSE,fig.align='center',fig.width=5,fig.height=2.5,message=FALSE>>=
+# 1.1
+
+library("quantmod")
+
+r <- read.table("http://gamma.mini.pw.edu.pl/~szymanowskih/lab1/USPOP.DATA")
+head(r,3)
+
+# a)
+
+USpop <- ts(data=r, start=1790, end=1990, frequency=0.1)
+
+# b)
+
+ts.plot(USpop)
+
+d <- diff(USpop)
+ts.plot(d,type="b")
+which.min(d)   # najmniejszy wzrost w latach 1790-1800 
+
+# c)
+
+czas <- seq(start(USpop), end(USpop), by=1/frequency(USpop))
+m1.lm <- lm(USpop ~ czas + I(czas^2))
+summary(m1.lm)
+wsp <- summary(m1.lm)$coefficients[,1]
+@
+
+
+<<warning=FALSE,fig.align='center',fig.width=5,fig.height=2.5,message=FALSE>>=
+ts.plot(USpop)
+curve(wsp[1]+wsp[2]*x+wsp[3]*x^2,from=1790, to=1990,add=TRUE,col="red")
+
+# wykres reziduow od czasu:
+
+plot(czas, m1.lm$residuals, type="b")
+@
+
+
+<<warning=FALSE,fig.align='center',fig.width=5,fig.height=2.5,message=FALSE>>=
+# d)
+
+res <- m1.lm$residuals
+USres <- ts(res, start=1790, end=1990, frequency=0.1)
+
+n <- length(USres)
+sr <- mean(res)
+autokor <- numeric(14)
+gamma0 <- (sum((res-sr)^2))/n
+autokor[1] <- 1
+
+for(i in 1:13){
+   gammah <- (sum((res[1:(21-i)]-sr)*(res[(i+1):21]-sr)))/n
+   autokor[i+1] <- gammah/gamma0
+}
+
+plot(1:14,autokor,type="h")
+kw <- qnorm(0.975)/sqrt(n)
+abline(b=0,a=kw,lty=2,col="blue")
+abline(b=0,a=-kw,lty=2,col="blue")
+abline(b=0,a=0)
+
+# funkcja wbudowana rysujaca ten sam wykres:
+
+acf(USres)   # jest autokorelacja rzedu 3 -> testujemy formalnie, czy jest korelacja
+
+# e)
+# H0: pierwsze 10 korelacji jest rowne zero  
+# lag := h
+
+Box.test(USres, lag = 10, type="Ljung")   
+# czyli rezidua nie sa bialym szumem niestety
+
+# 1.2
+
+data(LakeHuron)
+head(LakeHuron)
+is.ts(LakeHuron)
+@
+
+<<warning=FALSE,fig.align='center',fig.width=5,fig.height=2.5,message=FALSE>>=
+
+# a)
+
+ts.plot(LakeHuron)    # widac tendencje malejaca
+
+# b)
+
+czas <- as.vector(time(LakeHuron))
+lake.lm <- lm(LakeHuron ~ czas, data=LakeHuron)
+abline(lake.lm, col="red")
+
+# c)
+
+res <- lake.lm$residuals
+rszer <- ts(data=res)
+ts.plot(rszer)
+acf(rszer)   # pasowaloby MA(3)
+
+Box.test(rszer, lag = 20, type="Ljung")
+# to zdecydowanie nie jest bialy szum!
+
+# d)
+
+r0 <- res
+r1 <- Lag(res,k=1)
+r2 <- Lag(res,k=2)
+
+head(r0)
+head(r1)
+head(r2)
+
+# e)
+
+l <- lm(r0~r1)
+summary(l)
+mean(l$residuals^2)    # MSE
+acf(l$res)
+Box.test(l$res,lag=20,type="Ljung")
+
+# f)
+
+l2 <- lm(r0~r1+r2)
+summary(l2)
+mean(l2$residuals^2)
+acf(l2$res)
+
+Box.test(l2$res,lag=20,type="Ljung")  # lepiej dopasowany niz l
+
+# g)
+
+model_ar1 <- arima(r0,c(1,0,0))
+model_ar2 <- arima(r0,c(2,0,0))
+
+Box.test(model_ar1$residuals,lag=20,type="Ljung")
+Box.test(model_ar2$residuals,lag=20,type="Ljung")
+
+# h)
+
+model_ar1
+l$coefficients    # ok, w miare podobne
+
+# 1.3
+
+d <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Szeregi czasowe\\DOWJ.DAT")
+head(d)
+
+# a)
+
+t <- ts(data=d)
+
+# b)
+
+plot(t)    # widoczny jest trend!!!
+
+# c)
+
+acf(t)     # szereg niestacjonarny -> zeby sie pozbyc trendu roznicujemy
+
+# d)
+
+dd <- diff(as.numeric(as.matrix(d)))
+tt <- ts(data=dd)
+
+# e)
+
+ts.plot(tt)
+Box.test(tt,lag=20,type="Ljung")
+
+# f)
+
+acf(tt)   # sugeruje model MA(2)
+pacf(tt)  # sugeruje model AR(1)
+
+ma2 <- arima(dd,c(0,0,2))
+ar1 <- arima(dd,c(1,0,0))
+arma12 <- arima(dd,c(1,0,2))
+
+Box.test(ma2$res,lag=20,type="Ljung")
+
+Box.test(ar1$res,lag=20,type="Ljung")
+Box.test(arma12$res,lag=20,type="Ljung")
+
+acf(arma12$residuals)
+@
+
+
+\end{document}

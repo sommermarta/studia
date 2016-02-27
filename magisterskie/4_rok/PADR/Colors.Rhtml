@@ -1,0 +1,53 @@
+<html>  
+
+<head>
+   <title>Colors</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+
+<h1>Kolory</h1>
+
+<p> Najpierw wyświetlimy listę kolorów</p>
+
+<!--
+Tworzac odsylacze musimy pamietac aby w napisie 
+cat(paste("<li><a href=","\"#", kolory[i],"\"",">", kolory[i], "</a></li>\n", sep=""))
+nie było spacji - paste(..., sep="") lub cat(..., sep=""), tak samo w przypadku 
+tworzenia name
+-->
+
+
+<!--begin.rcode results='asis', echo=FALSE
+kolory<-colors()
+cat("<ol>\n")
+for (i in seq_along(kolory)){
+  cat(paste("<li><a href=","\"#", kolory[i],"\"",">", kolory[i], "</a></li>\n", sep=""))  
+}
+cat("</ol>\n")
+end.rcode-->
+
+<p>Następnie pokażemy próbki kolorów różnych kolorów, do których możemy się przenieść klikając bezpośrdenio w odsyłacze z listy</p>
+
+<!--begin.rcode results='asis', fig.align='center', fig.height=1.5, fig.width=8, echo=FALSE,
+for (i in seq_along(kolory)){
+  cat(paste("<a name=","\"", kolory[i],"\"",">", sep=""))
+  par(mar=rep(0,4))
+  plot.new()
+  plot.window(c(-1, 1), c(0, 1))
+  rect(-1, 0, 1, 1, col=kolory[i])
+  kolor<-as.numeric(col2rgb(kolory[i]))/255
+  if (all(kolor<0.26)){
+    kolor<-c(1,1,1)
+  }else{
+    kolor<-c(0,0,0)
+  } 
+  text(0, 0.5, kolory[i],cex=2, col=rgb(kolor[1], kolor[2], kolor[3]))
+  cat("</a>")
+}
+end.rcode-->
+
+</body>
+</html>

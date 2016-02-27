@@ -1,0 +1,158 @@
+<html>
+<head>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>Numerowanie tabelek</title>
+
+</head>
+
+<style>
+
+h1 {
+border: 3px red solid;
+}
+
+h2{
+color: blue;
+}
+
+h3{
+color: pink;
+}
+
+</style>
+
+<body>
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE
+library("stringi")
+library("MASS")
+end.rcode-->
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE, results='asis'
+
+data(iris)
+a <- iris
+ile <- ncol(a)
+
+n <- logical(ile)
+f <- logical(ile)
+
+for(i in 1:(ile)){
+   n[i] <- is.numeric(a[,i])
+   f[i] <- is.factor(a[,i])
+}
+
+jj <- names(a)
+
+w <- which(n==TRUE)
+ww <- which(f==TRUE)
+
+if(length(w)!=0){
+   nn <- as.matrix(a[,w])
+   nj <- jj[w]
+}
+
+if(length(ww)!=0){
+   ff <- as.matrix(a[,ww])
+   fj <- jj[ww]
+} 
+
+if(length(w)!=0){
+cat("<h1>ZMIENNE ILOSCIOWE</h1>")
+for(i in 1:ncol(nn)){
+   cat(stri_paste(c("<h2>",nj[i],":</h2>"), collapse=""))
+   cat("<p>Histogram:</p>")
+   hist(nn[,i])
+   cat("<p>Wykres skrzynkowy:</p>")
+   boxplot(nn[,i])
+   cat("<table border=\"1\">")
+   cat(stri_paste(c("<tr><td>Srednia</td><td>",mean(nn[,i]),"</td></tr>"),
+                  collapse=""))
+   cat(stri_paste(c("<tr><td>Mediana</td><td>",median(nn[,i]),"</td></tr>"),
+                  collapse=""))
+   cat(stri_paste(c("<tr><td>Kwantyl rzedu 0.25</td><td>",
+                    quantile(nn[,i],0.25),"</td></tr>"), collapse=""))
+   cat(stri_paste(c("<tr><td>Kwantyl rzedu 0.75</td><td>",
+                    quantile(nn[,i],0.75),"</td></tr>"), collapse=""))
+   cat(stri_paste(c("<tr><td>Minimum</td><td>",min(nn[,i]),"</td></tr>"), 
+                  collapse=""))
+   cat(stri_paste(c("<tr><td>Maksimum</td><td>",max(nn[,i]),"</td></tr>"), 
+                  collapse=""))
+   cat(stri_paste(c("<tr><td>Odchylenie standardowe</td><td>",
+                    sd(nn[,i]),"</td></tr>"), collapse=""))
+   cat("</table>")
+}
+}
+
+if(length(ww)!=0){
+cat("<h1>ZMIENNE JAKOSCIOWE</h1>") 
+for(i in 1:ncol(ff)){
+   t <- table(ff[,i])
+   cat(stri_paste(c("<h2>",fj[i],":</h2>"), collapse=""))
+   cat("<p>Wykres slupkowy:</p>")
+   barplot(t)
+   cat("<p>Wykres kołowy:</p>")
+   pie(t)
+   o <- names(t)
+   s <- sum(t)
+   cat("<p>Tabela z procentowym udziałem odpowiednich poziomów:</p>")
+   cat("<table border=\"1\">")
+   for(j in 1:length(o)){
+      cat(stri_paste(c("<tr><td>",o[j],"</td><td>",
+                       round(t[j]*100/s,digits=2),"</td></tr>"), 
+                       collapse=""))
+   }
+   cat("</table>")
+}
+}
+
+if(length(ww)!=0 & length(w)!=0){
+cat("<h1>KOMBINACJE ZMIENNYCH</h1>")
+for(k in 1:length(fj)){
+   
+   naz <- names(table(a[,ww[k]]))
+   
+   for(j in 1:length(naz)){
+      
+      b <- a[which(a[,ww[k]]==naz[j]),w]
+      cat(stri_paste(c("<h2>Przy ustalonym ",fj[k]," = ",
+                          naz[j],":</h2>"), collapse=""))
+      u <- numeric(ncol(b))
+      
+      for(i in 1:ncol(b)){
+         
+         cat(stri_paste(c("<h3>",nj[i],"</h3>"),collapse=""))
+         cat("<p>Histogram:</p>")
+         hist(b[,i])
+         cat("<p>Wykres skrzynkowy:</p>")
+         boxplot(b[,i])
+         
+         u[i] <- stri_paste(c("<tr><td>",nj[i],"</td>","<td>",
+                                mean(b[,i]),"</td>","<td>",median(b[,i]),
+                                "</td>","<td>",quantile(b[,i],0.25),"</td>",
+                                "<td>",quantile(b[,i],0.75),"</td>","<td>",
+                                 min(b[,i]),"</td>","<td>",max(b[,i]),
+                                "</td>","<td>",sd(b[,i]),"</td></tr>"),
+                              collapse="")
+      }
+      
+      cat("<table border=\"1\">")
+      cat(stri_paste(c("<tr><th></th><th>Srednia</th><th>Mediana</th>",
+                       "<th>Kwantyl rzedu 0.25</th><th>",
+                       "Kwantyl rzedu 0.27</th>",
+                       "<th>Minimum</th>","<th>Maksimum</th>",
+                       "<th>Odchylenie standardowe</th>","</tr>"),
+                     collapse=""))
+      cat(stri_paste(u,collapse=""))
+      cat("</table>")
+   }
+}
+}
+
+
+end.rcode-->
+
+</body>
+</html>

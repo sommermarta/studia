@@ -1,0 +1,305 @@
+\documentclass[10pt,a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1cm, bmargin=1cm, lmargin=1cm, rmargin=1cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+
+
+
+\newpage
+
+\section*{\centering BIOSTATYSTYKA -- PRACA DOMOWA 1\\ MARTA SOMMER -- BSMAD}
+
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Nasze dane wygl¹daj¹ nastêpuj¹co: (zmienna \textit{czas} to czas prze¿ycia, zmienna \textit{zdarzenie} jest równa $1$, gdy nast¹pi³ zgon, a $0$, gdy obserwacje by³y cenzurowane, zmienna \textit{rodzaj.terapii} mówi o dwóch ró¿nych rodzajach leczenia immunologicznego, zaœ zmienna \textit{wiek} odpowiada za grupê wiekow¹ pacjenta: $1$ dla grupy $21-40$ lat, $2$ dla grupy $41-60$ lat, a $3$ dla grupy $60$ lat i wiêcej).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##   czas zdarzenie rodzaj.terapii wiek
+## 1    4         1              1    2
+## 2    5         1              1    3
+## 3    8         1              1    1
+## 4   10         1              1    3
+## 5   17         0              1    2
+## 6   17         0              1    1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Stosuj¹c metodê Kaplana-Meiera, otrzymujemy nastêpuj¹cy wykres krzywych prze¿ycia dla dwóch rodzajów leczenia immunologicznego:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{1.png}
+\end{figure}
+
+Czy istnieje istotna ró¿nica miêdzy krzywymi prze¿ycia dla ró¿nych rodzajów leczenia? Przekonajmy siê stosuj¹c test $log-rank$:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(czas, zdarzenie) ~ rodzaj.terapii, data = sz)
+## 
+##                   N Observed Expected (O-E)^2/E (O-E)^2/V
+## rodzaj.terapii=1 11        5     3.71     0.448     0.756
+## rodzaj.terapii=2 19        5     6.29     0.264     0.756
+## 
+##  Chisq= 0.8  on 1 degrees of freedom, p= 0.385
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e ca³kowita liczba oczekiwanych zgonów dla pierwszej grupy wynosi $3,71$, zaœ dla drugiej grupy $6,29$. Oszacowanie wariancji wynosi zaœ $2,2$. Wartoœæ statystyki testowej dla testu $log-rank$, opartej na powy¿szym oszacowaniu wariancji, wynosi $0,76\simeq 0,8$, a $p-value$ tej statystyki odpowiednio $0,385$, czyli nie mamy podstaw do odrzucenia hipotezy o tym, ¿e funkcje prze¿ycia w obu grupach s¹ takie same. \underline{Innymi s³owy, metody leczenia nie ró¿ni¹ siê znacznie miêdzy sob¹.} Wartoœæ statystyki wyznaczona przy pomocy ,,prostszych obliczeñ'' wynosi $0,71$, a odpowiadaj¹ce jej $p-value$ $0,399$, zatem wnioski dla tej uproszczonej statystyki bêd¹ takie same.  
+
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Bazujemy na danych z Zadania 1. Tym razem jednak zastosujemy warstwowy (ze wzglêdu na \textit{wiek}) test $log-rank$ do oszacowania, czy krzywe prze¿ycia dla ró¿nych metod leczenia ró¿ni¹ siê istotnie.
+
+\bigskip
+
+Oczekiwana liczba zgonów dla ka¿dej z grup w ka¿dej z warstw wynosi:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##               wiek 21-40 wiek 41-60 wiek 60+
+## szczepionka 1      2.257     0.5222   0.9833
+## szczepionka 2      2.743     1.4778   2.0167
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Reszty dowiemy siê patrz¹c na wydruk R-a:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(czas, zdarzenie) ~ rodzaj.terapii + strata(wiek), 
+##     data = sz)
+## 
+##                   N Observed Expected (O-E)^2/E (O-E)^2/V
+## rodzaj.terapii=1 11        5     3.76     0.407     0.688
+## rodzaj.terapii=2 19        5     6.24     0.245     0.688
+## 
+##  Chisq= 0.7  on 1 degrees of freedom, p= 0.407
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e sumaryczna oczekiwana liczba zgonów dla szczepionki pierwszej wynosi $3,76$, zaœ dla szczopionki drugiej $6,24$. Wartoœæ statystyki testowej wyznaczona przy pomocy wariancji wynosi $0,7$, a odpowiadaj¹ce jej $p-value$ $0,407$. Zaœ statystyka testowa wyznaczona przy pomocy ,,prostszych obliczeñ'' jest równa $0,65$, a jej $p-value$ $0,419$. Zatem w obu przypadkach nie mamy podstaw do odrzucenia hipotezy. \underline{Czyli, mimo wprowadzenia warstwowania, krzywe i tak istotnie} \underline{nie ró¿ni¹ siê miêdzy sob¹.} 
+
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Zobaczmy, jak wygl¹daj¹ nasze dane:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##   patient histpat survtime survind level stage
+## 1      91       1       12       0     0     2
+## 2      89       2       12       0     0     1
+## 3      51       0       13       1     0     3
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Dopasujmy najpierw zwyk³y model Kaplana-Meiera w zale¿noœci od zmiennej \textit{level} odpowiadaj¹cej za poziom markera. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{2.png}
+\end{figure}
+
+Z rysunku widaæ rzeczywiœcie, ¿e krzywe raczej ró¿ni¹ siê miêdzy sob¹. Zanim jednak przeprowadzimy test formalny, przyjrzyjmy siê analogicznej zale¿noœci, ale od zmiennej \textit{stage} odpowiadaj¹cej za stopieñ zaawansowania nowotworu oraz od zmiennej \textit{histpat} odpowiadaj¹cej za typ histologiczny nowotworu.
+
+\begin{figure}[h]
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{3.png}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{4.png}
+\end{minipage}
+\end{figure}
+
+WyraŸnie widaæ, ¿e zmienna \textit{histpat} istotna nie jest, mamy zaœ podejrzenie, ¿e zmienna \textit{stage} istotna byæ ju¿ mo¿e. ¯eby nie pope³niæ b³êdu wielokrotnego testowania, na podstawie powy¿szych przypuszczeñ, przeprowadzê warstwowy (ze wzglêdu na zmienn¹ \textit{stage}) test $log-rank$ dla dwóch rodzajów markera. Oto wydruk R-a dla naszego testu: 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(survtime, survind) ~ level + strata(stage), 
+##     data = a)
+## 
+##          N Observed Expected (O-E)^2/E (O-E)^2/V
+## level=0 54       10     21.9      6.43      17.8
+## level=1 40       28     16.1      8.70      17.8
+## 
+##  Chisq= 17.8  on 1 degrees of freedom, p= 2.44e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu (dla statystyki testowej wynosz¹cej $17,8$) jest równe $2,44e-05$, zatem mamy podstawy do odrzucenia hipotezy o równoœci funkcji prze¿ycia. \underline{Czyli rzeczywiœcie jest ró¿nica w d³ugoœci prze¿ycia w zale¿noœci od poziomu markera} \underline{CYFRA-21 i ze wzglêdu na warstwowanie stopniem zaawansowania nowotworu.} Oczekiwana liczba zgonów dla ka¿dej z grup w ka¿dej z warstw, bêdzie równa:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##                       TNM 1 TNM 2  TNM 3
+## niski poziom markera   3.58  9.01  9.262
+## wysoki poziom markera  1.42  3.99 10.738
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\newpage
+\subsection*{\underline{\textbf{Syntaks R-a}}}
+
+\begin{small}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# zad.1}
+
+\hlstd{sz} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{17}\hlstd{,} \hlnum{17}\hlstd{,} \hlnum{17}\hlstd{,} \hlnum{19}\hlstd{,} \hlnum{24}\hlstd{,} \hlnum{34}\hlstd{,} \hlnum{34}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{8}\hlstd{,}
+    \hlnum{11}\hlstd{,} \hlnum{11}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{15}\hlstd{,} \hlnum{16}\hlstd{,} \hlnum{18}\hlstd{,} \hlnum{21}\hlstd{,} \hlnum{23}\hlstd{,} \hlnum{24}\hlstd{,} \hlnum{25}\hlstd{,} \hlnum{27}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,}
+    \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,}
+        \hlnum{11}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{19}\hlstd{),} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,}
+    \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwc{nrow} \hlstd{=} \hlnum{30}\hlstd{)}
+\hlstd{sz} \hlkwb{<-} \hlkwd{as.data.frame}\hlstd{(sz)}
+\hlkwd{names}\hlstd{(sz)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"czas"}\hlstd{,} \hlstr{"zdarzenie"}\hlstd{,} \hlstr{"rodzaj.terapii"}\hlstd{,} \hlstr{"wiek"}\hlstd{)}
+\hlstd{sz.KM} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(czas, zdarzenie)} \hlopt{~} \hlstd{rodzaj.terapii,} \hlkwc{data} \hlstd{= sz,} \hlkwc{conf.type} \hlstd{=} \hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(sz.KM,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Krzywe przezycia"}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"miesiace"}\hlstd{,}
+    \hlkwc{ylab} \hlstd{=} \hlstr{"p-stwo przezycia"}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlnum{0.4}\hlstd{,} \hlnum{0.27}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"szczepionka 1"}\hlstd{,} \hlstr{"szczepionka 2"}\hlstd{),} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),}
+    \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{0.7}\hlstd{)}
+\hlkwd{summary}\hlstd{(sz.KM)}
+\hlstd{sz.test} \hlkwb{<-} \hlkwd{survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(czas, zdarzenie)} \hlopt{~} \hlstd{rodzaj.terapii,} \hlkwc{data} \hlstd{= sz)}
+\hlstd{sz.test}\hlopt{$}\hlstd{exp}
+\hlstd{sz.test}\hlopt{$}\hlstd{var}
+\hlstd{stat_prost} \hlkwb{<-} \hlkwd{sum}\hlstd{((sz.test}\hlopt{$}\hlstd{obs} \hlopt{-} \hlstd{sz.test}\hlopt{$}\hlstd{exp)}\hlopt{^}\hlnum{2}\hlopt{/}\hlstd{sz.test}\hlopt{$}\hlstd{exp)}
+\hlstd{p.val} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlkwd{pchisq}\hlstd{(stat_prost,} \hlnum{1}\hlstd{)}
+
+\hlcom{# zad.2}
+
+\hlstd{sz.strata} \hlkwb{<-} \hlkwd{survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(czas, zdarzenie)} \hlopt{~} \hlstd{rodzaj.terapii} \hlopt{+} \hlkwd{strata}\hlstd{(wiek),}
+    \hlkwc{data} \hlstd{= sz)}
+\hlstd{sz.strata}
+\hlstd{sz.strata}\hlopt{$}\hlstd{exp}
+\hlstd{e} \hlkwb{<-} \hlkwd{rowSums}\hlstd{(sz.strata}\hlopt{$}\hlstd{exp)}
+\hlstd{o} \hlkwb{<-} \hlkwd{rowSums}\hlstd{(sz.strata}\hlopt{$}\hlstd{obs)}
+\hlstd{stat_prost} \hlkwb{<-} \hlkwd{sum}\hlstd{((e} \hlopt{-} \hlstd{o)}\hlopt{^}\hlnum{2}\hlopt{/}\hlstd{e)}
+\hlstd{p.val} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlkwd{pchisq}\hlstd{(stat_prost,} \hlnum{1}\hlstd{)}
+
+\hlcom{# zad.3}
+
+\hlstd{a} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}1\textbackslash{}\textbackslash{}cyfra_short.csv"}\hlstd{,}
+    \hlkwc{sep} \hlstd{=} \hlstr{","}\hlstd{)}
+\hlkwd{head}\hlstd{(a)}
+\hlstd{a.KM_level} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(survtime, survind)} \hlopt{~} \hlstd{level,} \hlkwc{data} \hlstd{= a,} \hlkwc{conf.type} \hlstd{=} \hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(a.KM_level,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Krzywe przezycia"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"miesiace"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"p-stwo przezycia"}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlnum{0.4}\hlstd{,} \hlnum{0.27}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"niski poziom markera"}\hlstd{,} \hlstr{"wysoki poziom markera"}\hlstd{),} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}
+    \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{0.7}\hlstd{)}
+\hlstd{a.KM_stage} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(survtime, survind)} \hlopt{~} \hlstd{stage,} \hlkwc{data} \hlstd{= a,} \hlkwc{conf.type} \hlstd{=} \hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(a.KM_stage,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"green"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Krzywe przezycia"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"miesiace"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"p-stwo przezycia"}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlnum{0.4}\hlstd{,} \hlnum{0.35}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"TNM 1"}\hlstd{,} \hlstr{"TNM 2"}\hlstd{,} \hlstr{"TNM 3"}\hlstd{),} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"green"}\hlstd{),}
+    \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{0.7}\hlstd{)}
+\hlstd{a.KM_histpat} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(survtime, survind)} \hlopt{~} \hlstd{histpat,} \hlkwc{data} \hlstd{= a,} \hlkwc{conf.type} \hlstd{=} \hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(a.KM_histpat,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"green"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Krzywe przezycia"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"miesiace"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"p-stwo przezycia"}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlnum{0.4}\hlstd{,} \hlnum{0.35}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"gruczolakorak"}\hlstd{,} \hlstr{"wielokomorkowiec"}\hlstd{,} \hlstr{"plaskonablonkowiec"}\hlstd{),}
+    \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"green"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,} \hlkwc{cex} \hlstd{=} \hlnum{0.7}\hlstd{)}
+\hlstd{a.KM} \hlkwb{<-} \hlkwd{survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(survtime, survind)} \hlopt{~} \hlstd{level} \hlopt{+} \hlkwd{strata}\hlstd{(stage),} \hlkwc{data} \hlstd{= a)}
+\hlstd{a.KM}
+\hlstd{tt} \hlkwb{<-} \hlstd{a.KM}\hlopt{$}\hlstd{exp}
+\hlkwd{rownames}\hlstd{(tt)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"niski poziom markera"}\hlstd{,} \hlstr{"wysoki poziom markera"}\hlstd{)}
+\hlkwd{colnames}\hlstd{(tt)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"TNM 1"}\hlstd{,} \hlstr{"TNM 2"}\hlstd{,} \hlstr{"TNM 3"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{small}
+
+\end{document}
+

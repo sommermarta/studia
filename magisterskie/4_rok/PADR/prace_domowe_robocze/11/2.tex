@@ -1,0 +1,335 @@
+\documentclass[12pt]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[MeX,OT4,plmath]{polski}
+\usepackage[utf8]{inputenc} 
+\usepackage[OT4]{fontenc}
+\usepackage[polish]{babel}
+\selectlanguage{polish}
+\let\lll\undefined
+\usepackage{amssymb,amsmath,amsfonts}
+\usepackage{graphicx}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1cm, bmargin=1cm, lmargin=1cm, rmargin=1cm}
+\pagestyle{empty}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\begin{table}[ht!]
+\centering
+ \begin{tabular}{c|c|c|c|c|c|c|c} 
+ &  X1 & X2 & X3 & X4 & X5 & X6 & X7 \\ \hline
+1 & 478& 184& 40& 74& 11& 31& 20 \\
+ \hline
+2 & 494& 213& 32& 72& 11& 43& 18 \\
+ \hline
+3 & 643& 347& 57& 70& 18& 16& 16 \\
+ \hline
+4 & 341& 565& 31& 71& 11& 25& 19 \\
+ \hline
+5 & 773& 327& 67& 72& 9& 29& 24 \\
+ \hline
+6 & 603& 260& 25& 68& 8& 32& 15 \\
+ \hline
+7 & 484& 325& 34& 68& 12& 24& 14 \\
+ \hline
+8 & 546& 102& 33& 62& 13& 28& 11 \\
+ \hline
+9 & 424& 38& 36& 69& 7& 25& 12 \\
+ \hline
+10 & 548& 226& 31& 66& 9& 58& 15 \\
+ \hline
+11 & 506& 137& 35& 60& 13& 21& 9 \\
+ \hline
+12 & 819& 369& 30& 81& 4& 77& 36 \\
+ \hline
+13 & 541& 109& 44& 66& 9& 37& 12 \\
+ \hline
+14 & 491& 809& 32& 67& 11& 37& 16 \\
+ \hline
+15 & 514& 29& 30& 65& 12& 35& 11 \\
+ \hline
+16 & 371& 245& 16& 64& 10& 42& 14 \\
+ \hline
+17 & 457& 118& 29& 64& 12& 21& 10 \\
+ \hline
+18 & 437& 148& 36& 62& 7& 81& 27 \\
+ \hline
+19 & 570& 387& 30& 59& 15& 31& 16 \\
+ \hline
+20 & 432& 98& 23& 56& 15& 50& 15 \\
+ \hline
+21 & 619& 608& 33& 46& 22& 24& 8 \\
+ \hline
+22 & 357& 218& 35& 54& 14& 27& 13 \\
+ \hline
+23 & 623& 254& 38& 54& 20& 22& 11 \\
+ \hline
+24 & 547& 697& 44& 45& 26& 18& 8 \\
+ \hline
+25 & 792& 827& 28& 57& 12& 23& 11 \\
+ \hline
+26 & 799& 693& 35& 57& 9& 60& 18 \\
+ \hline
+27 & 439& 448& 31& 61& 19& 14& 12 \\
+ \hline
+28 & 867& 942& 39& 52& 17& 31& 10 \\
+ \hline
+29 & 912& 1017& 27& 44& 21& 24& 9 \\
+ \hline
+30 & 462& 216& 36& 43& 18& 23& 8 \\
+ \hline
+31 & 859& 673& 38& 48& 19& 22& 10 \\
+ \hline
+32 & 805& 989& 46& 57& 14& 25& 12 \\
+ \hline
+33 & 652& 630& 29& 47& 19& 25& 9 \\
+ \hline
+34 & 776& 404& 32& 50& 19& 21& 9 \\
+ \hline
+35 & 919& 692& 39& 48& 16& 32& 11 \\
+ \hline
+36 & 732& 1517& 44& 49& 13& 31& 14 \\
+ \end{tabular}
+\end{table}\begin{table}[ht!]
+\centering
+ \begin{tabular}{c|c|c|c|c|c|c} 
+ &  wiek & wyksztalcenie & st.cywilny & plec & praca & cisnienie.skurczowe \\ \hline
+1 & 70& zawodowe& w zwiazku& mezczyzna& uczen lub pracuje& 143 \\
+ \hline
+2 & 66& zawodowe& w zwiazku& kobieta& uczen lub pracuje& 123 \\
+ \hline
+3 & 71& zawodowe& singiel& kobieta& uczen lub pracuje& 167 \\
+ \hline
+4 & 57& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 150 \\
+ \hline
+5 & 45& srednie& w zwiazku& kobieta& uczen lub pracuje& 130 \\
+ \hline
+6 & 48& srednie& w zwiazku& mezczyzna& nie pracuje& 138 \\
+ \hline
+7 & 53& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 149 \\
+ \hline
+8 & 61& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 103 \\
+ \hline
+9 & 63& srednie& w zwiazku& kobieta& uczen lub pracuje& 125 \\
+ \hline
+10 & 47& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 158 \\
+ \hline
+11 & 71& zawodowe& singiel& kobieta& uczen lub pracuje& 148 \\
+ \hline
+12 & 71& wyzsze& w zwiazku& kobieta& uczen lub pracuje& 127 \\
+ \hline
+13 & 49& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 138 \\
+ \hline
+14 & 60& zawodowe& w zwiazku& kobieta& uczen lub pracuje& 148 \\
+ \hline
+15 & 54& zawodowe& w zwiazku& mezczyzna& nie pracuje& 139 \\
+ \hline
+16 & 74& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 178 \\
+ \hline
+17 & 72& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 133 \\
+ \hline
+18 & 53& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 137 \\
+ \hline
+19 & 63& podstawowe& w zwiazku& kobieta& uczen lub pracuje& 123 \\
+ \hline
+20 & 58& srednie& w zwiazku& kobieta& nie pracuje& 158 \\
+ \hline
+21 & 48& srednie& w zwiazku& kobieta& uczen lub pracuje& 138 \\
+ \hline
+22 & 43& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 142 \\
+ \hline
+23 & 53& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 158 \\
+ \hline
+24 & 57& podstawowe& w zwiazku& mezczyzna& nie pracuje& 139 \\
+ \hline
+25 & 71& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 117 \\
+ \hline
+26 & 49& wyzsze& w zwiazku& mezczyzna& nie pracuje& 133 \\
+ \hline
+27 & 46& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 135 \\
+ \hline
+28 & 56& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 122 \\
+ \hline
+29 & 50& srednie& w zwiazku& mezczyzna& nie pracuje& 103 \\
+ \hline
+30 & 71& podstawowe& w zwiazku& kobieta& uczen lub pracuje& 161 \\
+ \hline
+31 & 47& zawodowe& w zwiazku& kobieta& uczen lub pracuje& 147 \\
+ \hline
+32 & 52& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 142 \\
+ \hline
+33 & 63& srednie& w zwiazku& mezczyzna& uczen lub pracuje& 135 \\
+ \hline
+34 & 49& srednie& w zwiazku& mezczyzna& nie pracuje& 123 \\
+ \hline
+35 & 67& wyzsze& w zwiazku& mezczyzna& uczen lub pracuje& 106 \\
+ \hline
+36 & 59& wyzsze& singiel& kobieta& uczen lub pracuje& 135 \\
+ \hline
+37 & 75& wyzsze& singiel& kobieta& uczen lub pracuje& 115 \\
+ \hline
+38 & 67& podstawowe& w zwiazku& mezczyzna& nie pracuje& 107 \\
+ \hline
+39 & 58& zawodowe& singiel& mezczyzna& nie pracuje& 132 \\
+ \hline
+40 & 67& podstawowe& w zwiazku& mezczyzna& uczen lub pracuje& 112 \\
+ \hline
+41 & 49& srednie& w zwiazku& mezczyzna& nie pracuje& 147 \\
+ \hline
+42 & 58& podstawowe& w zwiazku& mezczyzna& nie pracuje& 137 \\
+ \hline
+43 & 64& srednie& singiel& kobieta& uczen lub pracuje& 147 \\
+ \hline
+44 & 68& podstawowe& w zwiazku& mezczyzna& uczen lub pracuje& 144 \\
+ \hline
+45 & 49& srednie& w zwiazku& mezczyzna& nie pracuje& 139 \\
+ \hline
+46 & 53& wyzsze& w zwiazku& mezczyzna& nie pracuje& 121 \\
+ \end{tabular}
+\end{table}\begin{table}[ht!]
+\centering
+ \begin{tabular}{c|c|c|c|c|c|c|c|c|c|c|c} 
+ &  mpg & cylindry & moc & przysp & rok & waga & producent & marka & model & cena & legenda \\ \hline
+1 & 43.1& 4& 48& 21.5& 78& 1985& 2& Volkswagen& Rabbit Dl & 2400& America=1 \\
+ \hline
+2 & 36.1& 4& 66& 14.4& 78& 1800& 1& Ford      & Fiesta    & 1900& Europe=2 \\
+ \hline
+3 & 32.8& 4& 52& 19.4& 78& 1985& 3& Mazda     & GLC Deluxe& 2200& Japan =3 \\
+ \hline
+4 & 39.4& 4& 70& 18.6& 78& 2070& 3& Datsun    & B210 GX   & 2725&         \\
+ \hline
+5 & 36.1& 4& 60& 16.4& 78& 1800& 3& Honda     & Civic CVCC& 2250&         \\
+ \hline
+6 & 19.9& 8& 110& 15.5& 78& 3365& 1& Oldsmobile& Cutlass   & 3300&         \\
+ \hline
+7 & 19.4& 8& 140& 13.2& 78& 3735& 1& Dodge     & Diplomat  & 3125&         \\
+ \hline
+8 & 20.2& 8& 139& 12.8& 78& 3570& 1& Mercury   & Monarch   & 2850&         \\
+ \hline
+9 & 19.2& 6& 105& 19.2& 78& 3535& 1& Pontiac   & Phoenix   & 2800&         \\
+ \hline
+10 & 20.5& 6& 95& 18.2& 78& 3155& 1& Chevrolet & Malibu    & 3275&         \\
+ \hline
+11 & 20.2& 6& 85& 15.8& 78& 2965& 1& Ford      & Fairmont A& 2375&         \\
+ \hline
+12 & 25.1& 4& 88& 15.4& 78& 2720& 1& Ford      & Fairmont M& 2275&         \\
+ \hline
+13 & 20.5& 6& 100& 17.2& 78& 3430& 1& Plymouth  & Volare    & 2700&         \\
+ \hline
+14 & 19.4& 6& 90& 17.2& 78& 3210& 1& AMC       & Concord   & 2300&         \\
+ \hline
+15 & 20.6& 6& 105& 15.8& 78& 3380& 1& Buick     & Century   & 3300&         \\
+ \hline
+16 & 20.8& 6& 85& 16.7& 78& 3070& 1& Mercury   & Zephyr    & 2425&         \\
+ \hline
+17 & 18.6& 6& 110& 18.7& 78& 3620& 1& Dodge     & Aspen     & 2700&         \\
+ \hline
+18 & 18.1& 6& 120& 15.1& 78& 3410& 1& AMC       & Concord D1& 2425&         \\
+ \hline
+19 & 19.2& 8& 145& 13.2& 78& 3425& 1& Chevrolet & MonteCarlo& 3900&         \\
+ \hline
+20 & 17.7& 6& 165& 13.4& 78& 3445& 1& Buick     & RegalTurbo& 4400&         \\
+ \hline
+21 & 18.1& 8& 139& 11.2& 78& 3205& 1& Ford      & Futura    & 2525&         \\
+ \hline
+22 & 17.5& 8& 140& 13.7& 78& 4080& 1& Dodge     & Magnum XE & 3000&         \\
+ \hline
+23 & 30& 4& 68& 16.5& 78& 2155& 1& Chevrolet & Chevette  & 2100&         \\
+ \hline
+24 & 27.5& 4& 95& 14.2& 78& 2560& 3& Toyota    & Corona    & 2975&         \\
+ \hline
+25 & 27.2& 4& 97& 14.7& 78& 2300& 3& Datsun    & 510& 2775&         \\
+ \hline
+26 & 30.9& 4& 75& 14.5& 78& 2230& 1& Dodge     & Omni      & 2250&         \\
+ \hline
+27 & 21.1& 4& 95& 14.8& 78& 2515& 3& Toyota    & Celica GT & 3700&         \\
+ \hline
+28 & 23.2& 4& 105& 16.7& 78& 2745& 1& Plymouth  & Sapporo   & 3200&         \\
+ \hline
+29 & 23.8& 4& 85& 17.6& 78& 2855& 1& Oldsmobile& Starfire  & 2400&         \\
+ \hline
+30 & 23.9& 4& 97& 14.9& 78& 2405& 3& Datsun    & 200-SX    & 2975&         \\
+ \hline
+31 & 20.3& 5& 103& 15.9& 78& 2830& 2& Audi      & 5000& 4475&         \\
+ \hline
+32 & 17& 6& 125& 13.6& 78& 3140& 2& Volvo     & 264GL     & 5875&         \\
+ \hline
+33 & 21.6& 4& 115& 15.7& 78& 2795& 2& Saab      & 99GLE     & 4200&         \\
+ \hline
+34 & 16.2& 6& 133& 15.8& 78& 3410& 2& Peugeot   & 604SL     & 5450&         \\
+ \hline
+35 & 31.5& 4& 71& 14.9& 78& 1990& 2& Volkswagen& Scirocco  & 3675&         \\
+ \hline
+36 & 29.5& 4& 68& 16.6& 78& 2135& 3& Honda     & Accord LX & 3425&         \\
+ \hline
+37 & 21.5& 6& 115& 15.4& 79& 3245& 1& Pontiac   & Lemans V6 & 3925&         \\
+ \hline
+38 & 19.8& 6& 85& 18.2& 79& 2990& 1& Mercury   & Zephyr 6  & 3200&         \\
+ \hline
+39 & 22.3& 4& 88& 17.3& 79& 2890& 1& Ford      & Fairmont 4& 2975&         \\
+ \hline
+40 & 20.2& 6& 90& 18.2& 79& 3265& 1& AMC       & ConcordDL6& 3150&         \\
+ \hline
+41 & 20.6& 6& 110& 16.6& 79& 3360& 1& Dodge     & Aspen 6   & 3325&         \\
+ \hline
+42 & 17& 8& 130& 15.4& 79& 3840& 1& Chevrolet & Caprice Cl& 4650&         \\
+ \hline
+43 & 17.6& 8& 129& 13.4& 79& 3725& 1& Ford      & LTD Landau& 4850&         \\
+ \hline
+44 & 16.5& 8& 138& 13.2& 79& 3955& 1& Mercury   & GrandMarqs& 5725&         \\
+ \end{tabular}
+\end{table}
+
+
+\end{document}

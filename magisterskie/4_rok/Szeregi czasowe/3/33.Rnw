@@ -1,0 +1,168 @@
+\documentclass[10pt,a4paper,noindentfirst]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.9cm, bmargin=0.9cm, lmargin=0.9cm, rmargin=0.9cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+<<warning=FALSE,message=FALSE,fig.align='center',fig.width=6,fig.height=3>>=
+# 3.1
+
+# a)
+
+eps <- rnorm(1013,0,0.1)
+xt <- numeric(1013)
+yt <- numeric(1013)
+
+for(i in 4:1013){
+  
+  xt[i] <- 4/5*xt[i-1] - 2/5*xt[i-2] + 1/2*xt[i-3] + eps[i] + 1/4*eps[i-1]
+  yt[i] <- 4/5*yt[i-1] + 2/5*yt[i-2] + 1/2*yt[i-3] + eps[i] + 1/4*eps[i-1] 
+
+}
+
+xt <- xt[4:1013]
+yt <- yt[4:1013]
+
+x_tren <- xt[1:1000]
+x_test <- xt[1001:1010]
+
+y_tren <- yt[1:1000]
+y_test <- yt[1001:1010]
+
+plot(x_tren,type="l")
+plot(y_tren,type="l")
+
+# b)
+
+zt <- numeric(1010)
+for(i in 1:1010){
+  zt[i] <- 1/1000*i + xt[i]
+}
+
+z_tren <- ts(zt[1:1000])
+z_test <- ts(zt[1001:1010],start=1001,end=1010)
+
+# c)
+
+plot(z_tren,type="l")
+acf(z_tren)
+
+# widoczny jest trend
+
+# d)
+
+ztd <- diff(z_tren)
+ts.plot(ztd)
+acf(ztd)
+pacf(ztd)
+
+# po roznicowaniu jest duzo lepiej
+
+# e)
+
+# proponujê ARMA(3,4)
+
+model_moj <- arima(ztd, c(3,0,4))
+Box.test(model_moj$resid,lag=20,type="Ljung")
+
+# funkcja ar() dopasowuje nam model AR i sama wybiera rzad modelu:
+
+model_ar <- ar(ztd, aic=TRUE, method="mle", order.max=NULL)
+
+model_ar$order        # rzad
+model_ar$ar           # wspolczynniki
+model_ar$x.mean       # wyraz wolny
+
+Box.test(model_ar$resid,lag=20,type="Ljung")   # moj model byl lepszy :D
+
+# f)
+
+aic <- matrix(0,7,7)
+bic <- matrix(0,7,7)
+
+for(p in 0:6){
+   for(q in 0:6){
+      model <- arima(ztd, c(p,0,q),method="ML",
+                     optim.control=list(maxit=10^5))
+      aic[p+1,q+1] <- AIC(model)
+      bic[p+1,q+1] <- AIC(model,k=log(1000))
+   }
+}
+
+wym_aic <- which(aic==min(aic),arr.ind=TRUE)-1
+wym_bic <- which(bic==min(bic),arr.ind=TRUE)-1
+
+wym_aic
+wym_bic
+
+model_aic <- arima(ztd,c(wym_aic[1],0,wym_aic[2]))
+model_bic <- arima(ztd,c(wym_bic[1],0,wym_bic[2]))
+
+Box.test(model_aic$resid,lag=20,type="Ljung")
+Box.test(model_bic$resid,lag=20,type="Ljung")
+
+# model_aic wyglada na najlepszy ze wszystkich
+
+# g)
+
+pr_bic <- predict(model_bic,n.ahead=10)$pred
+se_bic <- predict(model_bic,n.ahead=10)$se
+
+ts.plot(pr_bic, diff(z_test), pr_bic + 2*se_bic, pr_bic - 2*se_bic,
+        col=c("red","black","red","red"), lty=c(1,1,3,3), main="BIC")
+
+pr_aic <- predict(model_aic,n.ahead=10)$pred
+se_aic <- predict(model_aic,n.ahead=10)$se
+
+ts.plot(pr_aic, diff(z_test), pr_aic + 2*se_aic, pr_aic - 2*se_aic,
+        col=c("red","black","red","red"), lty=c(1,1,3,3), main="AIC")
+
+pr_ar <- predict(model_ar,n.ahead=10)$pred
+se_ar <- predict(model_ar,n.ahead=10)$se
+
+ts.plot(pr_ar, diff(z_test), pr_ar + 2*se_ar, pr_ar - 2*se_ar,
+        col=c("red","black","red","red"), lty=c(1,1,3,3), main="AR")
+
+# h)
+
+blad_ar <- sum((pr_ar[-1] - diff(z_test))^2)
+blad_bic <- sum((pr_bic[-1] - diff(z_test))^2)
+blad_aic <- sum((pr_aic[-1] - diff(z_test))^2)
+
+blad_ar 
+blad_bic
+blad_aic 
+
+# i)
+
+model_true <- arima(diff(z_tren),c(3,0,2),include.mean=TRUE) 
+model_true$coef  
+
+# zgadzaja sie z teoretycznymi :D
+
+Box.test(model_ar$resid,lag=20,type="Ljung")
+Box.test(model_bic$resid,lag=20,type="Ljung")    
+Box.test(model_aic$resid,lag=20,type="Ljung") 
+Box.test(model_true$resid,lag=20,type="Ljung") 
+
+@
+
+
+\end{document}

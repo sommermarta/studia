@@ -1,0 +1,225 @@
+\documentclass[10pt,a4paper]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.8cm, bmargin=0.8cm, lmargin=0.8cm, rmargin=0.8cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+\section*{\centering BIOSTATYSTYKA -- PRACA DOMOWA 3\\ MARTA SOMMER -- BSMAD}
+
+\subsection*{\underline{Zadanie 1.}}
+
+Rozwa¿amy dane dotycz¹ce raka pêcherza. Model warunkowy (PWP) przedstawiony na wykladzie (\texttt{mod.wyk}) zak³ada ten sam efekt leczenia dla wszystkich typów zdarzeñ. Skonstruujê model (\texttt{mod.moj}), który dopuszcza mo¿liwoœæ, ¿e efekt ten jest ró¿ny dla ró¿nych typów zdarzeñ. Oto wspó³czynniki w moim modelu: 
+
+<<echo=FALSE,message=FALSE,warning=FALSE>>=
+library("survival")
+
+b3 <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\bladder3.csv")
+
+mod.moj <- coxph(Surv(time1,time2,status) ~ rx1 + rx2 + rx3 + rx4 + size + number + cluster(patid)+ strata(enum),
+              data=b3)
+mod.wyk <- coxph(Surv(time1,time2,status) ~ rx + size + number + cluster(patid) + strata(enum),
+              data=b3)
+mod.moj
+@
+
+Zwróæmy najpierw uwagê na statystykê ilorazu wiarogodnoœci ($p=0.2799$). Oznacza ona, ¿e model jest Ÿle dopasowany i wspó³czynniki nie s¹ istotne. Podobnie zreszt¹ wskazuj¹ testy Walda ($p=0.1983$), score ($p=0.2511$) i Robust ($p=0.1489$). Zatem na efekt leczenia nie ma wp³ywu rodzaj zdarzenia.   
+
+U¿ywaj¹c skalowanych reszt Schoenfelda, sprawdŸmy jeszcze, czy spe³nione jest za³o¿enie proporcjonalnych hazardów:
+
+<<echo=FALSE>>=
+zal_mod1 <- cox.zph(mod.moj, transform="identity")
+zal_mod1 
+@
+
+P-value wszêdzie jest du¿e, zatem nie mamy podstaw do odrzucenia hipotezy o spe³nianiu za³o¿enia proporcjonalnych hazardów. Model skonstruowany powy¿ej ma zatem sens i w ogóle móg³ byæ zbudowany.
+
+PrzeprowadŸmy jeszcze test hipotezy zerowej, ¿e efekt leczenia jest taki sam dla wszystkich typów zdarzeñ. U¿yjê statystyki testu ilorazu wiarogodnosci do hipotez liniowych i przyrównam j¹ do rozk³adu $\chi^2$ z trzema stopniami swobody, gdy¿ takiego rzêdu jest nasza macierz restrykcji. P-value mojego testu jest du¿e ($0.8118099$), zatem nie mam podstaw do odrzucenia hipotezy zerowej.
+
+<<echo=FALSE>>=
+s <- 2*(mod.moj$loglik[2]-mod.wyk$loglik[2])
+p <- 1-pchisq(s,3)
+@
+
+\subsection*{\underline{Zadanie 2.}}
+
+Bêdziemy rozwa¿aæ dane dotycz¹ce czasu do wznowy po uzyskaniu remisji dla par chorych na bia³aczkê. Pacjenci byli dobierani w pary tak, by pochodzili z tego samego oœrodka medycznego i mieli ten sam typu uzyskanej remisji, dlatego zastosujemy do nich model podatnoœci. Ponadto chcemy uwzglêdniæ efekt remisji, wiêc u¿yjemy warstwowania zmiennej \texttt{partial}.
+
+<<echo=FALSE>>=
+l <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\leukemia.csv")
+
+mod <- coxph(Surv(time,status) ~ treat + frailty(patid)+strata(partial), data=l)
+summary(mod)
+@
+
+Test najwiêkszej wiarogodnoœci ($p=2.526e-05$) wskazuje na to, ¿e mamy podstawy do odrzucenia hipotezy o nieistotnoœci modelu. Zatem model ma sens. Zmienna \texttt{treat} jest istotna ($9.3e-05$). Zatem efekt leczenia w parach jest istotny. Mo¿emy równie¿ odczytaæ, ¿e leczenie przy wzroœcie o jednostkê (czyli jeœli mamy aktywny lek) zmniejsza ryzyko wznowy $0.18$ razy, czyli wyd³u¿a czas do wyst¹pienia zdarzenia $5,5$ raza.
+
+SprawdŸmy jeszcze na koniec, czy spe³nione s¹ za³o¿enia PH:
+
+<<echo=FALSE>>=
+zz <- cox.zph(mod, transform="identity")
+zz 
+@
+
+P-value jest du¿e, zatem za³o¿enie proporcjonalnych hazardów jest spe³nione.
+
+\subsection*{\underline{Zadanie 3.}}
+
+Analizujemy dane dotycz¹ce czasów do pojawienia siê guzów gruczo³ów mlekowych u 48 samic szczurów. Dopasujê model proporcjonalnych œrednich (AG), bior¹c pod uwagê korelacjê zmiennej \texttt{ratid}.
+
+<<echo=FALSE>>=
+m <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\mammary.csv")
+
+mod <- coxph(Surv(time1,time2,status) ~ treat + cluster(ratid), data=m)
+summary(mod)
+@
+
+Z testu ilorazu wiarogodnoœci ($p=2.847e-06$) wynika, ¿e model ma sens. Zmienna \texttt{treat} jest istotna. Zmniejsza ona ryzyko o oko³o po³owê, czyli czas do wznowy zwiêksza siê $1.98$ raza. 
+
+SprawdŸmy jeszcze (testem skalowanych reszt Schoenfelda), czy s¹ spe³nione za³o¿enia PH:
+
+<<echo=FALSE>>=
+zz <- cox.zph(mod, transform="identity")
+zz 
+@
+
+P-value jest du¿e, zatem nie mamy podstaw do odrzucenia hipotezy o spe³nionych za³o¿eniach proporcjonalnych hazardów i mogliœmy u¿yæ powy¿szego modelu.
+
+\subsection*{\underline{Zadanie 4.}}
+
+Bêdziemy analizowaæ dane dla 865 pacjentów chorych na ziarnicê z³oœliw¹ (chorobê
+Hodgkina), którzy byli leczeni radioterapi¹ lub radioterapi¹ ³¹czon¹ z chemioterapi¹. Usuwam z danych zmienn¹ \texttt{stnum}, która odpowiada za numer pacjenta. Obserwowano czas do pierwszego zdarzenia. Zdarzeniem móg³ byæ nawrót choroby, zgon lub
+pojawienie siê innego pierwotnego nowotworu, czyli mamy tu do czynienia z konkuruj¹cym ryzykiem. Interesuje nas efekt leczenia na czas do pojawienia sie innego pierwotnego nowotworu. W tym celu najpierw dopasujemy model PH dla funkcji sub-hazardu:
+
+<<echo=FALSE, message=FALSE, warning=FALSE>>=
+library("cmprsk")
+
+m <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\hodgkin1.csv")
+attach(m)
+
+summary(coxph.inny <- coxph(Surv(firsttime, event_cause == 1) ~ cmt, data=m))
+@
+
+<<echo=FALSE>>=
+summary(coxph.hod <- coxph(Surv(firsttime, event_cause == 2) ~ cmt, data=m))
+@
+
+Zarówno dla modelu z chorob¹ Hodkina, jak i dla modelu z innym nowotworem leczenie jest istotne. W pierwszym przypadku przy leczeniu radioterapi¹ i chemioterapi¹ na raz ryzyko zdarzenia maleje $0.6$ raza. W drugim przypadku roœnie $1,8$ raza! W obu modelach test najwiêkszej wiarogodnoœci ma ma³e p-value, wiêc jest istotny statystycznie, czyli modele maj¹ sens. SprawdŸmy jeszcze za³o¿enia modelu hazardów:
+
+<<echo=FALSE>>=
+cox.zph(coxph.inny, transform="identity")
+cox.zph(coxph.hod, transform="identity")
+@
+
+Zarówno w pierwszym, jak i drugim modelu nie mamy podstaw s¹dziæ, ¿e za³o¿enia nie s¹ spe³nione.
+
+\bigskip
+
+Powy¿szy model nie bra³ pod uwagê pozosta³ych zmiennych z modelu. Dopasujmy wiêc teraz model PH dla funkcji hazardu sub-dystrybuanty, bior¹c pod uwagê wszystkie zmienne:
+
+<<echo=FALSE>>=
+mac <- model.matrix(~ cmt + male + nodes + mediast + age30 + clinstg)[,-1]
+@
+
+<<>>=
+(mod.inny <- crr(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=1))
+@
+
+Dla innych nowotworów z testu najwiêkszej wiarogodnoœci widaæ, ¿e model jest dobrze dopasowany. Istotny jest tylko efekt leczenia, inne zmienne ju¿ nie. Przy czym leczenie chemioterapi¹ i radioterapi¹ jednoczeœnie zwiêksza ryzyko zachorowania dwukrotnie w porównaniu do leczenia sam¹ radioterapi¹.
+
+<<>>=
+(mod.hod <- crr(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=2))
+@
+
+Dla choroby Hodgkina z testu najwiêkszej wiarogodnoœci widaæ, ¿e model jest dobrze dopasowany. Istotny jest efekt leczenia, ale te¿ zmienna \texttt{mediast} i \texttt{clinstg}. Przy czym efekt leczenia chemioterapi¹ zmniejsza ryzyko wznowy o po³owê. Wy¿szy stopieñ zaawansowania nowotworu zwiêksza ryzyko $1,2$ raza, zaœ wzrost stopnia zajêcia œródpiersia zmniejsza (co jest ma³o intuicyjne) ryzyko wznowy $0,79$ raza.
+
+Graficzne oszacowania funkcji skumulowanych czêstoœci dla modelu:
+
+<<echo=FALSE,fig.align='center',fig.height=3,fig.width=9>>=
+par(mfrow=c(1,2))
+
+inny.pred <- predict(mod.inny, cov1=rbind(0,1))
+plot(inny.pred,lty=1:2,color=2:3, main="Inny")
+legend("topleft",lty=1:2,col=2:3,c("radio","radio+chemio"),cex=0.7)
+
+hod.pred <- predict(mod.hod, cov1=rbind(0,1))
+plot(hod.pred,lty=1:2,color=2:3, main="Hod")
+legend("bottomright",lty=1:2,col=2:3,c("radio","radio+chemio"),cex=0.7)
+@
+
+\subsection*{\underline{Syntaks R-a}}
+
+\begin{small}
+<<eval=FALSE,message=FALSE,warning=FALSE>>=
+# zad.1
+
+library("survival")
+b3 <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\bladder3.csv")
+mod.moj <- coxph(Surv(time1,time2,status) ~ rx1 + rx2 + rx3 + rx4 + size + number + cluster(patid)+ strata(enum),
+              data=b3)
+mod.wyk <- coxph(Surv(time1,time2,status) ~ rx + size + number + cluster(patid) + strata(enum),
+              data=b3)
+mod.moj
+zal_mod1 <- cox.zph(mod.moj, transform="identity")
+zal_mod1 
+s <- 2*(mod.moj$loglik[2]-mod.wyk$loglik[2])
+p <- 1-pchisq(s,3)
+
+# zad.2
+
+l <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\leukemia.csv")
+mod <- coxph(Surv(time,status) ~ treat + frailty(patid)+strata(partial), data=l)
+summary(mod)
+zz <- cox.zph(mod, transform="identity")
+zz 
+
+# zad.3
+
+m <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\mammary.csv")
+mod <- coxph(Surv(time1,time2,status) ~ treat + cluster(ratid), data=m)
+summary(mod)
+zz <- cox.zph(mod, transform="identity")
+zz 
+
+# zad.4
+
+library("cmprsk")
+m <- read.csv("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\pd3\\hodgkin1.csv")
+attach(m)
+summary(coxph.inny <- coxph(Surv(firsttime, event_cause == 1) ~ cmt, data=m))
+summary(coxph.hod <- coxph(Surv(firsttime, event_cause == 2) ~ cmt, data=m))
+cox.zph(coxph.inny, transform="identity")
+cox.zph(coxph.hod, transform="identity"
+mac <- model.matrix(~ cmt + male + nodes + mediast + age30 + clinstg)[,-1]
+(mod.inny <- crr(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=1))
+(mod.hod <- crr(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=2))
+par(mfrow=c(1,2))
+inny.pred <- predict(mod.inny, cov1=rbind(0,1))
+plot(inny.pred,lty=1:2,color=2:3, main="Inny")
+legend("topleft",lty=1:2,col=2:3,c("radio","radio+chemio"),cex=0.7)
+hod.pred <- predict(mod.hod, cov1=rbind(0,1))
+plot(hod.pred,lty=1:2,color=2:3, main="Hod")
+legend("bottomright",lty=1:2,col=2:3,c("radio","radio+chemio"),cex=0.7)
+@
+\end{small}
+
+\end{document}

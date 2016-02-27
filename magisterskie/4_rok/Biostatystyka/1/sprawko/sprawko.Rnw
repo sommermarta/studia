@@ -1,0 +1,253 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1cm, bmargin=1cm, lmargin=1cm, rmargin=1cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+<<results='hide',echo=FALSE, warning=FALSE,message=FALSE>>=
+library("survival")
+library("foreign")
+
+# zad.1
+
+sz <- matrix(c(4,5,8,10,17,17,17,19,24,34,34,
+               7,8,8,8,8,8,8,11,11,12,12,15,16,18,21,23,24,25,27,
+               1,1,1,1,0,0,0,1,0,0,0,
+               1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,
+               rep(1,11),
+               rep(2,19),
+               2,3,1,3,2,1,1,1,1,1,2,
+               1,1,2,3,1,2,2,3,2,1,2,2,1,1,1,2,1,3,1),
+             nrow=30)
+sz <- as.data.frame(sz)
+names(sz) <- c("czas","zdarzenie","rodzaj.terapii","wiek")
+
+sz.KM <- survfit(Surv(czas,zdarzenie) ~ rodzaj.terapii, data=sz, 
+                 conf.type="none")
+
+
+
+summary(sz.KM)               
+
+sz.test <- survdiff(Surv(czas,zdarzenie) ~ rodzaj.terapii, data=sz)
+sz.test
+
+sz.test$exp
+sz.test$var
+
+stat_prost <- sum((sz.test$obs-sz.test$exp)^2/sz.test$exp)
+p.val <- 1-pchisq(stat_prost,1)
+
+# zad.2
+
+sz.strata <- survdiff(Surv(czas,zdarzenie) ~ rodzaj.terapii + strata(wiek),
+                      data=sz)
+sz.strata
+
+sz.strata$exp
+tab <- sz.strata$exp
+colnames(tab) <- c("wiek 21-40", "wiek 41-60", "wiek 60+")
+rownames(tab) <- c("szczepionka 1", "szczepionka 2")
+
+e <- rowSums(sz.strata$exp)
+o <- rowSums(sz.strata$obs)
+stat_prost <- sum((e-o)^2/e)
+p.val <- 1-pchisq(stat_prost,1)
+
+# zad.3
+
+a <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\1\\cyfra_short.csv",
+               sep=",")
+head(a)
+
+a.KM_level <- survfit(Surv(survtime,survind)~level,data=a,conf.type="none")
+
+
+
+a.KM_stage <- survfit(Surv(survtime,survind)~stage,data=a,conf.type="none")
+
+
+
+a.KM_histpat <- survfit(Surv(survtime,survind)~histpat,data=a,conf.type="none")
+
+
+
+a.KM <- survdiff(Surv(survtime,survind)~level+strata(stage),data=a)
+a.KM
+
+tt <- a.KM$exp
+rownames(tt) <- c("niski poziom markera","wysoki poziom markera")
+colnames(tt) <- c("TNM 1","TNM 2","TNM 3")
+@
+
+\newpage
+
+\section*{\centering BIOSTATYSTYKA -- PRACA DOMOWA 1\\ MARTA SOMMER -- BSMAD}
+
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Nasze dane wygl¹daj¹ nastêpuj¹co: (zmienna \textit{czas} to czas prze¿ycia, zmienna \textit{zdarzenie} jest równa $1$, gdy nast¹pi³ zgon, a $0$, gdy obserwacje by³y cenzurowane, zmienna \textit{rodzaj.terapii} mówi o dwóch ró¿nych rodzajach leczenia immunologicznego, zaœ zmienna \textit{wiek} odpowiada za grupê wiekow¹ pacjenta: $1$ dla grupy $21-40$ lat, $2$ dla grupy $41-60$ lat, a $3$ dla grupy $60$ lat i wiêcej).
+
+<<echo=FALSE>>=
+head(sz)
+@
+
+Stosuj¹c metodê Kaplana-Meiera, otrzymujemy nastêpuj¹cy wykres krzywych prze¿ycia dla dwóch rodzajów leczenia immunologicznego:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{1.png}
+\end{figure}
+
+Czy istnieje istotna ró¿nica miêdzy krzywymi prze¿ycia dla ró¿nych rodzajów leczenia? Przekonajmy siê stosuj¹c test $log-rank$:
+
+<<echo=FALSE>>=
+sz.test
+@
+
+Widaæ wiêc, ¿e ca³kowita liczba oczekiwanych zgonów dla pierwszej grupy wynosi $3,71$, zaœ dla drugiej grupy $6,29$. Oszacowanie wariancji wynosi zaœ $2,2$. Wartoœæ statystyki testowej dla testu $log-rank$, opartej na powy¿szym oszacowaniu wariancji, wynosi $0,76\simeq 0,8$, a $p-value$ tej statystyki odpowiednio $0,385$, czyli nie mamy podstaw do odrzucenia hipotezy o tym, ¿e funkcje prze¿ycia w obu grupach s¹ takie same. \underline{Innymi s³owy, metody leczenia nie ró¿ni¹ siê znacznie miêdzy sob¹.} Wartoœæ statystyki wyznaczona przy pomocy ,,prostszych obliczeñ'' wynosi $0,71$, a odpowiadaj¹ce jej $p-value$ $0,399$, zatem wnioski dla tej uproszczonej statystyki bêd¹ takie same.  
+
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Bazujemy na danych z Zadania 1. Tym razem jednak zastosujemy warstwowy (ze wzglêdu na \textit{wiek}) test $log-rank$ do oszacowania, czy krzywe prze¿ycia dla ró¿nych metod leczenia ró¿ni¹ siê istotnie.
+
+\bigskip
+
+Oczekiwana liczba zgonów dla ka¿dej z grup w ka¿dej z warstw wynosi:
+
+<<echo=FALSE>>=
+tab
+@
+
+Reszty dowiemy siê patrz¹c na wydruk R-a:
+
+<<echo=FALSE>>=
+sz.strata
+@
+
+Widaæ wiêc, ¿e sumaryczna oczekiwana liczba zgonów dla szczepionki pierwszej wynosi $3,76$, zaœ dla szczopionki drugiej $6,24$. Wartoœæ statystyki testowej wyznaczona przy pomocy wariancji wynosi $0,7$, a odpowiadaj¹ce jej $p-value$ $0,407$. Zaœ statystyka testowa wyznaczona przy pomocy ,,prostszych obliczeñ'' jest równa $0,65$, a jej $p-value$ $0,419$. Zatem w obu przypadkach nie mamy podstaw do odrzucenia hipotezy. \underline{Czyli, mimo wprowadzenia warstwowania, krzywe i tak istotnie} \underline{nie ró¿ni¹ siê miêdzy sob¹.} 
+
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Zobaczmy, jak wygl¹daj¹ nasze dane:
+
+<<echo=FALSE>>=
+head(a,3)
+@
+
+Dopasujmy najpierw zwyk³y model Kaplana-Meiera w zale¿noœci od zmiennej \textit{level} odpowiadaj¹cej za poziom markera. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{2.png}
+\end{figure}
+
+Z rysunku widaæ rzeczywiœcie, ¿e krzywe raczej ró¿ni¹ siê miêdzy sob¹. Zanim jednak przeprowadzimy test formalny, przyjrzyjmy siê analogicznej zale¿noœci, ale od zmiennej \textit{stage} odpowiadaj¹cej za stopieñ zaawansowania nowotworu oraz od zmiennej \textit{histpat} odpowiadaj¹cej za typ histologiczny nowotworu.
+
+\begin{figure}[h]
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{3.png}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{4.png}
+\end{minipage}
+\end{figure}
+
+WyraŸnie widaæ, ¿e zmienna \textit{histpat} istotna nie jest, mamy zaœ podejrzenie, ¿e zmienna \textit{stage} istotna byæ ju¿ mo¿e. ¯eby nie pope³niæ b³êdu wielokrotnego testowania, na podstawie powy¿szych przypuszczeñ, przeprowadzê warstwowy (ze wzglêdu na zmienn¹ \textit{stage}) test $log-rank$ dla dwóch rodzajów markera. Oto wydruk R-a dla naszego testu: 
+
+<<echo=FALSE>>=
+a.KM
+@
+
+$P-value$ testu (dla statystyki testowej wynosz¹cej $17,8$) jest równe $2,44e-05$, zatem mamy podstawy do odrzucenia hipotezy o równoœci funkcji prze¿ycia. \underline{Czyli rzeczywiœcie jest ró¿nica w d³ugoœci prze¿ycia w zale¿noœci od poziomu markera} \underline{CYFRA-21 i ze wzglêdu na warstwowanie stopniem zaawansowania nowotworu.} Oczekiwana liczba zgonów dla ka¿dej z grup w ka¿dej z warstw, bêdzie równa:
+
+<<echo=FALSE>>=
+tt
+@
+
+\newpage
+\subsection*{\underline{\textbf{Syntaks R-a}}}
+
+\begin{small}
+<< message=FALSE,warning=FALSE,eval=FALSE >>=
+# zad.1
+
+sz <- matrix(c(4,5,8,10,17,17,17,19,24,34,34,
+               7,8,8,8,8,8,8,11,11,12,12,15,16,18,21,23,24,25,27,
+               1,1,1,1,0,0,0,1,0,0,0,
+               1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,
+               rep(1,11),
+               rep(2,19),
+               2,3,1,3,2,1,1,1,1,1,2,
+               1,1,2,3,1,2,2,3,2,1,2,2,1,1,1,2,1,3,1),
+             nrow=30)
+sz <- as.data.frame(sz)
+names(sz) <- c("czas","zdarzenie","rodzaj.terapii","wiek")
+sz.KM <- survfit(Surv(czas,zdarzenie) ~ rodzaj.terapii, data=sz, 
+                 conf.type="none")
+plot(sz.KM,col=c("red","blue"), lty=1:2, main="Krzywe przezycia",
+     xlab="miesiace",ylab="p-stwo przezycia")
+legend(0.4, 0.27, c("szczepionka 1","szczepionka 2"),col=c("red","blue"),lty=1:2,cex=0.7)
+summary(sz.KM)               
+sz.test <- survdiff(Surv(czas,zdarzenie) ~ rodzaj.terapii, data=sz)
+sz.test$exp; sz.test$var
+stat_prost <- sum((sz.test$obs-sz.test$exp)^2/sz.test$exp)
+p.val <- 1-pchisq(stat_prost,1)
+
+# zad.2
+
+sz.strata <- survdiff(Surv(czas,zdarzenie) ~ rodzaj.terapii + strata(wiek),data=sz)
+sz.strata
+sz.strata$exp
+e <- rowSums(sz.strata$exp)
+o <- rowSums(sz.strata$obs)
+stat_prost <- sum((e-o)^2/e)
+p.val <- 1-pchisq(stat_prost,1)
+
+# zad.3
+
+a <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\1\\cyfra_short.csv",sep=",")
+head(a)
+a.KM_level <- survfit(Surv(survtime,survind)~level,data=a,conf.type="none")
+plot(a.KM_level, col=c("red","blue"), lty=1:2, main="Krzywe przezycia",
+     xlab="miesiace",ylab="p-stwo przezycia")
+legend(0.4, 0.27, c("niski poziom markera","wysoki poziom markera"),
+       col=c("red","blue"), lty=1:2,cex=0.7)
+a.KM_stage <- survfit(Surv(survtime,survind)~stage,data=a,conf.type="none")
+plot(a.KM_stage, col=c("red","blue","green"), lty=1:3, main="Krzywe przezycia",
+     xlab="miesiace",ylab="p-stwo przezycia")
+legend(0.4, 0.35, c("TNM 1","TNM 2","TNM 3"),
+       col=c("red","blue","green"), lty=1:3,cex=0.7)
+a.KM_histpat <- survfit(Surv(survtime,survind)~histpat,data=a,conf.type="none")
+plot(a.KM_histpat, col=c("red","blue","green"), lty=1:3, main="Krzywe przezycia",
+     xlab="miesiace",ylab="p-stwo przezycia")
+legend(0.4, 0.35, c("gruczolakorak","wielokomorkowiec","plaskonablonkowiec"),
+       col=c("red","blue","green"), lty=1:3,cex=0.7)
+a.KM <- survdiff(Surv(survtime,survind)~level+strata(stage),data=a)
+a.KM
+tt <- a.KM$exp
+rownames(tt) <- c("niski poziom markera","wysoki poziom markera")
+colnames(tt) <- c("TNM 1","TNM 2","TNM 3")
+@
+\end{small}
+
+\end{document}
+

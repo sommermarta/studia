@@ -1,0 +1,22 @@
+#wspólrzêdne nadajnika, minimalny zasiêg, maksymalny zasiêg
+0	9	3	4
+10	1	3	6
+0	10	3	3
+7	9	4	4
+9	2	3	5
+7	7	4	6
+5	10	4	4
+2	5	3	3
+8	10	3	3
+10	8	4	6
+3	3	4	7
+2	2	3	3
+5	9	4	5
+1	3	3	3
+2	6	3	6
+
+
+
+
+
+

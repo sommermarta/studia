@@ -1,0 +1,31 @@
+<html>
+<head>
+   
+<meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+
+<title>Czcionki</title>
+
+</head>
+   
+<body>
+ 
+<h1><center>CZCIONKI DOSTEPNE W R</center></h1>
+
+<!--begin.rcode results='asis', fig.align='center', fig.height=1.5, fig.width=8, echo=FALSE
+
+a <- names(pdfFonts())
+for(i in 1:length(a)){
+   cat("<h2>Czcionka ",a[i],"</h2>")
+   par(mar=rep(0,4))
+   plot.new()
+   plot.window(c(0,1),c(0,1))
+   rect(0,0,1,1,col="pink")
+   text(0.5,0.5,a[i],family=a[i],cex=3)
+}
+
+end.rcode-->
+   
+</body>
+</html>
+

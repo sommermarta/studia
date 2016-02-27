@@ -1,0 +1,17 @@
+****************************************************
+* Zuse Institute Mathematical Programming Language *
+* Release 3.3.0 Copyright (C)2012 by Thorsten Koch *
+****************************************************
+*   This is free software and you are welcome to   *
+*     redistribute it under certain conditions     *
+*      ZIMPL comes with ABSOLUTELY NO WARRANTY     *
+****************************************************
+
+Reading sommer2.zpl
+Reading radio_nadajniki2.txt
+Reading radio_nadajniki2.txt
+Reading radio_nadajniki2.txt
+Instructions evaluated: 138044
+Name: sommer2.zpl   Variables: 1845   Constraints: 1966   Non Zeros: 5490
+Writing [sommer2.lp]
+Writing [sommer2.tbl]

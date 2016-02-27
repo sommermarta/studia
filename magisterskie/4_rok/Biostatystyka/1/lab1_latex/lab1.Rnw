@@ -1,0 +1,149 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1cm, bmargin=1cm, lmargin=1cm, rmargin=1cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering BIOSTATYSTYKA - LABORATORIUM 1}
+
+<< message=FALSE, warning=FALSE >>=
+library("foreign")
+library("survival")
+@
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+<<>>=
+seasick <- read.dta("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\1\\seasick_eng_data.dta")
+head(seasick)
+
+# dla pierwszego eksperymentu:
+
+sea1.KM <- survfit(Surv(time, vomit) ~ intens, data=seasick,
+                   conf.type="none",subset=intens==1)
+summary(sea1.KM)
+
+@
+
+<<eval=FALSE>>=
+plot(sea1.KM, col="red",lty=2,xlab="minuty",ylab="p-stwo przezycia")
+@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{1.png}
+\end{figure}
+
+<<eval=FALSE>>=
+# dla obu eksperymentow:
+
+sea.KM <- survfit(Surv(time, vomit) ~ intens, data=seasick, conf.type="none")
+summary(sea.KM)
+
+plot(sea.KM, col=c("red","blue"), lty=c(1,2), xlab="minuty",
+     ylab="p-stwo przezycia")
+legend(5,.3,c("pierwsze dosw.","drugie dosw."),
+       col=c("red","blue"), lty=c(1,2),cex=0.7)
+@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{2.png}
+\end{figure}
+
+<<>>=
+
+# porowynywanie krzywych przezycia:
+
+sea.test <- survdiff(Surv(time, vomit) ~ intens, data=seasick, rho=0)
+sea.test
+
+# p-value duze, zatem przyjmujemy hipoteze, czyli krzywe przezycia nie 
+# roznia sie istotnie
+
+@
+
+\subsection*{\textbf{\underline{Zadanie 2.}}}
+
+<<>>=
+nsclc <- read.dta("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\1\\nsclc_eng.dta")
+head(nsclc)
+@
+
+<<eval=FALSE>>=
+nsclc.KM <- survfit(Surv(survtime,survind)~expression,data=nsclc,
+                    conf.type="none")
+
+plot(nsclc.KM,col=c("red","blue"), lty=c(1,2), xlab="miesiace",
+     ylab="p-stwo przezycia")
+legend(.4,.3,c("brak ekspresji bialka","ekspresja bialka"),
+       col=c("red","blue"), lty=c(1,2),cex=0.7)
+@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{3.png}
+\end{figure}
+
+<<>>=
+nsclc.test <- survdiff(Surv(survtime,survind)~expression,data=nsclc)
+nsclc.test    # krzywe roznia sie istotnie
+
+# test warstwowy:
+
+nsclc.test.w <- survdiff(Surv(survtime,survind)~expression+strata(tnm)
+                         ,data=nsclc)
+nsclc.test.w
+@
+
+<<eval=FALSE>>=
+# wykresy dla warstw oddzielnie:
+
+nsclc.KM.1 <- survfit(Surv(survtime,survind)~expression,data=nsclc,
+                      conf.type="none",subset=tnm==1)
+plot(nsclc.KM.1,col=c("red","blue"), lty=c(1,2), xlab="miesiace",
+     ylab="p-stwo przezycia",main="TNM = 1")
+legend(.4,.3,c("brak ekspresji bialka","ekspresja bialka"),
+       col=c("red","blue"), lty=c(1,2),cex=0.7)
+nsclc.KM.2 <- survfit(Surv(survtime,survind)~expression,data=nsclc,
+                      conf.type="none",subset=tnm==2)
+plot(nsclc.KM.2,col=c("red","blue"), lty=c(1,2), xlab="miesiace",
+     ylab="p-stwo przezycia",main="TNM = 2")
+legend(.4,.3,c("brak ekspresji bialka","ekspresja bialka"),
+       col=c("red","blue"), lty=c(1,2),cex=0.7)
+nsclc.KM.3 <- survfit(Surv(survtime,survind)~expression,data=nsclc,
+                      conf.type="none",subset=tnm==3)
+plot(nsclc.KM.3,col=c("red","blue"), lty=c(1,2), xlab="miesiace",
+     ylab="p-stwo przezycia",main="TNM = 3")
+legend(.4,.3,c("brak ekspresji bia3ka","ekspresja bialka"),
+       col=c("red","blue"), lty=c(1,2),cex=0.7)
+@
+
+\begin{figure}[h]
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{4.png}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{5.png}
+\end{minipage}
+\includegraphics[width=0.5\textwidth]{6.png}
+\end{figure}
+
+\end{document}

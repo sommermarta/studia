@@ -1,0 +1,39 @@
+<html>
+<head>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>Numerowanie tabelek</title>
+
+</head>
+
+<body>
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE
+library("stringi")
+end.rcode-->
+
+<!--begin.rcode echo=FALSE, warning=FALSE, message=FALSE
+a <- normalizePath(stri_paste("C:\\Users\\Marta\\Desktop\\Marta",
+                              "\\studia\\rok4\\PADR\\cos.html",
+                              collapse=""))
+end.rcode-->
+
+<!--begin.rcode results='asis', echo=FALSE, warning=FALSE, message=FALSE
+
+z <- readLines(a)
+zz <- stri_paste(z, collapse="\n")
+ocho <- unlist(stri_split_regex(zz,"</table>"))
+
+ochooo <- character(length(ocho))
+
+for(i in 1:length(ocho)-1){
+   ochooo[i] <- stri_paste(ocho[i],"\n<caption align=\"bottom\">Tabela nr "
+                           ,i,"</caption></table>", collapse="\n")
+}
+
+u <- stri_paste(ochooo, collapse="")
+cat(u)
+
+end.rcode-->
+

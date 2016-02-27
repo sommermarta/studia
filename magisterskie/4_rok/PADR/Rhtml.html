@@ -1,0 +1,296 @@
+<!-- RSTUDIO
+
+Najpierw trzeba go zainstalowac: install.packages("knitr"), a potem zmienic 
+ustawienia:
+Tools -> Global Options -> Sweave
+Weave..... with: KNITR
+
+Kompilacja: CTRL+SHIFT+H
+
+-->
+
+<html>
+<head>
+<style type="text/css">
+.knitr.inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+},
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0em 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.rimage.left {
+  text-align: left;
+}
+.rimage.right {
+  text-align: right;
+}
+.rimage.center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>M?j pierwszy raport w RHTML</title>
+
+</head>
+
+<body>
+
+<h1>Raport</h1>
+
+<p>Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet</p> <!-- nowy paragraf tekstu ciaglego -->
+
+<div class="chunk" id="unnamed-chunk-1"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl str">&quot;1&quot;</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "1"
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl str">&quot;2&quot;</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "2"
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl str">&quot;3&quot;</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "3"
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl num">2</span> <span class="hl opt">+</span> <span class="hl num">2</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 4
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl std">x</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">sum</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">10</span><span class="hl std">)</span>  <span class="hl com"># wyznacz sume 10 pierwszych liczb calkowitych</span>
+<span class="hl kwd">print</span><span class="hl std">(x)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 55
+</pre></div>
+</div></div>
+
+
+Sam output, bez polecen: echo=FALSE
+
+<div class="chunk" id="unnamed-chunk-2"><div class="rcode"><div class="warning"><pre class="knitr r">## Warning: package 'stringi' was built under R version 3.0.1
+</pre></div>
+<div class="message"><pre class="knitr r">## stringi (pl_PL.windows-1250)
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 26
+</pre></div>
+</div></div>
+
+
+Bez pierwszego polecenia: echo=-1
+
+<div class="chunk" id="unnamed-chunk-3"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">stri_length</span><span class="hl std">(</span><span class="hl str">&quot;ja mam psa, a ty nie masz!&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 26
+</pre></div>
+</div></div>
+
+
+Kilka wybranych:
+
+<div class="chunk" id="unnamed-chunk-4"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl num">1</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 1
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl num">2</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 2
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 3
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl num">4</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 4
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 5
+</pre></div>
+</div></div>
+
+
+Obrazek tez sie wyswietli:
+
+<div class="chunk" id="unnamed-chunk-5"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl num">100</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-5.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
+
+
+Ukryje nam output:
+
+<div class="chunk" id="unnamed-chunk-6"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">print</span><span class="hl std">(</span><span class="hl str">&quot;aaa&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div></div>
+
+
+asis &ndash;> potraktuje to jak htmla i zrobi ladna liste
+
+<ol><li> 1 </li><li> 2 </li><li> 3 </li><li> 4 </li><li> 5 </li><li> 6 </li><li> 7 </li><li> 8 </li><li> 9 </li><li> 10 </li></ol>
+
+
+Warto wlaczyc czasem pamiec podreczna, zeby raz policzone wyniki zostaly
+zachowane (cache=TRUE) -> za drugim razem otwiera sie juz duzo szybciej:
+
+<h2>n= 10 </h2></div><div class="rimage default"><img src="figure/unnamed-chunk-81.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" class="plot" /></div><div class="rcode">
+Srednia to:  0.0002771<h2>n= 25 </h2></div><div class="rimage default"><img src="figure/unnamed-chunk-82.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" class="plot" /></div><div class="rcode">
+Srednia to:  0.0002024<h2>n= 30 </h2></div><div class="rimage default"><img src="figure/unnamed-chunk-83.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" class="plot" /></div><div class="rcode">
+Srednia to:  -0.000325
+
+
+<p>Wstawki nazwane: - eval i echo oznacza, ze nie bedzie sie wyswietlalo 
+nic - ani output ani kod</p>
+
+
+
+
+<div class="chunk" id="unnamed-chunk-9"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">print</span><span class="hl std">(</span><span class="hl str">&quot;ala ma kota&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "ala ma kota"
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">print</span><span class="hl std">(</span><span class="hl str">&quot;ala ma kota&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "ala ma kota"
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">print</span><span class="hl std">(</span><span class="hl str">&quot;ala ma kota&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] "ala ma kota"
+</pre></div>
+</div></div>
+
+
+<div class="chunk" id="ustawienia"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">n</span> <span class="hl kwb">&lt;-</span> <span class="hl num">1e+06</span>
+</pre></div>
+</div></div>
+
+   
+<div class="chunk" id="unnamed-chunk-10"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwd">rnorm</span><span class="hl std">(n))</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-10.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" class="plot" /></div></div>
+
+
+<div class="chunk" id="unnamed-chunk-11"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">sum</span><span class="hl std">(gsdgsd)</span>  <span class="hl com"># takiej zmiennej nie ma</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error: nie znaleziono obiektu 'gsdgsd'
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">log</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">)</span>
+</pre></div>
+<div class="warning"><pre class="knitr r">## Warning: wyprodukowano wartości NaN
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] NaN
+</pre></div>
+</div></div>
+
+
+Mo?na powstrzyma? warningi:
+
+<div class="chunk" id="unnamed-chunk-12"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">sum</span><span class="hl std">(gsdgsd)</span>  <span class="hl com"># takiej zmiennej nie ma</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error: nie znaleziono obiektu 'gsdgsd'
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">log</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] NaN
+</pre></div>
+</div></div>
+
+
+<div class="chunk" id="unnamed-chunk-13"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwa">for</span><span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span>       <span class="hl num">10</span><span class="hl std">)</span> <span class="hl kwd">print</span><span class="hl std">(</span>
+   <span class="hl std">i)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+## [1] 6
+## [1] 7
+## [1] 8
+## [1] 9
+## [1] 10
+</pre></div>
+</div></div>
+
+
+<div class="chunk" id="unnamed-chunk-14"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwa">for</span> <span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">10</span><span class="hl std">)</span> <span class="hl kwd">print</span><span class="hl std">(i)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+## [1] 6
+## [1] 7
+## [1] 8
+## [1] 9
+## [1] 10
+</pre></div>
+</div></div>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

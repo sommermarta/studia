@@ -1,0 +1,291 @@
+\documentclass[10pt,a4paper]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.8cm, bmargin=0.8cm, lmargin=0.8cm, rmargin=0.8cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+<<echo=FALSE>>=
+opts_chunk$set(comment="", message=FALSE, tidy.opts=list(keep.blank.line=TRUE, width.cutoff=120),options(width=100), cache=TRUE, fig.align='center',fig.show='hold')
+@
+
+\section*{\centering BIOSTATYSTYKA -- PROJEKT KOÑCOWY\\ MARTA SOMMER -- BSMAD \\ 23 czerwca 2014}
+
+Analizujemy dane dotycz¹ce $927$ noworodków, które by³y karmione piersi¹ przez matki. Interesuje nas, która ze zmiennych charakteryzuj¹cych matkê ma wp³yw na czas do odstawienia dziecka od piersi.
+
+\section*{Wstêpna analiza danych}
+
+Nasz zbiór danych zawiera nastêpuj¹ce zmienne:
+\begin{enumerate}
+\item[] \texttt{feed} -- czas trwania karmienia piersi¹ (w tygodniach)
+\item[] \texttt{koniec\_karmienia} -- wskaŸnik odstawienia od piersi (0 -- nie, 1 -- tak)
+\item[] \texttt{race} -- rasa matki (1 -- bia³a, 2 -- czarna, 3 -- inna)
+\item[] \texttt{econ} -- wskaŸnik sytuacji ekonomicznej matki (0 -- dobra, 1 -- z³a)
+\item[] \texttt{smok} -- czy matka pali³a w czasie ci¹¿y (0 -- nie, 1 -- tak)
+\item[] \texttt{alco} -- czy matka pi³a alkohol w czasie ci¹¿y (0 -- nie, 1 -- tak)
+\item[] \texttt{age} -- wiek matki w chwili narodzin dziecka (w latach)
+\item[] \texttt{educ} -- wykszta³cenie matki (lata nauki)
+\item[] \texttt{care} -- czy matka korzysta³a z opieki prenatalnej na pocz¹tku ci¹¿y (0 -- nie, 1 -- tak)
+\end{enumerate}
+
+¯eby móc przeprowadziæ analizê, musimy odpowiednio dostosowaæ nasz zbiór danych. Przede wszystkim zmienn¹ \texttt{race} zmienimy na dwie zmienne indykatorowe, gdy¿ nie powinna ona reprezentowaæ porz¹dku, co robi przy aktualnym kodowaniu. Dostaniemy w ten sposób dwie nowe zmienne \texttt{rasa\_bia³a} (równ¹ 1 dla rasy bia³ej i 0 w przeciwnym przypadku) oraz \texttt{rasa\_czarna} (równ¹ 1 dla rasy czarnej i 0 w przeciwnym przypadku).
+
+Zmienna \texttt{age} oraz \texttt{educ} s¹ w pewnym przybli¿eniu zmiennymi ci¹g³ymi. Sprawdzê wiêc, czy mo¿e istnieje dla nich jakaœ odpowiednia postaæ funkcyjna. W tym celu zbudujê pusty model PH i narysujê jego reszty martynga³owe w zale¿noœci od naszych dwóch zmiennych ci¹g³ych. Oto rezultaty:
+
+<<echo=FALSE, fig.width=20,fig.height=5>>=
+library("foreign")
+library("survival")
+b <- read.dta("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\projekt\\BreastFeeding.dta")
+names(b)[2] <- "koniec_karmienia"
+n <- nrow(b)
+rasa_biala <- ifelse(b$race==1,1,0)
+rasa_czarna <- ifelse(b$race==2,1,0)
+bb <- cbind(b[,-3],rasa_biala,rasa_czarna)
+
+modelpusty <- coxph(Surv(feed, koniec_karmienia) ~ 1, data = bb) 
+mart <- resid(modelpusty)
+
+par(mfrow=c(1,2))
+plot(bb$educ, mart, xlab="Edukacja", ylab="Reszty martynga³owe",pch=19, cex.main=3,cex.axis=1.5,cex.lab=1.5) 
+lines(lowess(bb$educ, mart, iter=0, f=0.6), col="red") 
+
+plot(bb$age, mart, xlab="Wiek", ylab="Reszty martynga³owe", pch=19, cex.main=3,cex.axis=1.5,cex.lab=1.5) 
+lines(lowess(bb$age, mart, iter=0, f=0.6), col="red")
+par(mfrow=c(1,1))
+@
+
+Powy¿sze wykresy to w przybli¿eniu funkcje sta³e, tak wiêc nie ma potrzeby nadawania zmiennym \texttt{age} i \texttt{educ} ¿adnej postaci funkcyjnej. 
+
+Nasze dane w ostatecznej formie wygl¹daj¹ wiêc w nastêpuj¹cy sposób:
+
+<<echo=FALSE>>=
+head(bb,2)
+@
+
+\section*{Sprawdzenie za³o¿eñ modelu PH}
+
+Na pocz¹tek narysujmy krzywe Kaplana-Meiera, ¿eby zobaczyæ, które zmienne dobrze ró¿nicuj¹ czas odstawienia dziecka od piersi (oczywiœcie robimy to tylko dla zmiennych dyskretnych).
+
+<<echo=FALSE, fig.width=20,fig.height=10>>=
+par(mfrow=c(2,3))
+
+km1 <- survfit(Surv(feed,koniec_karmienia) ~ econ, data=bb, conf.type="none")
+plot(km1,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla econ", cex.main=3,cex.axis=1.5)
+
+km2 <- survfit(Surv(feed,koniec_karmienia) ~ smok, data=bb, conf.type="none")
+plot(km2,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla smok", cex.main=3,cex.axis=1.5)
+
+km3 <- survfit(Surv(feed,koniec_karmienia) ~ alco, data=bb, conf.type="none")
+plot(km3,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla alco", cex.main=3,cex.axis=1.5)
+
+km4 <- survfit(Surv(feed,koniec_karmienia) ~ care, data=bb, conf.type="none")
+plot(km4,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla care", cex.main=3,cex.axis=1.5)
+
+km5 <- survfit(Surv(feed,koniec_karmienia) ~ rasa_biala, data=bb, conf.type="none")
+plot(km5,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla rasa_biala", cex.main=3,cex.axis=1.5)
+
+km6 <- survfit(Surv(feed,koniec_karmienia) ~ rasa_czarna, data=bb, conf.type="none")
+plot(km6,col=c("red","blue"), lty=1:2, , main="Krzywa K-M dla rasa_czarna", cex.main=3,cex.axis=1.5)
+
+par(mfrow=c(1,1))
+@
+
+Widaæ, ¿e ¿adna ze zmiennych wyraŸnie nie ró¿nicuje czasu do odstawienia dziecka od piersi. Krzywe Kaplana-Meiera co prawda przecinaj¹ siê (a nie powinny, gdy s¹ spe³nione za³o¿enia proporcjonalnych hazardów), jednak widaæ, ¿e te krzywe s¹ po prostu niemal identyczne, dlatego nachodz¹ na siebie. Przyjrzyjmy siê jeszcze ich przekszta³ceniu $log(-log)$.
+
+\vspace{0.5mm}
+
+<<echo=FALSE, fig.width=20,fig.height=10>>=
+par(mfrow=c(2,3))
+
+plot(km1,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla econ", cex.main=3,cex.axis=1.5)
+plot(km2,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla smok", cex.main=3,cex.axis=1.5)
+plot(km3,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla alco", cex.main=3,cex.axis=1.5)
+plot(km4,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla care", cex.main=3,cex.axis=1.5)
+plot(km5,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla rasa_biala", cex.main=3,cex.axis=1.5)
+plot(km6,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla rasa_czarna", cex.main=3,cex.axis=1.5)
+
+par(mfrow=c(1,1))
+@
+
+Krzywe powinny byæ do siebie równoleg³e. Widaæ, ¿e nieraz siê nawet przecianj¹. Wydaje siê jednak, ¿e zachowuj¹ siê w miarê równolegle. Jako, ¿e wykresy przysparzaj¹ nam nieco trudnoœci w interpretacji, przyjrzyjmy siê formalnemu testowi skalowanych reszt Schoenfelda:
+
+<<echo=FALSE>>=
+ph <- coxph(Surv(feed, koniec_karmienia)~., data=bb)
+test <- cox.zph(ph, transform="identity")
+test
+@
+
+P-value ka¿dego z testów jest wiêksze ni¿ $0,05$, zatem nie mamy podstaw do odrzucenia hipotezy, ¿e za³o¿nie proporcjonalnych hazardów jest spe³nione (równie¿ dla zminnych \texttt{age} i \texttt{educ}, dla których nie mogliœmy narysowaæ krzywych prze¿ycia Kaplana-Meiera ze wzglêdu na ich ci¹g³y charakter). To samo tyczy siê tesu globalnego, którego p-value te¿ jest du¿e i wynosi oko³o $0,28$.
+
+Spójrzmy jeszcze ostatecznie na wykresy reszt Schoenfelda dla kolejnych zmiennych.
+
+<<echo=FALSE, fig.width=20, fig.height=10>>=
+par(mfrow=c(2,4))
+
+plot(test, df=3, nsmo=10, se=TRUE, var=1, main="Reszty Schoenfelda dla econ", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=2, main="Reszty Schoenfelda dla smok", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=3, main="Reszty Schoenfelda dla alco", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=4, main="Reszty Schoenfelda dla age", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=5, main="Reszty Schoenfelda dla educ", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=6, main="Reszty Schoenfelda dla care", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=7, main="Reszty Sch. dla rasa_biala", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=8, main="Reszty Sch. dla rasa_czarna", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+par(mfrow=c(1,1))
+@
+
+Gdy spe³nione jest za³o¿enie proporcjonalnych hazardów, oczekiwalibyœmy poziomej linii mieszcz¹cej siê w pasach ufnoœci. I rzeczywiœcie, dla ka¿dej zmiennej, wykres jest bliski funkcji sta³ej. 
+Ostateczny wniostek jest wiêc taki, ¿e dla ¿adnej zmiennej objaœniaj¹cej nie mamy podstaw uwa¿aæ, ¿e za³o¿enie proporcjonalnych hazardów nie jest spe³nione. PrzejdŸmy wiêc do dopasowania i analizy modelu PH.
+
+\section*{Dopasowanie modelu}
+
+Przeanalizujmy teraz ogóle dopasowanie modelu. Przyjrzyjmy siê w tym celu czterem wykresom:
+
+<<echo=FALSE, fig.width=20, fig.height=10>>=
+dewiancja <- residuals(ph, type="deviance")
+coef <- ph$linear.predictors
+
+par(mfrow=c(2,2))
+
+plot(1:n, dewiancja, pch=19, xlab="Numer", ylab="Reszty dewiancji",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+
+plot(coef, dewiancja, pch=19, xlab="Liniowa kombinacja zmiennych", ylab="Reszty dewiancji",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+
+plot(1:n, mart, pch=19, xlab="Numer", ylab="Reszty martynga³owe",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+
+plot(coef, mart, pch=19, xlab="Liniowa kombinacja zmiennych", ylab="Reszty martynga³owe",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+
+par(mfrow=c(1,1))
+@
+
+Na ka¿dym z wykresów reszty s¹ w miarê symetrycznie rozrzucone wokó³ prostej $y=0$. Co wiêcej, wykresy reszt dewiancji mieszcz¹ siê w przedziale $[-3,3]$, co jest ich dobr¹ cech¹. Niestety reszty martynga³owe nie zachowuj¹ siê ju¿ tak dobrze. Widaæ wyraŸnie, ¿e wystêpuje kilka obserwacji odstaj¹cych.
+
+\section*{Analiza modelu i wnioski}
+
+Przyjrzyjmy siê wspó³czynnikom z dopasowanego modelu PH:
+
+<<echo=FALSE>>=
+summary(ph)
+@
+
+Z testu Walda mo¿emy odczytaæ, które zmienne s¹ istotne w modelu. Mianowicie s¹ to zmienne \texttt{econ}, \texttt{smok}, \texttt{educ} i \texttt{rasa\_biala}.
+
+Wnioski s¹ zatem nastêpuj¹ce. Hazard (w naszym przypadku jest to ryzyko odstawienia dziecka od piersi) jest wiêkszy $1,28$ razy, gdy kobieta pali³a papierosy w czasie ci¹¿y, $1,18$ razy, gdy pi³a alkohol, $1,02$ razy, gdy kobieta jest o rok starsza. Pozosta³e zmienne hazard zmniejszaj¹. Tak wiêc, ryzyko odstawienia dziecka od piersi jest $0,81$ razy mniejsze, gdy kobieta ma gorsz¹ sytuacjê ekonomiczn¹, $0,94$ razy mniejsze, gdy ma o jeden rok edukacji wiêcej, $0,97$ razy mniejsze, gdy potrzebowa³a opieki prenatalnej w pierwszych miesi¹cach ci¹¿y, $0,74$ razy mniejsze, gdy jest rasy bia³ej i wreszcie $0,9$ razy mniejsze, gdy jest rasy czarnej. 
+
+Najwiêkszy wp³yw na zmienê hazardu ma zatem to, czy kobieta jest rasy bia³ej oraz czy w czasie ci¹¿y pali³a papierosy.
+ 
+Z testu najwiêkszej wiarogodnoœci widaæ te¿, ¿e model jako ca³oœæ jest dobrze dopasowany (p-value równe $0,00013$).  
+ 
+\section*{Kod R-owy} 
+ 
+\begin{small}
+<<eval=FALSE>>=
+library("foreign")
+library("survival")
+b <- read.dta("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\projekt\\BreastFeeding.dta")
+names(b)[2] <- "koniec_karmienia"
+n <- nrow(b)
+rasa_biala <- ifelse(b$race==1,1,0)
+rasa_czarna <- ifelse(b$race==2,1,0)
+bb <- cbind(b[,-3],rasa_biala,rasa_czarna)
+
+modelpusty <- coxph(Surv(feed, koniec_karmienia) ~ 1, data = bb) 
+mart <- resid(modelpusty)
+plot(bb$educ, mart, xlab="Edukacja", ylab="Reszty martynga³owe",pch=19, cex.main=3,cex.axis=1.5,cex.lab=1.5) 
+lines(lowess(bb$educ, mart, iter=0, f=0.6), col="red") 
+plot(bb$age, mart, xlab="Wiek", ylab="Reszty martynga³owe", pch=19, cex.main=3,cex.axis=1.5,cex.lab=1.5) 
+lines(lowess(bb$age, mart, iter=0, f=0.6), col="red")
+
+km1 <- survfit(Surv(feed,koniec_karmienia) ~ econ, data=bb, conf.type="none")
+plot(km1,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla econ", cex.main=3,cex.axis=1.5)
+km2 <- survfit(Surv(feed,koniec_karmienia) ~ smok, data=bb, conf.type="none")
+plot(km2,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla smok", cex.main=3,cex.axis=1.5)
+km3 <- survfit(Surv(feed,koniec_karmienia) ~ alco, data=bb, conf.type="none")
+plot(km3,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla alco", cex.main=3,cex.axis=1.5)
+km4 <- survfit(Surv(feed,koniec_karmienia) ~ care, data=bb, conf.type="none")
+plot(km4,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla care", cex.main=3,cex.axis=1.5)
+km5 <- survfit(Surv(feed,koniec_karmienia) ~ rasa_biala, data=bb, conf.type="none")
+plot(km5,col=c("red","blue"), lty=1:2, main="Krzywa K-M dla rasa_biala", cex.main=3,cex.axis=1.5)
+km6 <- survfit(Surv(feed,koniec_karmienia) ~ rasa_czarna, data=bb, conf.type="none")
+plot(km6,col=c("red","blue"), lty=1:2, , main="Krzywa K-M dla rasa_czarna", cex.main=3,cex.axis=1.5)
+
+plot(km1,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla econ", cex.main=3,cex.axis=1.5)
+plot(km2,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla smok", cex.main=3,cex.axis=1.5)
+plot(km3,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla alco", cex.main=3,cex.axis=1.5)
+plot(km4,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla care", cex.main=3,cex.axis=1.5)
+plot(km5,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla rasa_biala", cex.main=3,cex.axis=1.5)
+plot(km6,col=c("red","blue"), lty=1:2, fun=function(x) log(-log(x)), log="x", firstx=1, main="Krzywa K-M log(-log()) dla rasa_czarna", cex.main=3,cex.axis=1.5)
+
+ph <- coxph(Surv(feed, koniec_karmienia)~., data=bb)
+test <- cox.zph(ph, transform="identity")
+
+plot(test, df=3, nsmo=10, se=TRUE, var=1, main="Reszty Schoenfelda dla econ", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=2, main="Reszty Schoenfelda dla smok", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=3, main="Reszty Schoenfelda dla alco", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=4, main="Reszty Schoenfelda dla age", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=5, main="Reszty Schoenfelda dla educ", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=6, main="Reszty Schoenfelda dla care", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=7, main="Reszty Sch. dla rasa_biala", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+plot(test, df=3, nsmo=10, se=TRUE, var=8, main="Reszty Sch. dla rasa_czarna", pch=19,cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0, 0, lty=3, col="red")
+
+dewiancja <- residuals(ph, type="deviance")
+coef <- ph$linear.predictors
+plot(1:n, dewiancja, pch=19, xlab="Numer", ylab="Reszty dewiancji",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+plot(coef, dewiancja, pch=19, xlab="Liniowa kombinacja zmiennych", ylab="Reszty dewiancji",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+plot(1:n, mart, pch=19, xlab="Numer", ylab="Reszty martynga³owe",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+plot(coef, mart, pch=19, xlab="Liniowa kombinacja zmiennych", ylab="Reszty martynga³owe",cex.main=3,cex.axis=1.5,cex.lab=1.5)
+abline(0,0, col="red", lwd=2)
+@ 
+\end{small} 
+ 
+\end{document}
+
+
+
+

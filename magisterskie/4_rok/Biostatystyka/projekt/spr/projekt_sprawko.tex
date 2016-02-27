@@ -1,0 +1,339 @@
+\documentclass[10pt,a4paper]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.8cm, bmargin=0.8cm, lmargin=0.8cm, rmargin=0.8cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\section*{\centering BIOSTATYSTYKA -- PROJEKT KOÑCOWY\\ MARTA SOMMER -- BSMAD \\ 23 czerwca 2014}
+
+Analizujemy dane dotycz¹ce $927$ noworodków, które by³y karmione piersi¹ przez matki. Interesuje nas, która ze zmiennych charakteryzuj¹cych matkê ma wp³yw na czas do odstawienia dziecka od piersi.
+
+\section*{Wstêpna analiza danych}
+
+Nasz zbiór danych zawiera nastêpuj¹ce zmienne:
+\begin{enumerate}
+\item[] \texttt{feed} -- czas trwania karmienia piersi¹ (w tygodniach)
+\item[] \texttt{koniec\_karmienia} -- wskaŸnik odstawienia od piersi (0 -- nie, 1 -- tak)
+\item[] \texttt{race} -- rasa matki (1 -- bia³a, 2 -- czarna, 3 -- inna)
+\item[] \texttt{econ} -- wskaŸnik sytuacji ekonomicznej matki (0 -- dobra, 1 -- z³a)
+\item[] \texttt{smok} -- czy matka pali³a w czasie ci¹¿y (0 -- nie, 1 -- tak)
+\item[] \texttt{alco} -- czy matka pi³a alkohol w czasie ci¹¿y (0 -- nie, 1 -- tak)
+\item[] \texttt{age} -- wiek matki w chwili narodzin dziecka (w latach)
+\item[] \texttt{educ} -- wykszta³cenie matki (lata nauki)
+\item[] \texttt{care} -- czy matka korzysta³a z opieki prenatalnej na pocz¹tku ci¹¿y (0 -- nie, 1 -- tak)
+\end{enumerate}
+
+¯eby móc przeprowadziæ analizê, musimy odpowiednio dostosowaæ nasz zbiór danych. Przede wszystkim zmienn¹ \texttt{race} zmienimy na dwie zmienne indykatorowe, gdy¿ nie powinna ona reprezentowaæ porz¹dku, co robi przy aktualnym kodowaniu. Dostaniemy w ten sposób dwie nowe zmienne \texttt{rasa\_bia³a} (równ¹ 1 dla rasy bia³ej i 0 w przeciwnym przypadku) oraz \texttt{rasa\_czarna} (równ¹ 1 dla rasy czarnej i 0 w przeciwnym przypadku).
+
+Zmienna \texttt{age} oraz \texttt{educ} s¹ w pewnym przybli¿eniu zmiennymi ci¹g³ymi. Sprawdzê wiêc, czy mo¿e istnieje dla nich jakaœ odpowiednia postaæ funkcyjna. W tym celu zbudujê pusty model PH i narysujê jego reszty martynga³owe w zale¿noœci od naszych dwóch zmiennych ci¹g³ych. Oto rezultaty:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-2} 
+
+}
+
+
+
+\end{knitrout}
+
+Powy¿sze wykresy to w przybli¿eniu funkcje sta³e, tak wiêc nie ma potrzeby nadawania zmiennym \texttt{age} i \texttt{educ} ¿adnej postaci funkcyjnej. 
+
+Nasze dane w ostatecznej formie wygl¹daj¹ wiêc w nastêpuj¹cy sposób:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+  feed koniec_karmienia econ smok alco age educ care rasa_biala rasa_czarna
+1   16                1    0    0    1  24   14    0          1           0
+2    1                1    0    1    0  26   12    0          1           0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Sprawdzenie za³o¿eñ modelu PH}
+
+Na pocz¹tek narysujmy krzywe Kaplana-Meiera, ¿eby zobaczyæ, które zmienne dobrze ró¿nicuj¹ czas odstawienia dziecka od piersi (oczywiœcie robimy to tylko dla zmiennych dyskretnych).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-4} 
+
+}
+
+
+
+\end{knitrout}
+
+Widaæ, ¿e ¿adna ze zmiennych wyraŸnie nie ró¿nicuje czasu do odstawienia dziecka od piersi. Krzywe Kaplana-Meiera co prawda przecinaj¹ siê (a nie powinny, gdy s¹ spe³nione za³o¿enia proporcjonalnych hazardów), jednak widaæ, ¿e te krzywe s¹ po prostu niemal identyczne, dlatego nachodz¹ na siebie. Przyjrzyjmy siê jeszcze ich przekszta³ceniu $log(-log)$.
+
+\vspace{0.5mm}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-5} 
+
+}
+
+
+
+\end{knitrout}
+
+Krzywe powinny byæ do siebie równoleg³e. Widaæ, ¿e nieraz siê nawet przecianj¹. Wydaje siê jednak, ¿e zachowuj¹ siê w miarê równolegle. Jako, ¿e wykresy przysparzaj¹ nam nieco trudnoœci w interpretacji, przyjrzyjmy siê formalnemu testowi skalowanych reszt Schoenfelda:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+                 rho  chisq     p
+econ        -0.02938 0.8025 0.370
+smok        -0.00574 0.0296 0.863
+alco        -0.01336 0.1616 0.688
+age         -0.00519 0.0250 0.874
+educ         0.04540 1.8418 0.175
+care         0.00526 0.0249 0.875
+rasa_biala   0.05437 2.6581 0.103
+rasa_czarna  0.05274 2.5210 0.112
+GLOBAL            NA 9.8189 0.278
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+P-value ka¿dego z testów jest wiêksze ni¿ $0,05$, zatem nie mamy podstaw do odrzucenia hipotezy, ¿e za³o¿nie proporcjonalnych hazardów jest spe³nione (równie¿ dla zminnych \texttt{age} i \texttt{educ}, dla których nie mogliœmy narysowaæ krzywych prze¿ycia Kaplana-Meiera ze wzglêdu na ich ci¹g³y charakter). To samo tyczy siê tesu globalnego, którego p-value te¿ jest du¿e i wynosi oko³o $0,28$.
+
+Spójrzmy jeszcze ostatecznie na wykresy reszt Schoenfelda dla kolejnych zmiennych.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7} 
+
+}
+
+
+
+\end{knitrout}
+
+Gdy spe³nione jest za³o¿enie proporcjonalnych hazardów, oczekiwalibyœmy poziomej linii mieszcz¹cej siê w pasach ufnoœci. I rzeczywiœcie, dla ka¿dej zmiennej, wykres jest bliski funkcji sta³ej. 
+Ostateczny wniostek jest wiêc taki, ¿e dla ¿adnej zmiennej objaœniaj¹cej nie mamy podstaw uwa¿aæ, ¿e za³o¿enie proporcjonalnych hazardów nie jest spe³nione. PrzejdŸmy wiêc do dopasowania i analizy modelu PH.
+
+\section*{Dopasowanie modelu}
+
+Przeanalizujmy teraz ogóle dopasowanie modelu. Przyjrzyjmy siê w tym celu czterem wykresom:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-8} 
+
+}
+
+
+
+\end{knitrout}
+
+Na ka¿dym z wykresów reszty s¹ w miarê symetrycznie rozrzucone wokó³ prostej $y=0$. Co wiêcej, wykresy reszt dewiancji mieszcz¹ siê w przedziale $[-3,3]$, co jest ich dobr¹ cech¹. Niestety reszty martynga³owe nie zachowuj¹ siê ju¿ tak dobrze. Widaæ wyraŸnie, ¿e wystêpuje kilka obserwacji odstaj¹cych.
+
+\section*{Analiza modelu i wnioski}
+
+Przyjrzyjmy siê wspó³czynnikom z dopasowanego modelu PH:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+Call:
+coxph(formula = Surv(feed, koniec_karmienia) ~ ., data = bb)
+
+  n= 927, number of events= 892 
+
+               coef exp(coef) se(coef)     z Pr(>|z|)   
+econ        -0.2105    0.8102   0.0934 -2.25   0.0243 * 
+smok         0.2488    1.2824   0.0793  3.14   0.0017 **
+alco         0.1682    1.1832   0.1227  1.37   0.1705   
+age          0.0198    1.0200   0.0165  1.20   0.2297   
+educ        -0.0557    0.9458   0.0230 -2.43   0.0153 * 
+care        -0.0265    0.9738   0.0899 -0.30   0.7678   
+rasa_biala  -0.3047    0.7374   0.0972 -3.13   0.0017 **
+rasa_czarna -0.1104    0.8955   0.1287 -0.86   0.3910   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+            exp(coef) exp(-coef) lower .95 upper .95
+econ            0.810      1.234     0.675     0.973
+smok            1.282      0.780     1.098     1.498
+alco            1.183      0.845     0.930     1.505
+age             1.020      0.980     0.988     1.054
+educ            0.946      1.057     0.904     0.989
+care            0.974      1.027     0.817     1.161
+rasa_biala      0.737      1.356     0.609     0.892
+rasa_czarna     0.895      1.117     0.696     1.152
+
+Concordance= 0.567  (se = 0.012 )
+Rsquare= 0.033   (max possible= 1 )
+Likelihood ratio test= 31.2  on 8 df,   p=0.00013
+Wald test            = 32  on 8 df,   p=9.14e-05
+Score (logrank) test = 32.1  on 8 df,   p=9.1e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Z testu Walda mo¿emy odczytaæ, które zmienne s¹ istotne w modelu. Mianowicie s¹ to zmienne \texttt{econ}, \texttt{smok}, \texttt{educ} i \texttt{rasa\_biala}.
+
+Wnioski s¹ zatem nastêpuj¹ce. Hazard (w naszym przypadku jest to ryzyko odstawienia dziecka od piersi) jest wiêkszy $1,28$ razy, gdy kobieta pali³a papierosy w czasie ci¹¿y, $1,18$ razy, gdy pi³a alkohol, $1,02$ razy, gdy kobieta jest o rok starsza. Pozosta³e zmienne hazard zmniejszaj¹. Tak wiêc, ryzyko odstawienia dziecka od piersi jest $0,81$ razy mniejsze, gdy kobieta ma gorsz¹ sytuacjê ekonomiczn¹, $0,94$ razy mniejsze, gdy ma o jeden rok edukacji wiêcej, $0,97$ razy mniejsze, gdy potrzebowa³a opieki prenatalnej w pierwszych miesi¹cach ci¹¿y, $0,74$ razy mniejsze, gdy jest rasy bia³ej i wreszcie $0,9$ razy mniejsze, gdy jest rasy czarnej. 
+
+Najwiêkszy wp³yw na zmienê hazardu ma zatem to, czy kobieta jest rasy bia³ej oraz czy w czasie ci¹¿y pali³a papierosy.
+ 
+Z testu najwiêkszej wiarogodnoœci widaæ te¿, ¿e model jako ca³oœæ jest dobrze dopasowany (p-value równe $0,00013$).  
+ 
+\section*{Kod R-owy} 
+ 
+\begin{small}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"foreign"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"survival"}\hlstd{)}
+\hlstd{b} \hlkwb{<-} \hlkwd{read.dta}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}projekt\textbackslash{}\textbackslash{}BreastFeeding.dta"}\hlstd{)}
+\hlkwd{names}\hlstd{(b)[}\hlnum{2}\hlstd{]} \hlkwb{<-} \hlstr{"koniec_karmienia"}
+\hlstd{n} \hlkwb{<-} \hlkwd{nrow}\hlstd{(b)}
+\hlstd{rasa_biala} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(b}\hlopt{$}\hlstd{race}\hlopt{==}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{0}\hlstd{)}
+\hlstd{rasa_czarna} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(b}\hlopt{$}\hlstd{race}\hlopt{==}\hlnum{2}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{0}\hlstd{)}
+\hlstd{bb} \hlkwb{<-} \hlkwd{cbind}\hlstd{(b[,}\hlopt{-}\hlnum{3}\hlstd{],rasa_biala,rasa_czarna)}
+
+\hlstd{modelpusty} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(feed, koniec_karmienia)} \hlopt{~} \hlnum{1}\hlstd{,} \hlkwc{data} \hlstd{= bb)}
+\hlstd{mart} \hlkwb{<-} \hlkwd{resid}\hlstd{(modelpusty)}
+\hlkwd{plot}\hlstd{(bb}\hlopt{$}\hlstd{educ, mart,} \hlkwc{xlab}\hlstd{=}\hlstr{"Edukacja"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty martynga³owe"}\hlstd{,}\hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{lowess}\hlstd{(bb}\hlopt{$}\hlstd{educ, mart,} \hlkwc{iter}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{f}\hlstd{=}\hlnum{0.6}\hlstd{),} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(bb}\hlopt{$}\hlstd{age, mart,} \hlkwc{xlab}\hlstd{=}\hlstr{"Wiek"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty martynga³owe"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{lines}\hlstd{(}\hlkwd{lowess}\hlstd{(bb}\hlopt{$}\hlstd{age, mart,} \hlkwc{iter}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{f}\hlstd{=}\hlnum{0.6}\hlstd{),} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+
+\hlstd{km1} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{econ,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km1,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla econ"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlstd{km2} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{smok,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km2,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla smok"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlstd{km3} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{alco,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km3,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla alco"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlstd{km4} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{care,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km4,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla care"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlstd{km5} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{rasa_biala,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km5,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla rasa_biala"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlstd{km6} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(feed,koniec_karmienia)} \hlopt{~} \hlstd{rasa_czarna,} \hlkwc{data}\hlstd{=bb,} \hlkwc{conf.type}\hlstd{=}\hlstr{"none"}\hlstd{)}
+\hlkwd{plot}\hlstd{(km6,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{, ,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M dla rasa_czarna"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(km1,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla econ"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{plot}\hlstd{(km2,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla smok"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{plot}\hlstd{(km3,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla alco"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{plot}\hlstd{(km4,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla care"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{plot}\hlstd{(km5,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla rasa_biala"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{plot}\hlstd{(km6,}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{),} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{fun}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(x)),} \hlkwc{log}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{firstx}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Krzywa K-M log(-log()) dla rasa_czarna"}\hlstd{,} \hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{)}
+
+\hlstd{ph} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(feed, koniec_karmienia)}\hlopt{~}\hlstd{.,} \hlkwc{data}\hlstd{=bb)}
+\hlstd{test} \hlkwb{<-} \hlkwd{cox.zph}\hlstd{(ph,} \hlkwc{transform}\hlstd{=}\hlstr{"identity"}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla econ"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla smok"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla alco"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{4}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla age"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{5}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla educ"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{6}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Schoenfelda dla care"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{7}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Sch. dla rasa_biala"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlkwd{plot}\hlstd{(test,} \hlkwc{df}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{nsmo}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{se}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{var}\hlstd{=}\hlnum{8}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Reszty Sch. dla rasa_czarna"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+
+\hlstd{dewiancja} \hlkwb{<-} \hlkwd{residuals}\hlstd{(ph,} \hlkwc{type}\hlstd{=}\hlstr{"deviance"}\hlstd{)}
+\hlstd{coef} \hlkwb{<-} \hlstd{ph}\hlopt{$}\hlstd{linear.predictors}
+\hlkwd{plot}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n, dewiancja,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Numer"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty dewiancji"}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{plot}\hlstd{(coef, dewiancja,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Liniowa kombinacja zmiennych"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty dewiancji"}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{plot}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{n, mart,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Numer"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty martynga³owe"}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{plot}\hlstd{(coef, mart,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Liniowa kombinacja zmiennych"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Reszty martynga³owe"}\hlstd{,}\hlkwc{cex.main}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{1.5}\hlstd{,}\hlkwc{cex.lab}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\end{small} 
+ 
+\end{document}
+
+
+
+

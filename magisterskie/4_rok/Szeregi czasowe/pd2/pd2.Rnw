@@ -1,0 +1,100 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 2\\ ASC - 17 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Analizujemy zbiór SUNSPOTS opisuj¹cy liczbê plam na s³oñcu w kolejnych latach.
+Wykres przebiegu szeregu wygl¹da nastêpuj¹co:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+library("MASS")
+s <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\ASC\\SUNSPOTS.DAT")
+s <- ts(s)
+ts.plot(s)
+@
+
+Na powy¿szym wykresie wyraŸnie widaæ sezonowoœæ danych. Przyjrzyjmy siê jeszcze wykresowi funkcji ACF:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+acf(s)
+@
+
+Tu równie¿ widoczna jest sezonowoœæ. 
+
+\bigskip
+
+Dopasujmy model AR($1$) i przyjrzyjmy siê reziduom z tego modelu:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+ar1 <- arima(s,c(1,0,0))
+ts.plot(ar1$residuals)
+acf(ar1$residuals)
+@
+
+Z wykresów widaæ, ¿e nie s¹ one raczej bia³ym szumem. SprawdŸmy to jeszcze jednak formalnie u¿ywaj¹c testu Ljunga-Boxa:
+
+<<>>=
+Box.test(ar1$residuals,lag = 20, type="Ljung")
+@
+
+P-value testu wysz³o bardzo ma³e, zatem odrzucamy hipotezê o byciu bia³ym szumem. Model wiêc jest Ÿle dopasowany.
+
+\bigskip
+
+Dopasujmy wiêc odpowiedni model ARIMA($2$,$0$,$0$) o sezonowoœci $6$. Wykres ACF reziduów dla tego modelu wygl¹da nastêpuj¹co:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+mod <- arima(s,order=c(2,0,0),seasonal=list(order=c(3,0,0),period=6))
+acf(mod$residuals)
+@
+
+Widaæ, ¿e tu ju¿ jest znacznie lepiej ni¿ w poprzednim modelu. SprawdŸmy jeszcze, czy rezidua modelu s¹ bia³ym szumem:
+
+<<>>=
+Box.test(mod$residuals,lag = 20, type="Ljung")
+@
+
+P-value wysz³o du¿e, wiêc przyjmujemy hipotezê o bia³oszumowoœci reziduów. Model jest wiêc ca³kiem dobry.
+
+\bigskip
+
+Dla porównania dopasujmy jeszcze model ARIMA($2$,$0$,$0$) o sezonowoœci $12$. I znowu przeanalizujmy wykres reziduów i test Ljunga-Boxa:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+mod2 <- arima(s,order=c(2,0,0),seasonal=list(order=c(3,0,0),period=12))
+acf(mod2$residuals)
+@
+
+<<>>=
+Box.test(mod2$residuals,lag = 20, type="Ljung")
+@
+
+Lepszy jest wiêc model o sezonowoœci $12$. Na jego podstawie dokonajmy predykcji dla przysz³ych $14$ wartoœci:
+
+<<echo=FALSE,fig.align='center',fig.height=4,fig.width=8>>=
+pred24 <- predict(mod2,n.ahead=14)
+ts.plot(pred24$pred, s, pred24$pred+2*pred24$se,
+        pred24$pred-2*pred24$se, col=c("black","black","red","red"),lty=c(1,1,2,2))
+@
+
+\end{document}

@@ -1,0 +1,243 @@
+<html>
+<head>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>Numerowanie rysunkow</title>
+
+</head>
+
+<body>
+
+
+
+
+
+
+
+<html>
+   
+   <!--  http://www.w3schools.com/html/
+   http://www.w3schools.com/css/default.asp
+-->
+   
+   <head>
+   
+   <meta http-equiv="Content-Type" 
+content="text/html; charset=UTF-8" />
+   
+   <title>Moja pierwsza strona w HTML</title> <!-- to cos, co sie wyswietla 
+jako nazwa karty -->
+   
+   <style>
+   
+   body {
+      background: #f0f5dd;
+         font-family: "Verdana";
+      color: black;
+   }
+
+h1 {
+   border: 3px red solid;
+}
+
+h2{
+   color: blue;
+}
+
+img {
+   margin: 2em;
+}
+
+
+div.puzderko {
+   margin: 2em;
+   color: white;
+   background: pink;
+}
+
+</style>
+   </head>
+   
+   
+   <ul><li><a href='#r1'>Rysunek 1</a></li><li><a href='#r2'>Rysunek 2</a></li><li><a href='#r3'>Rysunek 3</a></li><li><a href='#r4'>Rysunek 4</a></li><li><a href='#r5'>Rysunek 5</a></li><li><a href='#r6'>Rysunek 6</a></li></ul>
+   
+   <h1>Spis treści</h1>  <!-- tytul pierwszego naglowka -->
+   
+   <ol>  <!-- lista elementow - ponumerowana -->
+   <li><a href='#sek1'>Sekcja 1</a></li> <!-- a href odpowiada za nazwe 
+referencyjna odnosnika -->
+   <li><a href='#sek2'>Sekcja 2</a></li>
+   <li><a href='#sek3'>Sekcja 3</a></li>
+   </ol>
+   
+   <h1>Moja stronka</h1>
+   
+   <a name='sek1' />  <!-- tu nas przeniesie klikniecie w Sekcje 1 -->
+  
+  
+<a name='r1'/>
+<p>Rysunek 1:</p>
+<img src='w.jpg' width='250'>
+  
+   <h2>Opowieść o autorze</h2> <!-- ten juz nie jest w czerwonej ramce, bo 
+nie jest z rodzaju h1, ale za to ma 
+niebieska czcionke, bo tak jest zdefinowane
+h2 w head -->
+   
+   <p>Encje: &lt; &le; &gt; &ge; &amp; &ndash; ala&nbsp;ma&nbsp;kota</p>
+   <!-- rozne specjalne znaki (a <p> to poczatek paragrafu) -->
+   
+   Hello, is it me you're looking for? <!-- tekst wpisuje sie tak po prostu -->
+
+world. <code>stri_locate()</code> <!-- pisanie czcionka maszynowa -->
+
+<!-- jesli chce, zeby bylo od nowej linijki, to musze nowy paragraf: -->
+
+<p>world. <code>stri_locate()</code></p>
+
+<a href='http://www.mini.pw.edu.pl'>Piekło</a> <!-- w ten sposob uzyty href
+przeniesie nas na zadana
+strone internetowa -->
+
+<a name='sek2' />
+
+
+<a name='r2'/>
+<p>Rysunek 2:</p>
+<img src='zyr.jpg'  
+width='250'>
+
+<h2>Opowiesc o czytelnikach</h2>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nunc 
+adipiscing at, dapibus sed magna. <strong>In at sollicitudin ligula. Lorem 
+ipsum dolor sit amet, consectetur adipiscing elit.</strong> Nam at massa 
+quis magna adipiscing placerat iaculis vitae lectus. <em>Sed ipsum eros, 
+faucibus a nulla cursus, convallis pretium nunc.</em> Aliquam tincidunt 
+viverra auctor. <mark>Curabitur eu rhoncus odio, ut sodales ipsum. Nulla 
+ac augue quis neque ornare tincidunt a vel est.</mark> Vestibulum eget magna 
+vel sem facilisis tincidunt. Nunc nec nunc eu eros vehicula pretium in 
+eget nulla.</p>
+
+<!-- strong robi pogrubienie, em robi kursywe, a mark wypisuje tekst w
+zoltej wypelnionej ramce -->
+
+<pre>
+int main() {
+cout << "hello world" << endl;
+return 0;
+}
+</pre>
+
+<!-- wyswietla to kursywa ladnie z enterami (tak, jak porzadny kod 
+powienien wygladac) -->
+
+<p>
+Phasellus vulputate sed dui sagittis placerat. Nulla id lectus commodo, 
+rutrum sem luctus, tempor ante. Vestibulum sed fringilla leo, eu dignissim 
+erat. Cras dictum convallis massa, quis tincidunt libero feugiat a. 
+Suspendisse elementum tellus erat, at molestie nunc bibendum vel. Aliquam 
+convallis pulvinar adipiscing. Quisque mollis eros vel cursus pulvinar.
+</p>
+
+<!-- ponizej, jak robic tabele: -->
+
+<table>
+<tr>
+<th>Lp.</th><th>Imię</th><th>Nazwisko</th>
+</tr>
+<tr>
+<td>1</td><td>Jola</td><td>Lojalna</td>
+</tr>
+<tr>
+<td>2</td><td>Cóż</td><td>Żezeszwecji</td>
+</tr>
+<tr>
+<td>3</td><td>Stół</td><td>znogami</td>
+</tr>   
+</table>
+
+<a name='r3'/>
+<p>Rysunek 3:</p>
+<img src='pap.jpg'  
+width='250'
+alt='No gdzie ty jesteś, obrazku????'/>  
+
+<!-- alt - wyswietli sie zamiast obrazka, jesli nie moze byc on wczytany,
+src - taka sciezka, jesli obrazek jest w tym samym pliku, co .html -->
+
+<a name='sek3' />   
+
+<h2>Zakonczenie</h2>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nunc quam, 
+consectetur quis adipiscing at, dapibus sed magna. In at sollicitudin 
+ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+
+<a name='r4'/>
+<p>Rysunek 4:</p>
+<img src='kon.jpg'  
+width='250'>
+
+<ol>
+<li>pierwsze</li>
+<li>drugie</li>
+<li>trzecie</li>
+</ol>
+
+Suspendisse egestas id diam at blandit. Cras quis eros ac magna blandit 
+pulvinar ac in neque. Duis ac sem vitae nulla lobortis ultrices. 
+Pellentesque cursus nec dui ac fringilla. Aenean odio felis, sollicitudin 
+eget metus at, scelerisque ultrices mauris. Morbi ligula tellus, 
+pellentesque quis lectus ut, cursus posuere odio. Maecenas luctus pretium 
+urna, ut rutrum risus placerat nec.
+
+<div class='puzderko'>
+Nulla purus velit, egestas et diam sed, tempor vehicula risus. Aenean in 
+tristique est. Integer scelerisque ac dui vitae imperdiet. Curabitur in 
+eleifend dui. Vestibulum sed ultricies odio. Nunc condimentum lacinia 
+ligula, vitae volutpat nunc mattis quis. Mauris nibh lacus, tincidunt ac
+diam nec, egestas ullamcorper felis. 
+</div>
+
+<a name='r5'/>
+<p>Rysunek 5:</p>
+<img src='zab.jpg'  
+width='250'>
+<!-- zrobilo sie w puzderku definiowanym w head -->
+
+<ul>  <!-- lista nienumerowana -->
+<li>pierwsze</li>
+<li>drugie</li>
+<li>trzecie</li>
+</ul>
+
+
+<a name='r6'/>
+<p>Rysunek 6:</p>
+<img src='slon.jpg'  
+width='250'>
+
+</body>
+</html>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

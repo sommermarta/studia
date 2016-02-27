@@ -1,0 +1,197 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 1\\ ASC - 04 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+\subsection*{\underline{\textbf{Zadanie 4.}}}
+
+\subsubsection*{\textbf{a)}}
+
+Generujê $500$ liczb z modelu $MA(1)$:
+
+$$
+X_t=Z_t-0,8\cdot Z_{t-1},
+$$
+gdzie $Z_t$ - bia³y szum o rozk³adzie $\mathcal{N}(0,1)$.
+
+<<fig.align='center',fig.height=4,fig.width=8>>=
+set.seed(400)
+zt <- rnorm(501)
+xt <- numeric(500)
+
+for(i in 1:500){
+   xt[i] <- zt[i+1]-0.8*zt[i]
+}
+
+t <- ts(xt)
+plot(t)
+@
+
+\subsubsection*{\textbf{b)}}
+
+Wyznaczam funkcjê autokorelacji:
+
+<<fig.align='center',fig.height=4,fig.width=5>>=
+acf(t)
+@
+
+Z wykresu wyraŸnie widaæ, ¿e jest to proces MA(1).
+
+\subsubsection*{\textbf{c)}}
+
+Wyznaczam zale¿noœæ $x\sim lag1+lag2$:
+
+<<warning=FALSE,message=FALSE>>=
+library("quantmod")
+
+lag1 <- Lag(xt)
+lag2 <- Lag(xt,k=2)
+
+l2 <- lm(xt~lag1+lag2)
+
+summary(l2)
+@
+
+Z $summary()$ mo¿emy odczytaæ, ¿e wartoœæ wspó³czynnika kierunkowego przy $lag1$ to $-0,62963$, a przy $lag2$ to $-0,28424$, a odpowiadaj¹ce im $p-value$ to $< 2e-16$ oraz $9,5e-11$.
+
+\subsubsection*{\textbf{d)}}
+
+Budujê model $x\sim lag1$:
+
+<<>>=
+l1 <- lm(xt~lag1)
+summary(l1)
+@
+
+Wspó³czynnik kierunkowy przy $lag1$ (-0.4879) jest to teoretyczny wspó³czynnik $pacf(1)=\alpha(1)=\dfrac{\gamma(1)}{\gamma(0)}$. Policzmy~to:
+
+\begin{eqnarray*}
+\gamma(0)&=&<X_t,X_t>=<Z_t-0,8\cdot Z_{t-1},Z_t-0,8\cdot Z_{t-1}>=1+(0,8)^2=1,64 \\
+\gamma(1)&=&<X_t,X_{t-1}>=<Z_t-0,8\cdot Z_{t-1},Z_{t-1}-0,8\cdot Z_{t-2}>=-0,8\\
+\dfrac{\gamma(1)}{\gamma(0)}&=&\dfrac{-0,8}{1,64}\approx -0,49
+\end{eqnarray*}
+
+Nasza wartoœæ teoretyczna mieœci siê w granicach b³êdu empirycznej, wiêc wynik wyszed³ nam sensowny.
+
+\subsection*{\underline{\textbf{Zadanie 5.}}}
+
+\subsubsection*{\textbf{a)}}
+
+Generujê $500$ liczb z modelu $AR(1)$:
+
+$$
+X_t=0,8\cdot X_{t-1}+\varepsilon_{t},
+$$
+gdzie $X_0=1$, $\varepsilon_t \sim \mathcal{N}(0,0.1)$.
+
+<<>>=
+set.seed(500)
+x0 <- 1
+eps <- rnorm(500,0,0.1)
+xt <- numeric(500)
+xt[1] <- x0
+for(i in 2:500){
+   xt[i] <- xt[i-1]*0.8 + eps[i]
+}
+@
+
+\subsubsection*{\textbf{b)}}
+
+<<fig.align='center',fig.height=3.5,fig.width=5>>=
+plot(xt,type="l")
+pacf(xt)
+acf(xt)
+@
+
+Z wykresu PACF widaæ wyraŸnie, ¿e jest to proces $AR(1)$.
+
+\subsubsection*{\textbf{c)}}
+
+<<>>=
+sr <- mean(xt)
+gamma0 <- (sum((xt-sr)^2))/500
+gamma1 <- (sum((xt[1:499]-sr)*(xt[2:500]-sr)))/500
+gamma2 <- (sum((xt[1:498]-sr)*(xt[3:500]-sr)))/500
+gamma3 <- (sum((xt[1:497]-sr)*(xt[4:500]-sr)))/500
+
+ro0 <- 1
+ro1 <- gamma1/gamma0
+ro2 <- gamma2/gamma0
+ro3 <- gamma3/gamma0
+
+ro1/ro0
+ro2/ro1
+ro3/ro2
+@
+
+Stosunek kolejnych wspó³czynników korelacji jest praktycznie identyczny. Wskazuje na to, ¿e funkcja autokorelacji w ka¿dym kroku maleje tyle samo razy.
+
+\subsubsection*{\textbf{d)}}
+
+<<>>=
+lag1 <- Lag(xt)
+l <- lm(xt~lag1)
+summary(l)
+@
+
+Wspó³czynnik kierunkowy prostej wynosi $0,76206$. Teoretycznie powinniœmy otrzymaæ: $pacf(1)=\alpha(1)=\dfrac{\gamma(1)}{\gamma(0)}$. Policzmy~to:
+
+\begin{eqnarray*}
+\gamma(0)&=&<X_t,X_t>=<0.8\cdot X_{t-1}+\varepsilon_{t},X_t>=0.8\cdot\gamma(1)+<\varepsilon_t,0.8\cdot X_{t-1}+\varepsilon_{t}>= 0.8\cdot\gamma(1)+\sigma^2\\
+\gamma(1)&=&<X_t,X_{t-1}>=<0.8\cdot X_{t-1}+\varepsilon_{t},X_{t-1}>=0.8\cdot\gamma(0)\\
+\gamma(0)&=&(0.8)^2\cdot\gamma(0)+\sigma^2\\
+\gamma(0)&=&\dfrac{\sigma^2}{0.36}\\
+\gamma(1)&=&0.8\cdot\dfrac{\sigma^2}{0.36}\\
+\dfrac{\gamma(1)}{\gamma(0)}&=&\dfrac{0.8\cdot\sigma^2}{0.36}\cdot\dfrac{0.36}{\sigma^2}=0.8\\
+\end{eqnarray*}
+
+Teoretycznie wysz³o $0,8$, a empirycznie $0,76206$. Tak wiêc podobnie, w granicy b³êdu.
+
+\subsubsection*{\textbf{e)}}
+
+Zmienimy model na: 
+
+$$
+X_t=X_{t-1}+\varepsilon_{t},
+$$
+gdzie $X_0=1$, $\varepsilon_t \sim \mathcal{N}(0,0.1)$.
+
+<<fig.align='center',fig.height=4,fig.width=5>>=
+x0 <- 1
+eps <- rnorm(500,0,0.1)
+xt <- numeric(500)
+xt[1] <- x0
+for(i in 2:500){
+   xt[i] <- xt[i-1] + eps[i]
+}
+
+plot(xt,type="l")
+pacf(xt)
+acf(xt)
+@
+
+Z wykresów wyraŸnie widaæ, ¿e jest to zwyk³e b³¹dzenie losowe.
+
+\end{document}
+
+

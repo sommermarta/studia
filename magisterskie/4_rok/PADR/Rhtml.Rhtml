@@ -1,0 +1,168 @@
+<!-- RSTUDIO
+
+Najpierw trzeba go zainstalowac: install.packages("knitr"), a potem zmienic 
+ustawienia:
+Tools -> Global Options -> Sweave
+Weave..... with: KNITR
+
+Kompilacja: CTRL+SHIFT+H
+
+-->
+
+<html>
+<head>
+
+   <meta http-equiv="Content-Type" 
+      content="text/html; charset=UTF-8" />
+   <title>M?j pierwszy raport w RHTML</title>
+
+</head>
+
+<body>
+
+<h1>Raport</h1>
+
+<p>Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet 
+Lorem ipsum dolor sit amet</p> <!-- nowy paragraf tekstu ciaglego -->
+
+<!--begin.rcode
+
+"1"
+"2"
+"3"
+2+2
+x <- sum(1:10) # wyznacz sume 10 pierwszych liczb calkowitych
+print(x)
+
+end.rcode-->
+
+Sam output, bez polecen: echo=FALSE
+
+<!--begin.rcode echo=FALSE
+library('stringi')
+stri_length("ja mam psa, a ty nie masz!")
+end.rcode-->
+
+Bez pierwszego polecenia: echo=-1
+
+<!--begin.rcode echo=-1
+library('stringi')
+stri_length("ja mam psa, a ty nie masz!")
+end.rcode-->
+
+Kilka wybranych:
+
+<!--begin.rcode echo=c(1,4,2)
+1
+2
+3
+4
+5
+end.rcode-->
+
+Obrazek tez sie wyswietli:
+
+<!--begin.rcode
+hist(rnorm(100))
+end.rcode-->
+
+Ukryje nam output:
+
+<!--begin.rcode results='hide'
+print("aaa")
+end.rcode-->
+
+asis &ndash;> potraktuje to jak htmla i zrobi ladna liste
+
+<!--begin.rcode results='asis', echo=FALSE
+cat("<ol>")
+for (i in 1:10)
+   cat("<li>", i, "</li>")
+cat("</ol>")
+end.rcode-->
+
+Warto wlaczyc czasem pamiec podreczna, zeby raz policzone wyniki zostaly
+zachowane (cache=TRUE) -> za drugim razem otwiera sie juz duzo szybciej:
+
+<!--begin.rcode results='asis',echo=FALSE,cache=TRUE
+n <- c(10, 25, 30)
+
+for (i in n) {
+   cat('<h2>n=', i, '</h2>')
+   replicate(100000, {
+      x <- rnorm(i)
+      mean(x)
+   }) -> res
+   hist(res)
+   cat('Srednia to: ', mean(res))
+}
+
+end.rcode-->
+
+<p>Wstawki nazwane: - eval i echo oznacza, ze nie bedzie sie wyswietlalo 
+nic - ani output ani kod</p>
+
+<!--begin.rcode wst1, eval=FALSE, echo=FALSE
+print("ala ma kota")
+end.rcode-->
+
+<!--begin.rcode
+<<wst1>>
+<<wst1>>
+<<wst1>>
+end.rcode-->
+
+<!--begin.rcode ustawienia, cache=TRUE
+n <- 1000000
+end.rcode-->
+   
+<!--begin.rcode cache=TRUE,dependson='ustawienia'
+hist(rnorm(n))
+end.rcode-->
+
+<!--begin.rcode
+sum(gsdgsd) # takiej zmiennej nie ma
+log(-1)
+end.rcode-->
+
+Mo?na powstrzyma? warningi:
+
+<!--begin.rcode warning=FALSE,message=FALSE
+sum(gsdgsd) # takiej zmiennej nie ma
+log(-1)
+end.rcode-->
+
+<!--begin.rcode tidy=FALSE
+for(i in 1:       10) print(
+   i)
+end.rcode-->
+
+<!--begin.rcode tidy=TRUE
+for(i in 1:       10) print(
+   i)
+end.rcode-->
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

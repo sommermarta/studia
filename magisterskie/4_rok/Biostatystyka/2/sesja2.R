@@ -1,0 +1,94 @@
+library("foreign")
+library("survival")
+library("rms")
+
+nsclc <- read.dta("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Biostatystyka\\2\\nsclc_eng.dta")[,-1]
+head(nsclc)
+
+nsclc.PH.P53e <- coxph(Surv(survtime, survind) ~ expression, data=nsclc)
+print(nsclc.PH.P53e)
+
+# test score:
+
+1-pchisq(nsclc.PH.P53e$score, 1)  # male, czyli expression istotne
+
+# bazowa funkcja przezycia (porownanie):
+
+nsclc.pKM.P53e <- survfit(nsclc.PH.P53e, newdata=nsclc)   # PH
+nsclc.KM.P53e <- survfit(Surv(survtime, survind) ~ expression, data=nsclc) # KM
+
+plot(nsclc.KM.P53e, conf.int=FALSE, mark.time=FALSE)
+lines(nsclc.pKM.P53e, col="red",mark.time=FALSE)  # bardzo podobne
+
+# model z dwiema zmiennymi:
+
+nsclc.PH.P53em <- coxph(Surv(survtime, survind) ~ mutation + expression,
+                        data=nsclc)
+print(nsclc.PH.P53em)
+
+# ocena zalozen dla pierwszego modelu:
+
+plot(nsclc.KM.P53e, conf.int=FALSE)  # krzywe przezycia nie przecinaja sie
+plot(nsclc.KM.P53e, col=c("red","blue"),
+     fun=function(x) log(-log(x)), log="x", firstx=1) # sa rownolegle
+
+# test Schoenfelda:
+
+nsclc.PHfit.P53e <- cox.zph(nsclc.PH.P53e, transform="identity")
+print(nsclc.PHfit.P53e)  # przyjmujemy hipoteze, czyli zalozenie spelnione
+
+plot(nsclc.PHfit.P53e, df=4, nsmo=10, se=TRUE)
+abline(0,0,lty=3,col="red")
+
+nsclc.PHfit1.P53e <- cox.zph(nsclc.PH.P53e, transform=function(x) x^2)
+plot(nsclc.PHfit1.P53e, df=4, nsmo=10, se=TRUE)
+abline(0, 0, lty=3)
+
+# ocena zalozen dla drugiego modelu:
+
+nsclc.devres.P53em <- residuals(nsclc.PH.P53em,type="deviance")
+nsclc.fitval.P53em <- predict(nsclc.PH.P53em,type="lp")
+
+plot(nsclc.fitval.P53em,nsclc.devres.P53em)
+
+# dla mutation:
+
+nsclc.KM.P53m <- survfit(Surv(survtime, survind) ~ mutation, data=nsclc)
+
+plot(nsclc.KM.P53m, col=c("red","blue"), xlab="months",
+     ylab="survival probability")
+plot(nsclc.KM.P53m, col=c("red","blue"),fun=function(x) log(-log(x)), 
+     log="x", firstx=1)  # raczej zalozenia niespelnione
+
+# test formalny:
+
+nsclc.PHfit.P53em <- cox.zph(nsclc.PH.P53em, transform="identity")
+print(nsclc.PHfit.P53em)  # mutation nie spelnia zalozen
+
+plot(nsclc.PHfit.P53em, df=4, nsmo=10, se=TRUE, var=1)
+abline(0, 0, lty=3)
+plot(nsclc.PHfit.P53em, df=4, nsmo=10, se=TRUE, var=2)
+abline(0, 0, lty=3)
+
+# model warstwowy:
+
+nsclc.strPH.P53em <- coxph(Surv(survtime, survind) ~ expression + 
+                              strata(mutation), data=nsclc)
+print(nsclc.strPH.P53em)
+
+nsclc.devres1.P53em <- residuals(nsclc.strPH.P53em,type="deviance")
+nsclc.fitval1.P53em <- nsclc.strPH.P53em$linear.predictors
+plot(nsclc.fitval1.P53em,nsclc.devres1.P53em)
+
+# inne dane:
+
+data("ovarian")
+head(ovarian)
+
+ovar.PH <- coxph(Surv(futime,fustat)~1, data=ovarian)
+mart <- resid(ovar.PH)
+plot(ovarian$age,mart)
+lines(lowess(ovarian$age,mart,iter=0,f=0.6))
+
+
+

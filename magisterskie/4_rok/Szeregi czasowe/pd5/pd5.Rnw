@@ -1,0 +1,94 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 5\\ ASC - 02 czerwca 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Rozwa¿amy pomiary pewnej skwantowanej wielkoœci tzn. pomiary pochodz¹ce z modelu:
+
+$$
+x_i=M_i\cdot q + \varepsilon_i,
+$$
+gdzie $M_i\in \mathbb{N}$, $\varepsilon_i$ to b³êdy pomiaru, a $q$ jest szukan¹ jednostk¹ (wartoœci¹ kwantu). Chcemy wyznaczyæ estymator $\hat{q}$ przy pomocy kwantogramu danego wzorem:
+
+$$
+\varphi(\tau)=\sum_{i=1}^n\cos{(2\pi\tau\cdot x_i)}
+$$
+
+Wczytujemy dane i tworzymy funkcjê kwantogramu zale¿n¹ od $\tau$. Nastêpnie tworzymy siatkê wartoœci $\tau$ i tworzymy wykres:
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=6>>=
+
+m <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Szeregi czasowe\\metr.csv")
+
+kw <- function(tau){
+  sum(cos(2*pi*tau*m[,2]))
+}
+
+tau <- seq(0.1,10, by=0.01)
+
+f <- numeric(length(tau))
+
+for(i in 1:length(tau)){
+  f[i] <- kw(tau[i])
+}
+plot(tau,f, type="l")
+
+@
+
+Zróbmy ma³e przeliczenie:
+
+$$
+\varphi(\tau)=\sum_{i=1}^n\cos{(2\pi\tau\cdot x_i)}=\sum_{i=1}^n\cos{(2\pi\tau\cdot (M_i\cdot q + \varepsilon_i))}=\sum_{i=1}^n\cos{(2\pi\tau\cdot M_i\cdot q + 2\pi\tau\varepsilon_i)}
+$$
+
+Jeœli przyjmiemy $q=\dfrac{1}{\tau}$, to otrzymamy:
+$$
+\varphi(\tau)=\sum_{i=1}^n\cos{(2\pi\cdot M_i + \dfrac{2\pi}{q}\varepsilon_i)}
+$$
+
+Jeœli b³êdy s¹ niewielkie (a wed³ug za³o¿eñ tak w³aœnie byæ powinno), to cz³on $ \dfrac{2\pi}{q}\varepsilon_i$ d¹¿y do zera. Wtedy:
+
+$$
+\varphi(\tau)\sim \sum_{i=1}^n\cos{(2\pi\cdot M_i)}
+$$
+
+Ale $M_i\in \mathbb{N}$, wiêc $\cos{(2\pi\cdot M_i)}=1$, czyli:
+$$
+\varphi(\tau)\sim \sum_{i=1}^n 1 = n
+$$
+
+<<echo=FALSE,eval=FALSE>>=
+which.max(f)
+f[49]
+1/tau[49]
+@
+
+
+Czyli w punkcie $\tau=\dfrac{1}{q}$ powinniœmy otrzymaæ jak¹œ du¿¹ wartoœæ (taki pik). Najwiêksza wartoœæ w naszym szeregu (co te¿ ³atwo widaæ na wykresie) jest dla $\tau$ równego $0,58$, co przek³ada siê na $q=1,72$. Zatem estymatorem naszego $q$ bêdzie w³aœnie ta wartoœæ.
+
+\end{document}
+
+
+
+
+

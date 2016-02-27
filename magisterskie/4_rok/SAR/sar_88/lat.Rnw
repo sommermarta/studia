@@ -1,0 +1,140 @@
+\documentclass[10pt]{article}
+\setlength{\textheight}{28cm}
+\setlength{\textwidth}{16cm}
+\setlength{\footskip}{2mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\parindent}{0mm}
+
+\usepackage[MeX,OT4,plmath]{polski}
+\usepackage[cp1250]{inputenc} 
+\usepackage[OT4]{fontenc}
+\usepackage[polish]{babel}
+\selectlanguage{polish}
+\let\lll\undefined
+\usepackage{amssymb,amsmath,amsfonts}
+\usepackage{graphicx}
+
+\begin{document}
+
+\section{Zadanie 8.2}
+
+<<>>=
+# 8.2
+
+m <- read.table("http://www.ipipan.eu/~teisseyrep/TEACHING/SAR/DANE/Miasta.txt",header=TRUE)
+head(m)
+
+# a) standaryzacja zmiennych
+
+mm <- scale(m)
+
+# inny sposob (taki po koleji)
+
+sr <- numeric(3)
+sd <- numeric(3)
+
+for(i in 1:3){
+   sr[i] <- mean(m[,i])
+   sd[i] <- sd(m[,i])
+}
+
+for(i in 1:3){
+   m[,i] <- (m[,i]-sr[i])/sd[i]
+}
+
+# b) dla Work i Price wyznaczyc kierunki wzdluz ktorych wystepuje najwieksza
+#    zmiennosc; wykres rozproszenia
+
+pc1 <- princomp(~., cor=FALSE, data=as.data.frame(mm[,1:2])) 
+
+# wybieramy albo macierz korelacji albo kowariancji - mamy 
+# zestandaryzowane dane, wiec juz korelacja nie jest potrzebna
+
+names(pc1)
+head(pc1$scores)    # Comp.1 to z1, a Comp.2 to z2
+pc1$loadings  # wektory ladunkow (pierwsza kolumna to a1, a druga to a2) -> 
+
+plot(mm[,1],mm[,2])
+abline(c(0,-1),col="red")
+abline(c(0,1),col="blue")
+@
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

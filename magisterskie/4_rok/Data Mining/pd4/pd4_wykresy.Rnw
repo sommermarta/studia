@@ -1,0 +1,268 @@
+\documentclass[11pt,a4paper]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{listings}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering WYKRESY -- PRACA DOMOWA NR 4 \\ DATA MINING \\ MARTA SOMMER -- BSMAD}
+
+<<echo=FALSE,warning=FALSE,message=FALSE,fig.align='center', fig.width=10,fig.height=6>>=
+
+# data mining - zadanie domowe nr 4 - MARTA SOMMER BSMAD
+
+library("KernSmooth")
+
+# stworzenie modelu:
+
+n <- 500
+x <- runif(n,min=0,max=4)
+eps <- rnorm(n,0,0.1)
+
+f1 <- function(x){
+  
+  4.26*(exp(-x)-4*exp(-2*x)+3*exp(-3*x))
+
+}
+
+f2 <- function(x){sin(3*x)}
+
+f3 <- function(x){
+  (x>0 & x<=1)*x + (x>1 & x<=2)*(-x+2) + (x>2 & x<=3)*(x-2) + (x>3 & x<=4)*(-x+4)
+}
+
+y1 <- f1(x)+eps
+y2 <- f2(x)+eps
+y3 <- f3(x)+eps
+
+# dopasowanie krzywych roznymi metodami: 
+
+l1 <- locpoly(x,y1,bandwidth=0.25)
+l2 <- locpoly(x,y2,bandwidth=0.25)
+l3 <- locpoly(x,y3,bandwidth=0.25)
+
+k1 <- ksmooth(x,y1,kernel="normal")
+k2 <- ksmooth(x,y2,kernel="normal")
+k3 <- ksmooth(x,y3,kernel="normal")
+
+s1 <- smooth.spline(x,y1,spar=0.75)
+s2 <- smooth.spline(x,y2,spar=0.75)
+s3 <- smooth.spline(x,y3,spar=0.75)
+
+lo1 <- loess(y1~x,span=0.5)
+lo2 <- loess(y2~x,span=0.5)
+lo3 <- loess(y3~x,span=0.5)
+
+plo1 <- predict(lo1,data.frame(x=seq(0,4,by=0.01)))
+plo2 <- predict(lo2,data.frame(x=seq(0,4,by=0.01)))
+plo3 <- predict(lo3,data.frame(x=seq(0,4,by=0.01)))
+
+# wykresy:
+
+curve(f1,from=0,to=4,col="red",lwd=2, main="Wykres f1 roznymi metodami")
+matplot(x,y1,type="p",pch=1,add=TRUE)
+matplot(l1$x,l1$y,type="l",col="green",add=TRUE,lwd=2)
+matplot(k1$x,k1$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(s1$x,s1$y,type="l",col="blue",add=TRUE,lwd=2)
+matplot(seq(0,4,by=0.01),plo1,type="l",col="violet",add=TRUE,lwd=2)
+legend("bottomright",col=c("red","black","green","orange","blue","violet"),
+       c("prawdziwa","punkty","locpoly","ksmooth","smooth.spline","loess"),
+       lty=c(1,0,1,1,1,1), pch=c(NA,1,NA,NA,NA,NA),lwd=2)
+
+curve(f2,from=0,to=4,col="red",lwd=2, main="Wykres f2 roznymi metodami")
+matplot(x,y2,type="p",pch=1,add=TRUE)
+matplot(l2$x,l2$y,type="l",col="green",add=TRUE,lwd=2)
+matplot(k2$x,k2$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(s2$x,s2$y,type="l",col="blue",add=TRUE,lwd=2)
+matplot(seq(0,4,by=0.01),plo2,type="l",col="violet",add=TRUE,lwd=2)
+legend("topright",col=c("red","black","green","orange","blue","violet"),
+       c("prawdziwa","punkty","locpoly","ksmooth","smooth.spline","loess"),
+       lty=c(1,0,1,1,1,1), pch=c(NA,1,NA,NA,NA,NA),lwd=2)
+  
+curve(f3,from=0,to=4,col="red",lwd=2, main="Wykres f3 roznymi metodami")
+matplot(x,y3,type="p",pch=1,add=TRUE)
+matplot(l3$x,l3$y,type="l",col="green",add=TRUE,lwd=2)
+matplot(k3$x,k3$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(s3$x,s3$y,type="l",col="blue",add=TRUE,lwd=2)
+matplot(seq(0,4,by=0.01),plo3,type="l",col="violet",add=TRUE,lwd=2)
+legend("topright",col=c("red","black","green","orange","blue","violet"),
+       c("prawdziwa","punkty","locpoly","ksmooth","smooth.spline","loess"),
+       lty=c(1,0,1,1,1,1), pch=c(NA,1,NA,NA,NA,NA),lwd=2)
+
+# ISE:
+
+ise_l1 <- sum((f1(l1$x)-l1$y)^2)/length(l1$x)
+ise_l2 <- sum((f2(l2$x)-l2$y)^2)/length(l2$x)
+ise_l3 <- sum((f3(l3$x)-l3$y)^2)/length(l3$x)
+
+ise_k1 <- sum((f1(k1$x)-k1$y)^2)/length(k1$x)
+ise_k2 <- sum((f2(k2$x)-k2$y)^2)/length(k2$x)
+ise_k3 <- sum((f3(k3$x)-k3$y)^2)/length(k3$x)
+
+ise_s1 <- sum((f1(s1$x)-s1$y)^2)/length(s1$x)
+ise_s2 <- sum((f2(s2$x)-s2$y)^2)/length(s2$x)
+ise_s3 <- sum((f3(s3$x)-s3$y)^2)/length(s3$x)
+
+w1 <- which(is.na(plo1)==TRUE)
+w2 <- which(is.na(plo2)==TRUE)
+w3 <- which(is.na(plo3)==TRUE)
+
+ise_lo1 <- sum((f1(seq(0,4,by=0.01)[-w1])-plo1[-w1])^2)/length(plo1[-w1])
+ise_lo2 <- sum((f2(seq(0,4,by=0.01)[-w2])-plo2[-w2])^2)/length(plo2[-w2])
+ise_lo3 <- sum((f3(seq(0,4,by=0.01)[-w3])-plo3[-w3])^2)/length(plo3[-w3])
+
+# zaleznosc miedzy bledem ise i liczba obserwacji:
+
+s <- seq(50,500,by=50)
+k <- 1
+
+isef1l <- numeric(length(s))
+isef1k <- numeric(length(s))
+isef1s <- numeric(length(s))
+isef1lo <- numeric(length(s))
+
+isef2l <- numeric(length(s))
+isef2k <- numeric(length(s))
+isef2s <- numeric(length(s))
+isef2lo <- numeric(length(s))
+
+isef3l <- numeric(length(s))
+isef3k <- numeric(length(s))
+isef3s <- numeric(length(s))
+isef3lo <- numeric(length(s))
+
+for(i in s){
+   
+   x <- runif(i,min=0,max=4)
+   eps <- rnorm(i,0,0.1)
+   y1 <- f1(x)+eps
+   y2 <- f2(x)+eps
+   y3 <- f3(x)+eps
+   
+   l1 <- locpoly(x,y1,bandwidth=0.25)
+   l2 <- locpoly(x,y2,bandwidth=0.25)
+   l3 <- locpoly(x,y3,bandwidth=0.25)
+   
+   k1 <- ksmooth(x,y1,kernel="normal")
+   k2 <- ksmooth(x,y2,kernel="normal")
+   k3 <- ksmooth(x,y3,kernel="normal")
+   
+   s1 <- smooth.spline(x,y1,spar=0.75)
+   s2 <- smooth.spline(x,y2,spar=0.75)
+   s3 <- smooth.spline(x,y3,spar=0.75)
+   
+   lo1 <- loess(y1~x,span=0.5)
+   lo2 <- loess(y2~x,span=0.5)
+   lo3 <- loess(y3~x,span=0.5)
+   
+   plo1 <- predict(lo1,data.frame(x=seq(0,4,by=0.01)))
+   plo2 <- predict(lo2,data.frame(x=seq(0,4,by=0.01)))
+   plo3 <- predict(lo3,data.frame(x=seq(0,4,by=0.01)))
+   
+   isef1l[k] <- sum((f1(l1$x)-l1$y)^2)/length(l1$x)
+   isef2l[k] <- sum((f2(l2$x)-l2$y)^2)/length(l2$x)
+   isef3l[k] <- sum((f3(l3$x)-l3$y)^2)/length(l3$x)
+   
+   isef1k[k] <- sum((f1(k1$x)-k1$y)^2)/length(k1$x)
+   isef2k[k] <- sum((f2(k2$x)-k2$y)^2)/length(k2$x)
+   isef3k[k] <- sum((f3(k3$x)-k3$y)^2)/length(k3$x)
+   
+   isef1s[k] <- sum((f1(s1$x)-s1$y)^2)/length(s1$x)
+   isef2s[k] <- sum((f2(s2$x)-s2$y)^2)/length(s2$x)
+   isef3s[k] <- sum((f3(s3$x)-s3$y)^2)/length(s3$x)
+
+   w1 <- which(is.na(plo1)==TRUE)
+   w2 <- which(is.na(plo2)==TRUE)
+   w3 <- which(is.na(plo3)==TRUE)
+   
+   isef1lo[k] <- sum((f1(seq(0,4,by=0.01)[-w1])-plo1[-w1])^2)/length(plo1[-w1])
+   isef2lo[k] <- sum((f2(seq(0,4,by=0.01)[-w2])-plo2[-w2])^2)/length(plo2[-w2])
+   isef3lo[k] <- sum((f3(seq(0,4,by=0.01)[-w3])-plo3[-w3])^2)/length(plo3[-w3])
+
+   k <- k+1
+}
+
+
+matplot(s,cbind(isef1l,isef1k,isef1s,isef1lo),type="l",
+        main="Zaleznosc ISE on n dla f1",lwd=2)
+legend("topright",col=1:4,lty=1:4,
+       c("locpoly","ksmooth","smooth.spline","loess"),lwd=2)
+
+matplot(s,cbind(isef2l,isef2k,isef2s,isef2lo),type="l",
+        main="Zaleznosc ISE on n dla f2",lwd=2)
+legend("topright",col=1:4,lty=1:4,
+       c("locpoly","ksmooth","smooth.spline","loess"),lwd=2)
+
+matplot(s,cbind(isef3l,isef3k,isef3s,isef3lo),type="l",
+        main="Zaleznosc ISE on n dla f3",lwd=2)
+legend("topright",col=1:4,lty=1:4,
+       c("locpoly","ksmooth","smooth.spline","loess"),lwd=2)
+
+# dzialanie roznych funkcji jadrowych dla ksmooth:
+
+n <- 500
+x <- runif(n,min=0,max=4)
+eps <- rnorm(n,0,0.1)
+
+y1 <- f1(x)+eps
+y2 <- f2(x)+eps
+y3 <- f3(x)+eps
+
+k1n <- ksmooth(x,y1,kernel="normal")
+k2n <- ksmooth(x,y2,kernel="normal")
+k3n <- ksmooth(x,y3,kernel="normal")
+
+k1b <- ksmooth(x,y1,kernel="box")
+k2b <- ksmooth(x,y2,kernel="box")
+k3b <- ksmooth(x,y3,kernel="box")
+
+curve(f1,from=0,to=4,col="red",lwd=2, 
+      main="Wykres f1 dla roznych funkcji jadrowych")
+matplot(x,y1,type="p",pch=1,add=TRUE)
+matplot(k1n$x,k1n$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(k1b$x,k1b$y,type="l",col="blue",add=TRUE,lwd=2)
+legend("bottomright",col=c("red","black","orange","blue"),
+       c("prawdziwa","punkty","ksmooth - normal","ksmooth - box"),
+       lty=c(1,0,1,1), pch=c(NA,1,NA,NA),lwd=2)
+
+curve(f2,from=0,to=4,col="red",lwd=2, 
+      main="Wykres f2 dla roznych funkcji jadrowych")
+matplot(x,y2,type="p",pch=1,add=TRUE)
+matplot(k2n$x,k2n$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(k2b$x,k2b$y,type="l",col="blue",add=TRUE,lwd=2)
+legend("topright",col=c("red","black","orange","blue"),
+       c("prawdziwa","punkty","ksmooth - normal","ksmooth - box"),
+       lty=c(1,0,1,1), pch=c(NA,1,NA,NA),lwd=2)
+
+curve(f3,from=0,to=4,col="red",lwd=2, 
+      main="Wykres f3 dla roznych funkcji jadrowych")
+matplot(x,y3,type="p",pch=1,add=TRUE)
+matplot(k3n$x,k3n$y,type="l",col="orange",add=TRUE,lwd=2)
+matplot(k3b$x,k3b$y,type="l",col="blue",add=TRUE,lwd=2)
+legend("topright",col=c("red","black","orange","blue"),
+       c("prawdziwa","punkty","ksmooth - normal","ksmooth - box"),
+       lty=c(1,0,1,1), pch=c(NA,1,NA,NA),lwd=2)
+
+
+@
+
+
+\end{document}

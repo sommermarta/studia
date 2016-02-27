@@ -1,0 +1,728 @@
+\documentclass[11pt,a4paper]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{multirow}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.7}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 3 \\ EKONOMETRIA \\ MARTA SOMMER -- BSMAD}
+
+Bêdziemy rozwa¿aæ $16$ portfeli i na tej podstawie modelowaæ polsk¹ gie³dê. Mamy do dyspozycji dwa zestawy danych posortowane odpowiednio wzglêdem ró¿nych wskaŸników. Bêdziemy chcieli sprawdziæ, który model: jednoczynnikowy, trójczynnikowy, czy czteroczynnikowy, dobrze opisuje polsk¹ gie³dê.
+
+\subsection*{Model jednoczynnikowy}
+
+Rozwa¿my model jednoczynnikowy:
+$$
+R_{i,t}=\alpha_i + \beta_{RM,i}RM_t+\varepsilon_{i,t},
+$$
+gdzie $i=1,\ldots,16$, $t=1,\ldots,97$.
+
+Dopasowaliœmy wiêc w ten sposób $16$ portfeli dla pierwszego zestawu danych.
+
+Heteroskedastycznoœæ badaliœmy testem Breuscha-Pagana i ten nie wykaza³ heteroskedastycznoœci w ¿adnym modelu, natomiast test White'a wykry³ heteroskedastycznoœæ tylko w portfelu $16$. Œmia³o mo¿emy wiêc stwierdziæ, ¿e nie mamy tu do czynienia z heteroskedastycznoœci¹. Co do autokorelacji, to, przy pomocy testu Durbina-Watsona, zosta³a ona wykryta w ponad po³owie przypadków, czyli niestety mamy z ni¹ do czynienia w modelu. Zatem w portfelach, w których autokorelacja zosta³a wykryta bêdziemy przy szacowaniu wariancji korzystaæ z poprawki Newey-Westa.  
+
+Zobaczmy teraz w jaki sposób uk³adaj¹ siê wartoœci estymatorów $\beta_{RM}$:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{RM}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$}  & $ 0.9553296 $ & $ 0.8540825 $ & $ 0.8334983 $ & $ 0.8029792 $ \\ \cline{2-5} 
+ & $ 1.008922 $ & $ 0.8993477 $ & $ 0.8797741 $ & $ 1.045466 $ \\ \cline{2-5} 
+ & $ 1.1172 $ & $ 1.058734 $ & $ 1.002255 $ & $ 1.137929 $ \\ \cline{2-5} 
+ & $ 1.09756 $ & $ 1.1529 $ & $ 1.152157 $ & $ 1.124232 $ \\ \hline
+\end{tabular}
+\end{center}
+
+Z powy¿szej tabeli nie widaæ wiele zale¿noœci. Jedynie to, ¿e mniejsze spó³ki z wiêkszym $\dfrac{BV}{MV}$ (du¿a wartoœæ ksiêgowa i ma³a wartoœæ rynkowa) s¹ bardziej agresywne (a tym samym bardziej ryzykowne) ni¿ spó³ki z ma³ym wspó³czynnikiem $\dfrac{BV}{MV}$. 
+
+\bigskip
+
+PrzejdŸmy teraz do testu restrykcji GRS o hipotezie:
+
+$$
+\left\{
+\begin{array}{l}
+H: \alpha = 0 \\
+K: \alpha \neq 0\\
+\end{array}
+\right.
+$$
+
+$P-value$ tego testu jest ma³e i wynosi $0,016$, zatem odrzucamy hipotezê zerow¹, czyli $\alpha \neq 0$. Oznacza to tyle, ¿e nasz model jednoczynnikowy Ÿle opisuje polsk¹ gie³dê, gdy¿ istnieje w nim element losowoœci, przypadkowoœci. Nie ma wiêc ju¿ sensu badaæ zestawu drugiego danych ani oszacowywaæ premii za ryzyko w modelu.
+
+
+\subsection*{Model trójczynnikowy}
+
+Rozwa¿my model trójczynnikowy:
+$$
+R_{i,t}=\alpha_i + \beta_{RM,i}RM_t+ \beta_{SMB,i}SMB_t+ \beta_{HML,i}HML_t+ \varepsilon_{i,t},
+$$
+gdzie $i=1,\ldots,16$, $t=1,\ldots,97$.
+
+Dopasowaliœmy wiêc w ten sposób $16$ portfeli dla pierwszego zestawu danych.
+
+Heteroskedastycznoœæ badaliœmy testem Breuscha-Pagana i ten wykaza³ heteroskedastycznoœæ w trzech portfelach, natomiast test White'a wykry³ heteroskedastycznoœæ w piêciu portfelach. Nale¿y wiêc stwierdziæ, ¿e heteroskedastycznoœæ jest obecna. Co do autokorelacji, to, przy pomocy testu Durbina-Watsona, zosta³a ona wykryta tylko w dwóch przypadkach, czyli problem autokorelacji w modelu mo¿emy pomin¹æ. Mimo wszystko, ze wzglêdu na heteroskedastycznoœæ, trzeba bêdzie skorzystaæ z poprawki Newey-Westa.  
+
+Zobaczmy teraz w jaki sposób uk³adaj¹ siê wartoœci estymatorów $\beta$:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{RM}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ 0.9385604 $ & $ 0.8875909 $ & $ 0.8255328 $ & $ 0.8495374 $ \\ \cline{2-5}
+ & $ 0.8592244 $ & $ 0.8457644 $ & $ 0.821443 $ & $ 1.036485 $ \\ \cline{2-5}
+ & $ 1.052344 $ & $ 0.9245519 $ & $ 0.8528089 $ & $ 1.08829 $ \\ \cline{2-5}
+ & $ 0.8839021 $ & $ 0.8837371 $ & $ 0.9143578 $ & $ 0.9778986 $ \\ \hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{SMB}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ 1.348105 $ & $ 1.107419 $ & $ 0.3920486 $ & $ 0.0130365 $ \\ \cline{2-5}
+ & $ 1.481069 $ & $ 0.9689015 $ & $ 0.2761607 $ & $ 0.2071676 $ \\ \cline{2-5}
+ & $ 1.322681 $ & $ 0.8095409 $ & $ 0.1186516 $ & $ -0.1282186 $ \\ \cline{2-5}
+ & $ 1.176667 $ & $ 0.7678757 $ & $ 0.06623415 $ & $ -0.4334654 $ \\ \hline
+\end{tabular}
+\end{center}
+
+Widaæ, ¿e im wiêksza spó³ka tym mniejsze ryzyko zwi¹zane z SMB.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{HML}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ -0.322925 $ & $ -0.4655263 $ & $ -0.0808298 $ & $ -0.2009929 $ \\ \cline{2-5}
+ & $ 0.2011988 $ & $ -0.05619854 $ & $ 0.1663436 $ & $ -0.02250085 $ \\ \cline{2-5}
+ & $ -0.1118389 $ & $ 0.3317198 $ & $ 0.5982598 $ & $ 0.247697 $ \\ \cline{2-5}
+ & $ 0.5610356 $ & $ 0.9155656 $ & $ 0.9877718 $ & $ 0.7464178 $ \\ \hline
+\end{tabular}
+\end{center}
+
+Najbardziej ryzykowne s¹ spó³ki z du¿ym $\dfrac{BV}{MV}$ (widaæ tu tak¹ zale¿noœæ monotoniczn¹).
+
+\bigskip
+
+PrzejdŸmy teraz do testu restrykcji GRS o hipotezie:
+
+$$
+\left\{
+\begin{array}{l}
+H: \alpha = 0 \\
+K: \alpha \neq 0\\
+\end{array}
+\right.
+$$
+
+$P-value$ tego testu jest du¿e i wynosi $0.051$, zatem nie mamy podstaw do odrzucenia hipotezy zerowej, czyli $\alpha = 0$. Oznacza³oby to tyle, ¿e nasz model trójczynnikowy dobrze opisuje polsk¹ gie³dê, gdy¿ nie istnieje w nim element losowoœci, przypadkowoœci. SprawdŸmy jeszcze jednak, czy dobrze opisuje on te¿ drugi zestaw danych. Tym razem $p-value$ testu GRS jest ju¿ ma³e i wynosi $0.004$, tak wiêc odrzucamy hipotezê. Model zatem nie sprawdza siê dla drugiego zestawu danych. Model ten wiêc Ÿle opisuje polski rynek. 
+
+\bigskip
+
+PrzejdŸmy zatem do modelu czteroczynnikowego.
+
+\subsection*{Model czteroczynnikowy}
+
+Rozwa¿my model trójczynnikowy:
+$$
+R_{i,t}=\alpha_i + \beta_{RM,i}RM_t+ \beta_{SMB,i}SMB_t+ \beta_{HML,i}HML_t+\beta_{WML,i}WML_t+ \varepsilon_{i,t},
+$$
+gdzie $i=1,\ldots,16$, $t=1,\ldots,97$.
+
+Dopasowaliœmy wiêc w ten sposób $16$ portfeli dla pierwszego zestawu danych.
+
+Heteroskedastycznoœæ badaliœmy testem Breuscha-Pagana i ten wykaza³ heteroskedastycznoœæ w dwóch portfelach, natomiast test White'a wykry³ heteroskedastycznoœæ w piêciu portfelach. Nale¿y wiêc stwierdziæ, ¿e heteroskedastycznoœæ jest obecna. Co do autokorelacji, to, przy pomocy testu Durbina-Watsona, zosta³a ona wykryta tylko w dwóch przypadkach, czyli problem autokorelacji w modelu mo¿emy pomin¹æ. Mimo wszystko, ze wzglêdu na heteroskedastycznoœæ, trzeba bêdzie skorzystaæ z poprawki Newey-Westa.  
+
+Zobaczmy teraz w jaki sposób uk³adaj¹ siê wartoœci estymatorów $\beta$:
+
+\bigskip
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{RM}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ 0.9232306 $ & $ 0.8641042 $ & $ 0.8241291 $ & $ 0.8427869 $ \\ \cline{2-5}
+ & $ 0.8479656 $ & $ 0.8568631 $ & $ 0.8152669 $ & $ 1.026009 $ \\ \cline{2-5}
+ & $ 1.061216 $ & $ 0.9249988 $ & $ 0.8416023 $ & $ 1.092635 $ \\ \cline{2-5}
+ & $ 0.8677172 $ & $ 0.8730714 $ & $ 0.9079475 $ & $ 0.9748165 $ \\ \hline
+\end{tabular}
+\end{center}
+
+Przy $\beta_{RM}$ nie widaæ zbytniej zale¿noœci.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{SMB}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ 1.343542 $ & $ 1.100427 $ & $ 0.3916307 $ & $ 0.011027 $ \\ \cline{2-5}
+ & $ 1.477718 $ & $ 0.9722053 $ & $ 0.2743222 $ & $ 0.2040493 $ \\ \cline{2-5}
+ & $ 1.325322 $ & $ 0.809674 $ & $ 0.1153156 $ & $ -0.1269254 $ \\ \cline{2-5}
+ & $ 1.171849 $ & $ 0.7647007 $ & $ 0.06432592 $ & $ -0.4343829 $ \\ \hline
+\end{tabular}
+\end{center}
+
+$\beta_{RM}$ uk³ada siê monotonicznie zarówno ze wzglêdu na kapitalizacjê, jak i ze wzglêdu na $\dfrac{BV}{MV}$. Przy czym najmniej ryzykowne s¹ du¿e spó³ki z du¿ym $\dfrac{BV}{MV}$, a najbardziej ryzykowne ma³e spó³ki z ma³ym $\dfrac{BV}{MV}$ (rynek trochê je przecenia, dlatego s¹ ryzykowne).
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{HML}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ -0.4544298 $ & $ -0.6670027 $ & $ -0.09287146 $ & $ -0.2589012 $ \\ \cline{2-5}
+ & $ 0.1046171 $ & $ 0.03900907 $ & $ 0.1133629 $ & $ -0.1123617 $ \\ \cline{2-5}
+ & $ -0.03573682 $ & $ 0.3355533 $ & $ 0.502126 $ & $ 0.2849643 $ \\ \cline{2-5}
+ & $ 0.4221964 $ & $ 0.8240721 $ & $ 0.932782 $ & $ 0.7199789 $ \\ \hline
+\end{tabular}
+\end{center}
+
+$\beta_{RM}$ uk³ada siê w miarê monotonicznie ze wzglêdu na $\dfrac{BV}{MV}$. I tym razem najbardziej ryzykowne s¹ du¿e spó³ki z du¿ym $\dfrac{BV}{MV}$.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$\beta_{WML}$ & \multicolumn{4}{|c|}{kapitalizacja $\longrightarrow$}  \\ \hline 
+\multirow{4}{*}{$\dfrac{BV}{MV} \downarrow$} &  $ -0.1596162 $ & $ -0.2445455 $ & $ -0.01461578 $ & $ -0.07028727 $ \\ \cline{2-5}
+ & $ -0.1172278 $ & $ 0.1155599 $ & $ -0.06430635 $ & $ -0.1090702 $ \\ \cline{2-5}
+ & $ 0.09237024 $ & $ 0.004652982 $ & $ -0.1166842 $ & $ 0.04523386 $ \\ \cline{2-5}
+ & $ -0.1685186 $ & $ -0.1110518 $ & $ -0.06674487 $ & $ -0.03209072 $ \\ \hline
+\end{tabular}
+\end{center}
+
+\bigskip
+
+PrzejdŸmy teraz do testu restrykcji GRS o hipotezie:
+
+$$
+\left\{
+\begin{array}{l}
+H: \alpha = 0 \\
+K: \alpha \neq 0\\
+\end{array}
+\right.
+$$
+
+$P-value$ tego testu jest du¿e i wynosi $0.19$, zatem nie mamy podstaw do odrzucenia hipotezy zerowej. Model wiêc dobrze opisuje polsk¹ gie³dê. SprawdŸmy jednak, czy dobrze zachowuje siê równie¿ w przypadku drugiego zestawu danych, bo byæ mo¿e, tak jak w przypadku modelu trójczynnikowego, nie bêdzie siê dobrze zachowywa³ na nowych danych. $P-value$ wynosi $0.23$. Jest wiêc du¿e i znów nie daje podstaw do odrzucenia hipotezy zerowej. Model czteroczynnikowy sprawdza siê wiêc w przypadku polskiej gie³dy. 
+
+\bigskip
+
+Spróbujmy wiêc oszacowaæ premiê za ryzyko w tym modelu.
+
+$$
+\mathbb{E}(R_{t})=\gamma_0 + \gamma_{RM}\beta_{RM}+ \gamma_{SMB}\beta_{SMB}+ \gamma_{HML}\beta_{HML}+\gamma_{WML}\beta_{WML}
+$$
+ 
+Metod¹ wa¿onych najmniejszych kwadratów otrzymujemy nastêpuj¹ce wyniki:
+
+\begin{eqnarray*}
+\gamma_0 &=& -0.0327659584 \\
+\gamma_{RM}&=& 0.0273126639\\
+\gamma_{SMB}&=& 0.0017693357\\
+\gamma_{HML}&=& 0.0066998285\\
+\gamma_{WML}&=& -0.0005393353\\
+\end{eqnarray*}
+
+Przeprowadzaj¹c test istotnoœci wspó³czynników wysz³o, ¿e tylko $\gamma_{RM}$ jest niezerowy. Czyli tylko on, gdy siê zwiêkszy bêdzie mia³ wp³yw na premiê za ryzyko.
+
+\begin{small}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"bstats"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"lmtest"}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{"FinTS"}\hlstd{)}
+
+\hlcom{# model jednoczynnikowy:}
+
+\hlstd{p1} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr3\textbackslash{}\textbackslash{}portfele_z1.csv"}\hlstd{,}
+    \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{,} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{head}\hlstd{(p1)}
+
+\hlstd{wig1} \hlkwb{<-} \hlstd{p1[,} \hlnum{2}\hlstd{]}
+
+\hlstd{l1} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"list"}\hlstd{,} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{x} \hlkwb{<-} \hlstd{p1[, i} \hlopt{+} \hlnum{5}\hlstd{]}
+    \hlstd{l1[[i]]} \hlkwb{<-} \hlkwd{lm}\hlstd{(x} \hlopt{~} \hlstd{wig1)}
+\hlstd{\}}
+\hlstd{l1}
+
+\hlstd{w1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{bg} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{gq} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{dw} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{w1[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{white.test}\hlstd{(l1[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{bg[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{bptest}\hlstd{(l1[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{gq[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{gqtest}\hlstd{(l1[[i]],} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{wig1)}\hlopt{$}\hlstd{p.value} \hlopt{<}
+        \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{dw[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{dwtest}\hlstd{(l1[[i]],} \hlkwc{alternative} \hlstd{=} \hlstr{"two.sided"}\hlstd{)}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,}
+        \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+\hlstd{\}}
+
+\hlstd{w1}  \hlcom{# heteroskedastycznosc}
+\hlstd{bg}  \hlcom{# heteroskedastycznosc}
+\hlstd{gq}  \hlcom{# heteroskedastycznosc}
+\hlstd{dw}  \hlcom{# autokorelacja}
+
+
+\hlstd{rm1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{rm1[i]} \hlkwb{<-} \hlstd{l1[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]}
+\hlstd{\}}
+
+\hlcom{# tabele dla RM:}
+
+\hlstd{rm1}
+\hlstd{tabela1_rm} \hlkwb{<-} \hlkwd{matrix}\hlstd{(rm1,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela1_rm}
+
+\hlstd{t} \hlkwb{<-} \hlkwd{nrow}\hlstd{(p1)}
+\hlstd{n} \hlkwb{<-} \hlnum{16}
+\hlstd{k} \hlkwb{<-} \hlnum{1}
+
+\hlstd{alfa1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{alfa1[i]} \hlkwb{<-} \hlstd{l1[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{]}
+\hlstd{\}}
+\hlstd{alfa1}
+
+\hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{a} \hlkwb{<-} \hlstd{l1[[i]]}\hlopt{$}\hlstd{residuals}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+        \hlstd{m[j, i]} \hlkwb{<-} \hlstd{a[j]}
+    \hlstd{\}}
+\hlstd{\}}
+\hlstd{m}
+\hlkwd{dim}\hlstd{(m)}
+
+\hlstd{sigma} \hlkwb{<-} \hlstd{(}\hlkwd{t}\hlstd{(m)} \hlopt{%*%} \hlstd{m)}\hlopt{/}\hlstd{t}
+\hlstd{sigma}
+
+\hlkwd{head}\hlstd{(p1)}
+\hlstd{v} \hlkwb{<-} \hlkwd{var}\hlstd{(p1}\hlopt{$}\hlstd{WIG)}
+
+\hlstd{mi} \hlkwb{<-} \hlkwd{mean}\hlstd{(p1}\hlopt{$}\hlstd{WIG)}
+
+\hlstd{grs} \hlkwb{<-} \hlstd{(t}\hlopt{/}\hlstd{n)} \hlopt{*} \hlstd{((t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}\hlopt{/}\hlstd{(t} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))} \hlopt{*} \hlstd{((alfa1} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(alfa1)))}\hlopt{/}\hlstd{(}\hlnum{1} \hlopt{+}
+    \hlstd{mi} \hlopt{%*%} \hlkwd{solve}\hlstd{(v)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(mi))))}
+\hlstd{grs}
+\hlnum{1} \hlopt{-} \hlkwd{pf}\hlstd{(grs, n, t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}  \hlcom{# ma³e -> odrzucamy hipoteze, czyli alfa nie sa zerami}
+
+
+\hlcom{# model trójczynnikowy:}
+
+\hlstd{l2} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"list"}\hlstd{,} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{x} \hlkwb{<-} \hlstd{p1[, i} \hlopt{+} \hlnum{5}\hlstd{]}
+    \hlstd{l2[[i]]} \hlkwb{<-} \hlkwd{lm}\hlstd{(x} \hlopt{~} \hlstd{wig1} \hlopt{+} \hlstd{p1}\hlopt{$}\hlstd{SMB} \hlopt{+} \hlstd{p1}\hlopt{$}\hlstd{HML)}
+\hlstd{\}}
+
+\hlstd{w1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{bg} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{gq} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{dw} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{w1[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{white.test}\hlstd{(l2[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{bg[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{bptest}\hlstd{(l2[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{gq[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{gqtest}\hlstd{(l2[[i]],} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{wig1)}\hlopt{$}\hlstd{p.value} \hlopt{<}
+        \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{dw[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{dwtest}\hlstd{(l2[[i]],} \hlkwc{alternative} \hlstd{=} \hlstr{"two.sided"}\hlstd{)}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,}
+        \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+\hlstd{\}}
+\hlstd{w1}
+\hlstd{bg}
+\hlstd{gq}
+\hlstd{dw}
+
+\hlstd{rm2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{smb2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{hml2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{rm2[i]} \hlkwb{<-} \hlstd{l2[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]}
+    \hlstd{smb2[i]} \hlkwb{<-} \hlstd{l2[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]}
+    \hlstd{hml2[i]} \hlkwb{<-} \hlstd{l2[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{4}\hlstd{]}
+\hlstd{\}}
+
+\hlstd{tabela2_rm} \hlkwb{<-} \hlkwd{matrix}\hlstd{(rm2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela2_smb} \hlkwb{<-} \hlkwd{matrix}\hlstd{(smb2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela2_hml} \hlkwb{<-} \hlkwd{matrix}\hlstd{(hml2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+
+\hlstd{tabela2_rm}
+\hlstd{tabela2_smb}
+\hlstd{tabela2_hml}
+
+
+\hlstd{t} \hlkwb{<-} \hlkwd{nrow}\hlstd{(p1)}
+\hlstd{n} \hlkwb{<-} \hlnum{16}
+\hlstd{k} \hlkwb{<-} \hlnum{3}
+
+\hlstd{alfa2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{alfa2[i]} \hlkwb{<-} \hlstd{l2[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{]}
+\hlstd{\}}
+\hlstd{alfa2}
+
+\hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{a} \hlkwb{<-} \hlstd{l2[[i]]}\hlopt{$}\hlstd{residuals}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+        \hlstd{m[j, i]} \hlkwb{<-} \hlstd{a[j]}
+    \hlstd{\}}
+\hlstd{\}}
+\hlstd{sigma2} \hlkwb{<-} \hlstd{(}\hlkwd{t}\hlstd{(m)} \hlopt{%*%} \hlstd{m)}\hlopt{/}\hlstd{t}
+
+\hlstd{h} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(p1}\hlopt{$}\hlstd{WIG, p1}\hlopt{$}\hlstd{SMB, p1}\hlopt{$}\hlstd{HML),} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{)}
+
+\hlstd{v} \hlkwb{<-} \hlkwd{cov}\hlstd{(h)}
+\hlstd{mi} \hlkwb{<-} \hlkwd{apply}\hlstd{(h,} \hlnum{2}\hlstd{, mean)}
+\hlstd{mi}
+\hlstd{grs} \hlkwb{<-} \hlstd{(t}\hlopt{/}\hlstd{n)} \hlopt{*} \hlstd{((t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}\hlopt{/}\hlstd{(t} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))} \hlopt{*} \hlstd{((alfa2} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma2)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(alfa2)))}\hlopt{/}\hlstd{(}\hlnum{1} \hlopt{+}
+    \hlstd{mi} \hlopt{%*%} \hlkwd{solve}\hlstd{(v)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(mi))))}
+\hlstd{grs}
+\hlnum{1} \hlopt{-} \hlkwd{pf}\hlstd{(grs, n, t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}
+
+
+\hlcom{# dla p2}
+
+\hlstd{l22} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"list"}\hlstd{,} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{x} \hlkwb{<-} \hlstd{p2[, i} \hlopt{+} \hlnum{5}\hlstd{]}
+    \hlstd{l22[[i]]} \hlkwb{<-} \hlkwd{lm}\hlstd{(x} \hlopt{~} \hlstd{wig1} \hlopt{+} \hlstd{p2}\hlopt{$}\hlstd{SMB} \hlopt{+} \hlstd{p2}\hlopt{$}\hlstd{HML)}
+\hlstd{\}}
+
+\hlstd{w1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{bg} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{gq} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{dw} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{w1[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{white.test}\hlstd{(l22[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{bg[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{bptest}\hlstd{(l22[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{gq[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{gqtest}\hlstd{(l22[[i]],} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{wig1)}\hlopt{$}\hlstd{p.value} \hlopt{<}
+        \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{dw[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{dwtest}\hlstd{(l22[[i]],} \hlkwc{alternative} \hlstd{=} \hlstr{"two.sided"}\hlstd{)}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,}
+        \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+\hlstd{\}}
+\hlstd{w1}
+\hlstd{bg}
+\hlstd{gq}
+\hlstd{dw}
+
+\hlstd{rm2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{smb2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{hml2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{rm2[i]} \hlkwb{<-} \hlstd{l22[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]}
+    \hlstd{smb2[i]} \hlkwb{<-} \hlstd{l22[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]}
+    \hlstd{hml2[i]} \hlkwb{<-} \hlstd{l22[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{4}\hlstd{]}
+\hlstd{\}}
+
+\hlstd{tabela2_rm} \hlkwb{<-} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(rm2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{))}
+\hlstd{tabela2_smb} \hlkwb{<-} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(smb2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{))}
+\hlstd{tabela2_hml} \hlkwb{<-} \hlkwd{t}\hlstd{(}\hlkwd{matrix}\hlstd{(hml2,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{))}
+
+\hlstd{tabela2_rm}
+\hlstd{tabela2_smb}
+\hlstd{tabela2_hml}
+
+
+\hlstd{t} \hlkwb{<-} \hlkwd{nrow}\hlstd{(p2)}
+\hlstd{n} \hlkwb{<-} \hlnum{16}
+\hlstd{k} \hlkwb{<-} \hlnum{3}
+
+\hlstd{alfa2} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{alfa2[i]} \hlkwb{<-} \hlstd{l22[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{]}
+\hlstd{\}}
+\hlstd{alfa2}
+
+\hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{a} \hlkwb{<-} \hlstd{l22[[i]]}\hlopt{$}\hlstd{residuals}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+        \hlstd{m[j, i]} \hlkwb{<-} \hlstd{a[j]}
+    \hlstd{\}}
+\hlstd{\}}
+\hlstd{sigma2} \hlkwb{<-} \hlstd{(}\hlkwd{t}\hlstd{(m)} \hlopt{%*%} \hlstd{m)}\hlopt{/}\hlstd{t}
+
+\hlstd{h} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(p1}\hlopt{$}\hlstd{WIG, p1}\hlopt{$}\hlstd{SMB, p1}\hlopt{$}\hlstd{HML),} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{)}
+
+\hlstd{v} \hlkwb{<-} \hlkwd{cov}\hlstd{(h)}
+\hlstd{mi} \hlkwb{<-} \hlkwd{apply}\hlstd{(h,} \hlnum{2}\hlstd{, mean)}
+\hlstd{mi}
+\hlstd{grs} \hlkwb{<-} \hlstd{(t}\hlopt{/}\hlstd{n)} \hlopt{*} \hlstd{((t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}\hlopt{/}\hlstd{(t} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))} \hlopt{*} \hlstd{((alfa2} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma2)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(alfa2)))}\hlopt{/}\hlstd{(}\hlnum{1} \hlopt{+}
+    \hlstd{mi} \hlopt{%*%} \hlkwd{solve}\hlstd{(v)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(mi))))}
+\hlstd{grs}
+\hlnum{1} \hlopt{-} \hlkwd{pf}\hlstd{(grs, n, t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}  \hlcom{# odrzucamy hipotezê}
+
+\hlcom{########################################################################### model czteroczynnikowy:}
+
+\hlstd{l3} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"list"}\hlstd{,} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{x} \hlkwb{<-} \hlstd{p1[, i} \hlopt{+} \hlnum{5}\hlstd{]}
+    \hlstd{l3[[i]]} \hlkwb{<-} \hlkwd{lm}\hlstd{(x} \hlopt{~} \hlstd{wig1} \hlopt{+} \hlstd{p1}\hlopt{$}\hlstd{SMB} \hlopt{+} \hlstd{p1}\hlopt{$}\hlstd{HML} \hlopt{+} \hlstd{p1}\hlopt{$}\hlstd{WML)}
+\hlstd{\}}
+
+\hlstd{l3}
+
+\hlstd{w1} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{bg} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{gq} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlstd{dw} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{w1[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{white.test}\hlstd{(l3[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{bg[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{bptest}\hlstd{(l3[[i]])}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{gq[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{gqtest}\hlstd{(l3[[i]],} \hlkwc{fraction} \hlstd{=} \hlnum{0.33}\hlstd{,} \hlkwc{order.by} \hlstd{=} \hlopt{~}\hlstd{wig1)}\hlopt{$}\hlstd{p.value} \hlopt{<}
+        \hlnum{0.05}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+    \hlstd{dw[i]} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(}\hlkwd{dwtest}\hlstd{(l3[[i]],} \hlkwc{alternative} \hlstd{=} \hlstr{"two.sided"}\hlstd{)}\hlopt{$}\hlstd{p.value} \hlopt{<} \hlnum{0.05}\hlstd{,}
+        \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+\hlstd{\}}
+
+\hlstd{w1}  \hlcom{# heteroskedastycznosc}
+\hlstd{bg}  \hlcom{# heteroskedastycznosc}
+\hlstd{gq}  \hlcom{# heteroskedastycznosc}
+\hlstd{dw}  \hlcom{# autokorelacja}
+
+
+\hlstd{rm3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{smb3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{hml3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+\hlstd{wml3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{0}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{rm3[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]}
+    \hlstd{smb3[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]}
+    \hlstd{hml3[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{4}\hlstd{]}
+    \hlstd{wml3[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{5}\hlstd{]}
+\hlstd{\}}
+
+
+\hlstd{tabela3_rm} \hlkwb{<-} \hlkwd{matrix}\hlstd{(rm3,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela3_smb} \hlkwb{<-} \hlkwd{matrix}\hlstd{(smb3,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela3_hml} \hlkwb{<-} \hlkwd{matrix}\hlstd{(hml3,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+\hlstd{tabela3_wml} \hlkwb{<-} \hlkwd{matrix}\hlstd{(wml3,} \hlkwc{nrow} \hlstd{=} \hlnum{4}\hlstd{)}
+
+
+\hlstd{tabela3_rm}
+\hlstd{tabela3_smb}
+\hlstd{tabela3_hml}
+\hlstd{tabela3_wml}
+
+\hlstd{t} \hlkwb{<-} \hlkwd{nrow}\hlstd{(p1)}
+\hlstd{n} \hlkwb{<-} \hlnum{16}
+\hlstd{k} \hlkwb{<-} \hlnum{4}
+
+\hlstd{alfa3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{alfa3[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{]}
+\hlstd{\}}
+\hlstd{alfa3}
+
+\hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{a} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{residuals}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+        \hlstd{m[j, i]} \hlkwb{<-} \hlstd{a[j]}
+    \hlstd{\}}
+\hlstd{\}}
+\hlstd{sigma3} \hlkwb{<-} \hlstd{(}\hlkwd{t}\hlstd{(m)} \hlopt{%*%} \hlstd{m)}\hlopt{/}\hlstd{t}
+
+\hlstd{h} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(p1}\hlopt{$}\hlstd{WIG, p1}\hlopt{$}\hlstd{SMB, p1}\hlopt{$}\hlstd{HML, p1}\hlopt{$}\hlstd{WML),} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{)}
+
+\hlstd{v} \hlkwb{<-} \hlkwd{cov}\hlstd{(h)}
+\hlstd{mi} \hlkwb{<-} \hlkwd{apply}\hlstd{(h,} \hlnum{2}\hlstd{, mean)}
+\hlstd{mi}
+\hlstd{grs} \hlkwb{<-} \hlstd{(t}\hlopt{/}\hlstd{n)} \hlopt{*} \hlstd{((t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}\hlopt{/}\hlstd{(t} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))} \hlopt{*} \hlstd{((alfa3} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma3)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(alfa3)))}\hlopt{/}\hlstd{(}\hlnum{1} \hlopt{+}
+    \hlstd{mi} \hlopt{%*%} \hlkwd{solve}\hlstd{(v)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(mi))))}
+\hlstd{grs}
+\hlnum{1} \hlopt{-} \hlkwd{pf}\hlstd{(grs, n, t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}
+
+\hlcom{# dla p2:}
+
+\hlstd{l33} \hlkwb{<-} \hlkwd{vector}\hlstd{(}\hlstr{"list"}\hlstd{,} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{x} \hlkwb{<-} \hlstd{p2[, i} \hlopt{+} \hlnum{5}\hlstd{]}
+    \hlstd{l33[[i]]} \hlkwb{<-} \hlkwd{lm}\hlstd{(x} \hlopt{~} \hlstd{p2}\hlopt{$}\hlstd{WIG} \hlopt{+} \hlstd{p2}\hlopt{$}\hlstd{SMB} \hlopt{+} \hlstd{p2}\hlopt{$}\hlstd{HML} \hlopt{+} \hlstd{p2}\hlopt{$}\hlstd{WML)}
+\hlstd{\}}
+
+\hlstd{t} \hlkwb{<-} \hlkwd{nrow}\hlstd{(p2)}
+\hlstd{n} \hlkwb{<-} \hlnum{16}
+\hlstd{k} \hlkwb{<-} \hlnum{4}
+
+\hlstd{alfa3} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{alfa3[i]} \hlkwb{<-} \hlstd{l33[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{1}\hlstd{]}
+\hlstd{\}}
+\hlstd{alfa3}
+
+\hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{16}\hlstd{)}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{a} \hlkwb{<-} \hlstd{l33[[i]]}\hlopt{$}\hlstd{residuals}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+        \hlstd{m[j, i]} \hlkwb{<-} \hlstd{a[j]}
+    \hlstd{\}}
+\hlstd{\}}
+\hlstd{sigma3} \hlkwb{<-} \hlstd{(}\hlkwd{t}\hlstd{(m)} \hlopt{%*%} \hlstd{m)}\hlopt{/}\hlstd{t}
+
+\hlstd{h} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(p2}\hlopt{$}\hlstd{WIG, p2}\hlopt{$}\hlstd{SMB, p2}\hlopt{$}\hlstd{HML, p2}\hlopt{$}\hlstd{WML),} \hlkwc{nrow} \hlstd{=} \hlnum{97}\hlstd{)}
+
+\hlstd{v} \hlkwb{<-} \hlkwd{cov}\hlstd{(h)}
+\hlstd{mi} \hlkwb{<-} \hlkwd{apply}\hlstd{(h,} \hlnum{2}\hlstd{, mean)}
+\hlstd{mi}
+\hlstd{grs} \hlkwb{<-} \hlstd{(t}\hlopt{/}\hlstd{n)} \hlopt{*} \hlstd{((t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}\hlopt{/}\hlstd{(t} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))} \hlopt{*} \hlstd{((alfa3} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma3)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(alfa3)))}\hlopt{/}\hlstd{(}\hlnum{1} \hlopt{+}
+    \hlstd{mi} \hlopt{%*%} \hlkwd{solve}\hlstd{(v)} \hlopt{%*%} \hlkwd{t}\hlstd{(}\hlkwd{t}\hlstd{(mi))))}
+\hlstd{grs}
+\hlnum{1} \hlopt{-} \hlkwd{pf}\hlstd{(grs, n, t} \hlopt{-} \hlstd{n} \hlopt{-} \hlstd{k)}
+
+\hlcom{# 6 dwoch pierwszych nie ma sensu - tylko trzeci}
+
+\hlcom{# pierwsza metoda: (wazona metoda najmniejszych kwadratow)}
+
+\hlstd{l3}
+
+\hlstd{xx} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{5}\hlstd{)}
+\hlstd{xx[,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlnum{1}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+    \hlstd{xx[i,} \hlnum{2}\hlopt{:}\hlnum{5}\hlstd{]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlopt{:}\hlnum{5}\hlstd{]}
+\hlstd{\}}
+
+\hlstd{xx}
+\hlstd{sigma3}
+
+\hlstd{p1}
+
+\hlstd{r_sr} \hlkwb{<-} \hlkwd{apply}\hlstd{(p1[}\hlnum{6}\hlopt{:}\hlnum{21}\hlstd{],} \hlnum{2}\hlstd{, mean)}
+\hlstd{r_sr}
+
+\hlstd{gamma} \hlkwb{<-} \hlkwd{solve}\hlstd{(}\hlkwd{t}\hlstd{(xx)} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma3)} \hlopt{%*%} \hlstd{xx)} \hlopt{%*%} \hlkwd{t}\hlstd{(xx)} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma3)} \hlopt{%*%}
+    \hlstd{r_sr}
+\hlstd{gamma}  \hlcom{# to jest premia za ryzyko -> srednio 0.2 procenta}
+
+\hlkwd{lm}\hlstd{(r_sr} \hlopt{~} \hlstd{xx} \hlopt{+} \hlnum{0}\hlstd{,} \hlkwc{weights} \hlstd{=} \hlkwd{diag}\hlstd{(sigma3))}
+
+\hlstd{va} \hlkwb{<-} \hlstd{(}\hlnum{1}\hlopt{/}\hlnum{97}\hlstd{)} \hlopt{*} \hlstd{(}\hlkwd{solve}\hlstd{(}\hlkwd{t}\hlstd{(xx)} \hlopt{%*%} \hlkwd{solve}\hlstd{(sigma3)} \hlopt{%*%} \hlstd{xx)} \hlopt{+} \hlkwd{rbind}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwd{cbind}\hlstd{(}\hlnum{0}\hlstd{, v)))}
+\hlstd{va}
+
+\hlstd{gamma[}\hlnum{1}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{])}
+\hlnum{1} \hlopt{-} \hlkwd{pt}\hlstd{(gamma[}\hlnum{1}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{]),} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}  \hlcom{# gammma 0 wyszlo rowne zero}
+\hlkwd{qt}\hlstd{(}\hlnum{0.95}\hlstd{,} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}
+
+\hlstd{gamma[}\hlnum{2}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{])}
+\hlnum{1} \hlopt{-} \hlkwd{pt}\hlstd{(gamma[}\hlnum{2}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{]),} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}
+
+\hlstd{gamma[}\hlnum{3}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{3}\hlstd{,} \hlnum{3}\hlstd{])}
+\hlnum{1} \hlopt{-} \hlkwd{pt}\hlstd{(gamma[}\hlnum{3}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{3}\hlstd{,} \hlnum{3}\hlstd{]),} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}
+
+\hlstd{gamma[}\hlnum{4}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{4}\hlstd{,} \hlnum{4}\hlstd{])}
+\hlnum{1} \hlopt{-} \hlkwd{pt}\hlstd{(gamma[}\hlnum{4}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{4}\hlstd{,} \hlnum{4}\hlstd{]),} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}
+
+\hlstd{gamma[}\hlnum{5}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{])}
+\hlnum{1} \hlopt{-} \hlkwd{pt}\hlstd{(gamma[}\hlnum{5}\hlstd{]}\hlopt{/}\hlkwd{sqrt}\hlstd{(va[}\hlnum{5}\hlstd{,} \hlnum{5}\hlstd{]),} \hlnum{97} \hlopt{-} \hlnum{5}\hlstd{)}
+
+\hlcom{# jesli hml zwiekszy sie o jeden procent, to ma to wplyw na wartosc naszego}
+\hlcom{# portfele, jesli sie zwieksza pozostale to juz raczej nie}
+
+\hlcom{# druga metoda:}
+
+\hlstd{eps} \hlkwb{<-} \hlkwd{numeric}\hlstd{(}\hlnum{5} \hlopt{*} \hlnum{16}\hlstd{)}
+\hlstd{mac} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{80}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{97}\hlstd{)}
+
+\hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{97}\hlstd{) \{}
+
+    \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{16}\hlstd{) \{}
+        \hlstd{eps[i]} \hlkwb{<-} \hlstd{l3[[i]]}\hlopt{$}\hlstd{residuals[j]}
+    \hlstd{\}}
+
+    \hlstd{eps[}\hlnum{17}\hlopt{:}\hlnum{32}\hlstd{]} \hlkwb{<-} \hlstd{eps[}\hlnum{1}\hlopt{:}\hlnum{16}\hlstd{]} \hlopt{*} \hlstd{p1[j,} \hlnum{2}\hlstd{]}
+    \hlstd{eps[}\hlnum{33}\hlopt{:}\hlnum{48}\hlstd{]} \hlkwb{<-} \hlstd{eps[}\hlnum{1}\hlopt{:}\hlnum{16}\hlstd{]} \hlopt{*} \hlstd{p1[j,} \hlnum{3}\hlstd{]}
+    \hlstd{eps[}\hlnum{49}\hlopt{:}\hlnum{64}\hlstd{]} \hlkwb{<-} \hlstd{eps[}\hlnum{1}\hlopt{:}\hlnum{16}\hlstd{]} \hlopt{*} \hlstd{p1[j,} \hlnum{4}\hlstd{]}
+    \hlstd{eps[}\hlnum{65}\hlopt{:}\hlnum{80}\hlstd{]} \hlkwb{<-} \hlstd{eps[}\hlnum{1}\hlopt{:}\hlnum{16}\hlstd{]} \hlopt{*} \hlstd{p1[j,} \hlnum{5}\hlstd{]}
+
+    \hlstd{mac[, j]} \hlkwb{<-} \hlstd{eps}
+\hlstd{\}}
+
+\hlstd{mac}
+
+\hlstd{gt} \hlkwb{<-} \hlkwd{apply}\hlstd{(mac,} \hlnum{1}\hlstd{, sum)}
+\hlstd{gt}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+ 
+\end{small} 
+ 
+\end{document}

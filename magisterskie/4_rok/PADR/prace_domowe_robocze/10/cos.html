@@ -1,0 +1,204 @@
+<html>
+   
+   <!--  http://www.w3schools.com/html/
+   http://www.w3schools.com/css/default.asp
+-->
+   
+   <head>
+   
+   <meta http-equiv="Content-Type" 
+content="text/html; charset=UTF-8" />
+   
+   <title>Moja pierwsza strona w HTML</title> <!-- to cos, co sie wyswietla 
+jako nazwa karty -->
+   
+   <style>
+   
+   body {
+      background: #f0f5dd;
+         font-family: "Verdana";
+      color: black;
+   }
+
+h1 {
+   border: 3px red solid;
+}
+
+h2{
+   color: blue;
+}
+
+img {
+   margin: 2em;
+}
+
+
+div.puzderko {
+   margin: 2em;
+   color: white;
+   background: pink;
+}
+
+</style>
+   </head>
+   
+   
+   <body>
+   
+   <h1>Spis tre?ci</h1>  <!-- tytul pierwszego naglowka -->
+   
+   <ol>  <!-- lista elementow - ponumerowana -->
+   <li><a href='#sek1'>Sekcja 1</a></li> <!-- a href odpowiada za nazwe 
+referencyjna odnosnika -->
+   <li><a href='#sek2'>Sekcja 2</a></li>
+   <li><a href='#sek3'>Sekcja 3</a></li>
+   </ol>
+   
+   <h1>Moja stronka</h1>
+   
+   <a name='sek1' />  <!-- tu nas przeniesie klikniecie w Sekcje 1 -->
+   
+   <h2>Opowiesc o autorze</h2> <!-- ten juz nie jest w czerwonej ramce, bo 
+nie jest z rodzaju h1, ale za to ma 
+niebieska czcionke, bo tak jest zdefinowane
+h2 w head -->
+   
+   <p>Encje: &lt; &le; &gt; &ge; &amp; &ndash; ala&nbsp;ma&nbsp;kota</p>
+   <!-- rozne specjalne znaki (a <p> to poczatek paragrafu) -->
+   
+   Hello, is it me you're looking for? <!-- tekst wpisuje sie tak po prostu -->
+
+world. <code>stri_locate()</code> <!-- pisanie czcionka maszynowa -->
+
+<!-- jesli chce, zeby bylo od nowej linijki, to musze nowy paragraf: -->
+
+<p>world. <code>stri_locate()</code></p>
+
+<a href='http://www.mini.pw.edu.pl'>Piek?o</a> <!-- w ten sposob uzyty href
+przeniesie nas na zadana
+strone internetowa -->
+
+<a name='sek2' />
+
+<h2>Opowiesc o czytelnikach</h2>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nunc 
+adipiscing at, dapibus sed magna. <strong>In at sollicitudin ligula. Lorem 
+ipsum dolor sit amet, consectetur adipiscing elit.</strong> Nam at massa 
+quis magna adipiscing placerat iaculis vitae lectus. <em>Sed ipsum eros, 
+faucibus a nulla cursus, convallis pretium nunc.</em> Aliquam tincidunt 
+vi</p>
+
+<!-- strong robi pogrubienie, em robi kursywe, a mark wypisuje tekst w
+zoltej wypelnionej ramce -->
+
+<pre>
+int main() {
+cout << "hello world" << endl;
+return 0;
+}
+</pre>
+
+<!-- wyswietla to kursywa ladnie z enterami (tak, jak porzadny kod 
+powienien wygladac) -->
+
+<p>
+Phasellus vulputate sed dui sagittis placerat. Nulla id lectus commodo, 
+rutrum sem luctus, tempor ante. Vestibulum sed fringilla leo, eu dignissim 
+erat. Cras dictum convallis massa, quis tincidunt libero feugiat a. 
+Suspendisse elementum tellus erat, at molestie nunc bibendum vel. Aliquam 
+convallis pulvinar adipiscing. Quisque mollis eros vel cursus pulvinar.
+</p>
+
+<!-- ponizej, jak robic tabele: -->
+
+<table>
+<tr>
+<th>Lp.</th><th>Imie</th><th>Nazwisko</th>
+</tr>
+<tr>
+<td>1</td><td>Jola</td><td>Lojalna</td>
+</tr>
+<tr>
+<td>2</td><td>Coz</td><td>Zezeszwecji</td>
+</tr>
+<tr>
+<td>3</td><td>Stol</td><td>znogami</td>
+</tr>   
+</table>
+
+<!-- alt - wyswietli sie zamiast obrazka, jesli nie moze byc on wczytany,
+src - taka sciezka, jesli obrazek jest w tym samym pliku, co .html -->
+
+<a name='sek3' />   
+
+<h2>Zakonczenie</h2>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nunc quam, 
+consectetur quis adipiscing at, dapibus sed magna. In at sollicitudin 
+ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+<ol>
+<li>pierwsze</li>
+<li>drugie</li>
+<li>trzecie</li>
+</ol>
+
+<table border="5">
+<tr>
+   <td>komorka1</td>	<td>komorka2</td>
+</tr>
+<tr>
+	<td>komorka3</td>	<td>komorka4</td>
+</tr>
+</table>
+
+Suspendisse egestas id diam at blandit. Cras quis eros ac magna blandit 
+
+
+
+pulvinar ac in neque. Duis ac sem vitae nulla lobortis ultrices. 
+Pellentesque cursus nec dui ac fringilla. Aenean odio felis, sollicitudin 
+eget metus at, scelerisque ultrices mauris. Morbi ligula tellus, 
+pellentesque quis lectus ut, cursus posuere odio. Maecenas luctus pretium 
+urna, ut rutrum risus placerat nec.
+
+<table border="1">
+
+<tr>
+   <td colspan="2">komorki1,2</td>
+</tr>
+<tr>
+	<td>komorka3</td>  <td>komorka4</td>
+</tr>
+</table>
+
+<div class='puzderko'>
+Nulla purus velit, egestas et diam sed, tempor vehicula risus. Aenean in 
+tristique est. Integer scelerisque ac dui vitae imperdiet. Curabitur in 
+eleifend dui. Vestibulum sed ultricies odio. Nunc condimentum lacinia 
+ligula, vitae volutpat nunc mattis quis. Mauris nibh lacus, tincidunt ac
+diam nec, egestas ullamcorper felis. 
+</div>
+
+<!-- zrobilo sie w puzderku definiowanym w head -->
+
+<ul>  <!-- lista nienumerowana -->
+<li>pierwsze</li>
+<li>drugie</li>
+<li>trzecie</li>
+</ul>
+
+<table>
+<tr>
+   <td>komorka1</td>
+	<td>komorka2</td>
+</tr>
+<tr>
+	<td>komorka3</td>
+	<td>komorka4</td>
+</tr>
+</table>
+
+</body>
+</html>

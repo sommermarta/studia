@@ -1,0 +1,160 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering PRACA DOMOWA 4\\ ASC - 31 maja 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+Analizujemy zbiór \textit{Deaths}. Wczytajmy dane i zobaczmy, jak on wygl¹da:
+
+<<echo=FALSE,warning=FALSE,message=FALSE>>=
+d <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\ASC\\DEATHS.DAT")
+d <- ts(d, start=1973, frequency=12)
+d
+@
+
+Wyestymujmy komponentê sezonow¹ i trend za pomoc¹ funkcji \texttt{decompose()}. Oto otrzymany wykres:
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=6>>=
+dec <- decompose(d)
+plot(dec)
+@
+
+Zajmijmy siê teraz tylko komponent¹ sezonow¹. Oto jej wykres:
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=4>>=
+sez <- dec$seasonal
+plot(sez)
+@
+
+Oto jej gêstoœæ spektralna:
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=4>>=
+sp.sez <- spectrum(sez)
+@
+
+A oto jej dystrybuanta spektralna
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=6>>=
+cpgram(sez) 
+okres <- sp.sez$freq[order(-sp.sez$spec)[1]]
+@
+
+Na podstawie gêstoœci spektralnej wyliczy³am, ¿e okres naszych danych wynosi $1$ rok, czyli $12$ miesiêcy.
+
+\bigskip
+
+Predykcja (wraz z przedzia³ami ufnoœci) dla kolejnych $36$ elementów:
+
+<<echo=FALSE,fig.align='center',fig.width=10,fig.height=4>>=
+m <- HoltWinters(d, seasonal="additive")
+p <- predict(m, n.ahead=36, prediction.interval=TRUE)
+plot(m,p) 
+@
+
+Dopasujmy model SARIMA korzystaj¹c z kryterium AIC. Optymalny model wyszed³ mi SARIMA$(1,1,1)(1,1,1)_{12}$. Przyjrzyjmy siê predykcji na tym modelu:
+
+<<echo=FALSE,results='hide'>>=
+tab <- array(0,dim=c(2,2,2,2),dimnames=c("p","q","P","Q")) 
+
+for (i in 0:1) { 
+   for (j in 0:1){ 
+      for (k in 0:1){ 
+         for (l in 0:1){ 
+            tab[i+1,j+1,k+1,l+1] <- AIC(arima(d,order=c(i,1,j),
+                                              seasonal=list(order=c(k,1,l)
+                                                            ,period=12),
+                                              optim.control=list(maxit=10^5))) 
+         } 
+      } 
+   } 
+}
+
+tab
+tab==max(tab)   # wybral 1,1,1,1
+@
+
+<<echo=FALSE,fig.align='center',fig.width=6,fig.height=4>>=
+aic <- arima(d,order=c(1,1,1), seasonal=list(order=c(1,1,1),period=12))
+p <- predict(aic, n.ahead=36)$pred
+s <- predict(aic, n.ahead=36)$se
+
+ts.plot(p, p + 2*s, p - 2*s,
+        col=c("red","red","red"), lty=c(1,3,3), main="AIC")
+@
+
+\section*{\textbf{\underline{Kod Ÿród³owy}}}
+
+<<eval=FALSE>>=
+# praca domowa:
+
+d <- read.table("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\ASC\\DEATHS.DAT")
+d <- ts(d, start=1973, frequency=12)
+d
+
+# a)
+
+dec <- decompose(d)
+plot(dec)
+
+sez <- dec$seasonal
+plot(sez)
+sp.sez <- spectrum(sez)
+cpgram(sez) 
+sp.sez$freq[order(-sp.sez$spec)[1]]   # okres co 1 rok
+
+m <- HoltWinters(d, seasonal="additive")
+p <- predict(m, n.ahead=36, prediction.interval=TRUE)
+plot(m,p)   
+
+# b)
+
+tab <- array(0,dim=c(2,2,2,2),dimnames=c("p","q","P","Q")) 
+
+for (i in 0:1) { 
+   for (j in 0:1){ 
+      for (k in 0:1){ 
+         for (l in 0:1){ 
+            tab[i+1,j+1,k+1,l+1] <- AIC(arima(d,order=c(i,1,j),
+                                              seasonal=list(order=c(k,1,l)
+                                                            ,period=12),
+                                              optim.control=list(maxit=10^5))) 
+         } 
+      } 
+   } 
+}
+
+tab
+tab==max(tab)   # wybral 1,1,1,1
+
+aic <- arima(d,order=c(1,1,1), seasonal=list(order=c(1,1,1),period=12))
+p <- predict(aic, n.ahead=36)$pred
+s <- predict(aic, n.ahead=36)$se
+
+ts.plot(p, p + 2*s, p - 2*s,
+        col=c("red","red","red"), lty=c(1,3,3), main="AIC") 
+@
+
+
+\end{document}
+
+
+

@@ -1,0 +1,430 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+
+\begin{document}
+
+\section*{\centering EKONOMETRIA -- SPRAWOZDANIE 2\\ MARTA SOMMER -- BSMAD}
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Wczytajmy nasze dane:
+
+<<>>=
+a <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr2\\zad1.csv",header=TRUE,sep=";")
+names(a) <- c("wydatki","dochod")
+attach(a)
+head(a)
+@
+
+Zbudujmy model liniowy (zale¿noœæ zmiennej \textit{wydatki} od zmiennej \textit{dochod}) stosuj¹c metodê MNK:
+
+<<>>=
+l <- lm(wydatki~dochod, data=a)
+summary(l)
+@
+
+Z \textit{summary} widaæ, ¿e model jest dobrze dopasowany ($p-value$ testu $F$ jest ma³e -- równe $2e-16$). Wspó³czynnik $R^2$ równy $0,9858$ równie¿ œwiadczy o dobrym dopasowaniu modelu. 
+
+Wspó³czynniki $\alpha$ i $\beta$ w naszym modelu 
+$$ wydatki = \alpha + \beta \cdot dochod $$ 
+s¹ równe odpowiednio $0,89$ i $0,9$. Z testu $t$, wynika równie¿, ¿e zmienna dochód jest rzeczywiœcie istotna w modelu ($p-value<2e-16$).
+
+Przedstawmy reszty z modelu na wykresie:
+
+<<eval=FALSE>>=
+plot(l,1)
+@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{1.png}
+\end{figure}
+
+Widaæ wyraŸnie, ¿e rezidua nie s¹ losowo rozrzucone wokó³ zera, tylko jest miêdzy nimi jakaœ zale¿noœæ. Podejrzewamy wiêc wystêpowanie heteroskedastycznoœci w modelu.
+
+\bigskip
+
+Powtórzmy rozumowanie dla modelu potêgowego tzn.
+$$ \ln{(wydatki)}=\alpha+\beta\cdot\ln{(dochod)} $$
+
+<<>>=
+l2 <- lm(log(wydatki)~log(dochod),data=a)
+summary(l2)
+@
+
+I tutaj równie¿, podobnie jak w modelu liniowym, model ma sens ($p-value$ testu $F$ ma³e) oraz jest doœæ dobrze dopasowany ($R^2=0,9937$). Z testu $t$ wynika, ¿e zmienna \textit{dochod} jest istotna. Przyjrzyjmy siê jeszcze wykresowi reszt z modelu:
+
+<<eval=FALSE>>=
+plot(l2,1)
+@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{2.png}
+\end{figure}
+
+Widaæ, ¿e rezidua wydl¹daj¹ nieco lepiej ni¿ w modelu liniowym (s¹ bardziej sp³aszczone). Heteroskedastycznoœæ jest jakby mniejsza, niemniej jednak i tak jest zauwa¿alna.
+
+\bigskip
+
+PrzejdŸmy teraz do formalnego sprawdzenia heteroskedastycznoœci dla obu modeli. Wykorzystamy do tego testy White'a, Breuscha-Pagana oraz Goldfelda-Quandta.
+
+Zacznijmy od modelu liniowego:
+
+<<warning=FALSE, message=FALSE>>=
+library("lmtest")
+library("bstats")
+
+white.test(l)
+bptest(l)
+gqtest(wydatki~dochod, fraction=0.33, order.by=~dochod)
+@
+
+$P-value$ ka¿dego z trzech testów jest mniejsze ni¿ $0,05$, wiêc w ka¿dym z testów hipotezê o równoœci wariancji odrzucamy. Mamy wiêc do czynienia z heteroskedastycznoœci¹. A w przypadku testu Breuscha-Pagana, znamy nawet charakter heteroskedastycznoœci, a mianowicie, wraz ze wzrostem dochodu, roœnie wariancja wydatków.
+
+\bigskip
+
+Zróbmy analogiczne testy dla modelu potêgowego:
+
+<<>>=
+white.test(l2)
+bptest(l2)
+gqtest(log(wydatki)~log(dochod), fraction=0.33, order.by=~dochod)
+@
+
+Analizuj¹c $p-value$ testów widzimy, ¿e hipotezê odrzucimy w przypadku testów White'a i Breuscha-Pagana, zaœ w przypadku testu Goldfelda-Quandta hipotezê przyjmiemy. Jako ¿e wiêkszoœæ testów (dwa z trzech) wskazuje na obecnoœæ heteroskedastycznoœci, wiêc w modelu tym równie¿ bêdziemy sk³onni uwa¿aæ, ¿e rzeczywiœcie jest ona obecna. Widaæ jednak, ¿e bêdzie ju¿ w takim razie mniejsza ni¿ w przypadku modelu liniowego.
+
+\bigskip
+
+Jakie wiêc wyci¹gniemy wnioski? Przede wszystkim stwierdzamy, ¿e model potêgowy bêdzie lepiej dopasowany ni¿ liniowy. Po drugie, ¿e w modelu obecna jest heteroskedastycznoœæ (wariancja nie jest sta³a, a nawet jest funkcj¹ monotoniczn¹). Widzimy wiêc, ¿e wraz ze wzrostem dochodów, wariancja wydatków równie¿ roœnie. Interpretowaæ nale¿y to w ten sposób, ¿e osoby zarabiaj¹ce ma³o, bardziej pilnuj¹ i planuj¹ wydatki, zaœ osoby zamo¿ne mniej przejmuj¹ siê tym, czy w danym miesi¹cu wydadz¹ mniej, czy wiêcej, gdy¿ mog¹ sobie na to finansowo pozwoliæ.  
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Zbudujmy nastêpuj¹cy model regresji:
+$$ y_t=\alpha+\beta x_t + \varepsilon_t, \hspace{2cm} t=1,\ldots,500, $$
+gdzie $\alpha,\beta \in \mathbb{R}$, $x_t$ s¹ dowolnymi obserwacjami (w moim przypadku z rozk³adu jednostajnego $U[1,6]$) oraz zaburzenie $\varepsilon_t$ jest zdefiniowane, jako:
+$$ \varepsilon_t=\eta_t \cdot \sqrt{a_0+a_1\varepsilon_{t-1}^2}, $$
+gdzie $\eta_t\sim\mathrm{N}(0,1)$, a za $a_0$ i $a_1$ przyjmiemy odpowiednio liczby $12,5$ oraz $0,5$. 
+
+\bigskip
+
+W zwi¹zku z tym, ¿e wzór na $\varepsilon_t$ jest rekurencyjny bez podanej  wartoœci pocz¹tkowej, przyjmiemy $\varepsilon_1=\eta_1$, ale ¿eby unikn¹æ b³êdu wynikaj¹cego z takiego za³o¿enia, zamiast $500$ obserwacji, wygenerujemy ich $600$, a nastêpnie obetniemy $100$ pierwszych, jako tych obarczonych b³êdem powy¿szego za³o¿enia. 
+
+<<cache=TRUE>>=
+x <- runif(500,1,6)
+a0 <- 12.5; a1 <- 0.5
+eta <- rnorm(600)
+eps <- numeric(600)
+
+eps[1] <- eta[1]
+for(i in 2:600){
+  eps[i] <- eta[i]*sqrt(a0+a1*(eps[i-1])^2)
+}
+eps <- eps[101:600]
+@
+
+Przyjrzyjmy siê, jak wygl¹daj¹ nasze $\varepsilon_t$ na wykresie:
+
+<<fig.height = 4, fig.width=6, fig.align="center">>=
+plot(eps,type="l")
+@
+
+Rzeczywiœcie, widaæ, ¿e wariancja ,,dziœ'', zale¿y od tej ,,wczoraj".
+
+\bigskip
+
+Stosuj¹c MNK, bêdziemy teraz chcieli oszacowaæ parametry $\alpha$ i $\beta$. ¯eby to jednak zrobiæ, musimy wygenerowaæ sobie obserwacje. Przyjmijmy wiêc $\alpha=5$ i $\beta=6$, wygenerumy dane, dopasujmy model liniowy, a nastêpnie sprawdŸmy, czy nasz model poda³ zbli¿one do prawdziwych wartoœci $\alpha$ i $\beta$.
+
+<<fig.height = 4, fig.width=5, fig.align="center">>=
+b0 <- 5; b1 <- 6
+y <- b0+b1*x+eps
+plot(y~x)
+@
+
+Na powy¿szym rysunku widaæ, ¿e waraiancja $y_t$ jest zmienna. Dopasujmy model liniowy:
+
+<<>>=
+l <- lm(y~x)
+summary(l)
+@
+
+Z \textit{summary} widaæ, ¿e model jest dobrze dopasowany oraz zmienna $x$ jest istotna. Model oszacowa³ nam parametry nastêpuj¹co: $\alpha=4,749, \beta=6,083$. Ich wartoœci s¹ wiêc bardzo zbli¿one do wartoœci prawdziwych. 
+
+Obliczmy jeszcze b³¹d œredniokwadratowy dla tego modelu:
+
+<<>>=
+mean((l$coefficients-c(5,6))^2)
+@
+
+Zbudujmy teraz model metod¹ najwiêkszej wiarogodnoœci. Zmaksymalizujmy wiêc logarytm funkcji wiarogodnoœci dany wzorem:
+$$ \ln{L}=-\dfrac{n}{2}\ln{2\pi}-\dfrac{1}{2}\sum^n_{t=1}\ln{(a_0+a_1(y_{t-1}-\alpha-\beta x_{t-1})^2)}-\dfrac{1}{2}\sum^n_{t=1}\dfrac{(y_{t}-\alpha-\beta x_{t})^2}{a_0+a_1(y_{t-1}-\alpha-\beta x_{t-1})^2} $$
+
+W tym celu u¿yjemy funkcji \textit{optim()}, korzystaj¹cej z metody optymalizacji quasi-Newtona.
+
+<<warning=FALSE,message=FALSE, cache=TRUE>>=
+n <- 500
+   
+f <- function(a){
+  
+  a0 <- a[1]
+  a1 <- a[2]
+  alfa <- a[3]
+  beta <- a[4]
+  
+  m <- numeric(n-1)
+  for(t in 2:n){
+    m[t-1] <- 1/2*log(a0+a1*(y[t-1]-alfa-beta*x[t-1])^2)+
+      (1/2*(y[t]-alfa-beta*x[t])^2)/(a0+a1*(y[t-1]-alfa-beta*x[t-1])^2)
+  }
+  sum(m)+n/2*log(2*pi)
+}
+
+op <- optim(c(1,1,4.749,6.083),f,method="BFGS")$par
+op
+@
+
+Dziêki metodzie najwiêkszej wiarogodnoœci, otrzymujemy wiêc nastêpuj¹ce rezultaty: $a_0=11,97$, $a_1=0,4$, $\alpha=4,95$, $\beta=6,00$. Na pierwszy rzut oka, rezultaty s¹ wiêc lepsze od tych otrzymanych metod¹ najmniejszych kwadratów. Przekonajmy siê jeszcze o tym formalnie, licz¹c b³¹d œredniokwadratowy metody najwiêkszej wiarogodnoœci:
+
+<<>>=
+mean((op[3:4]-c(5,6))^2)
+@
+
+Widzimy zatem, ¿e dla MNK b³¹d œreniokwadratowy wynosi $0,03499$, zaœ dla MNW $0.001306$. Jest on o rz¹d wielkoœci mniejszy w przypadku metody najwiêkszej wiarogodnoœci, wiêc to ona w naszym modelu lepiej estymuje parametry $\alpha$ i $\beta$. 
+
+\bigskip
+
+Zróbmy jeszcze krótk¹ symulacjê. Wybierzmy $5$ losowych ci¹gów zmiennych i oszacujmy parametry $\alpha$ i $\beta$ dwiema metedami. Dla ka¿dej z metod obliczmy b³¹d œredniokwadratowy, a nastêpnie policzmy jego œredni¹:
+
+<<warning=FALSE, message=FALSE, cache=TRUE>>=
+blad_mnk <- numeric(5)
+blad_mnw <- numeric(5)
+
+for(i in 1:5){
+   x2 <- runif(500,1,6)
+   eta2 <- rnorm(600)
+   eps2 <- numeric(600)
+
+   eps2[1] <- eta2[1]
+   for(j in 2:600){
+      eps2[j] <- eta2[j]*sqrt(a0+a1*(eps2[j-1])^2)
+   }
+   eps2 <- eps2[101:600]
+   y2 <- b0+b1*x2+eps2
+   l2 <- lm(y2~x2)
+   
+   blad_mnk[i] <- mean((l2$coefficients-c(5,6))^2)
+   op2 <- optim(c(1,1,l2$coefficients[1],l2$coefficients[2]),f,method="BFGS")$par
+   blad_mnw[i] <- mean((op2[3:4]-c(5,6))^2)
+}
+
+mean(blad_mnk); mean(blad_mnw)
+@
+
+Widaæ wyraŸnie, ¿e b³¹d œredniokwadratowy metody najwiêkszej wiarogodnoœci ($0,001256$) jest du¿o mniejszy, ni¿ b³¹d œredniokwadratowy metody najmniejszych kwadratów ($0,1331$). Metoda ta jest wiêc efektywniejsza.
+
+\bigskip
+
+PrzejdŸmy teraz do trochê innego modelu. Bêdzie to model autoregresyjny $AR(1)$:
+$$ \varepsilon_t=\rho \varepsilon_{t-1}+\eta_t, $$
+gdzie $\rho \in (0,1)$, $x_t\sim \mathrm{U}[1,2]$ a $y_t$ oraz $\eta_t$ s¹ zdefiniowane tak, jak w poprzednim modelu.
+
+\bigskip
+
+Oszacujmy parametry $\alpha$ i $\beta$ stosuj¹c MNK:
+
+<<fig.height = 4, fig.width=6, fig.align="center">>=
+x <- runif(500,1,2)
+
+rho <- 0.5
+eta <- rnorm(600)
+
+eps <- numeric(600)
+eps[1] <- eta[1]
+for(i in 2:600){
+  eps[i] <- rho*eps[i-1]+eta[i]
+}
+
+eps <- eps[101:600]
+
+plot(eps,type="l")
+@
+
+<<fig.height = 4, fig.width=5, fig.align="center">>=
+b0 <- 5
+b1 <- 6
+
+y <- b0+b1*x+eps
+plot(y~x)
+
+l <- lm(y~x)
+summary(l)
+@
+
+Estymatory $\alpha$ i $\beta$ w tym modelu s¹ zatem równe, odpowiednio, $4,629$ i $6,097$. A ich odchylenie standardowe to odpowiednio: $0.272$ i $0.179$. Policzmy b³¹d œredniokwadratowy naszego dopasowania, przeprowadzaj¹c krótk¹ symulacjê:
+
+<<>>=
+blad_mnk <- numeric(50)
+
+for(i in 1:50){
+   x3 <- runif(500,1,2)
+   eta3 <- rnorm(600)
+   eps3 <- numeric(600)
+
+   eps3[1] <- eta3[1]
+   for(j in 2:600){
+      eps3[j] <- rho*eps3[j-1]+eta3[j]
+   }
+   eps3 <- eps3[101:600]
+   y3 <- b0+b1*x3+eps3
+   l3 <- lm(y3~x3)
+   
+   blad_mnk[i] <- mean((l3$coefficients-c(5,6))^2)
+}
+
+mean(blad_mnk)
+@
+
+B³¹d œredniokwadratowy wynosi $0.05251$. Nie jest wiêc dostatecznie ma³y, ale du¿o mniejszy, ni¿ b³¹d dla MNK z poprzedniego modelu. 
+
+\bigskip
+
+Z symulacji przeprowadzonych w tym æwiczeniu widaæ wiêc, ¿e MNK nie zachowuje siê efektywnie, gdy mamy do czynienia z autokorelacj¹ b³êdów, czyli pewnym odstêpstwem od za³o¿eñ. Lepsz¹ metod¹ szacowania parametrów wydaje siê zatem metoda najwiêkszej wiarogodnoœci. Jest ona jednak du¿o bardziej skomplikowana obliczeniowo i numerycznie ni¿ metoda najmniejszych kwadratów.
+
+\newpage
+
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Bêdziemy w tym zadaniu rozwa¿aæ kursy zamkniêcia spó³ki PZU na gie³dzie. W tym celu œci¹gnêliœmy z internetu potrzebne dane -- kursy zamkniêcia spó³ki PZU w latach $12.05.2010-13.03.2014$ i odpowiednie notowania WIG-u, równie¿ w tych latach. 
+
+\bigskip
+
+Dla naszej spó³ki utwórzmy logarytmiczne stopy zwrotu:
+
+<<>>=
+wig <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr2\\wig_d.csv",header=TRUE,sep=",") 
+head(wig,3)
+
+pzu <- read.csv2("C:\\Users\\Marta\\Desktop\\Marta\\studia\\rok4\\Ekonometria\\spr2\\pzu_d.csv",header=TRUE,sep=",") 
+head(pzu,3)
+
+n <- nrow(pzu)
+attach(pzu)
+kurs_zamkn <- as.numeric(as.vector(pzu$Close))
+
+stop_zwr <- numeric(n-1)
+for(i in 2:length(kurs_zamkn)){
+  stop_zwr[i] <- log(kurs_zamkn[i]/kurs_zamkn[i-1])
+}
+
+kurs_zamkn_wig <- as.numeric(as.vector(wig$Close))
+
+stop_zwr_wig <- numeric(n-1)
+for(i in 2:length(kurs_zamkn_wig)){
+  stop_zwr_wig[i] <- log(kurs_zamkn_wig[i]/kurs_zamkn_wig[i-1])
+}
+
+mean(stop_zwr)
+@
+
+Œrednia logarytmiczna stopa zwrotu w tych latach wynosi $0.0004248$. Widaæ wiêc, ¿e œrednio PZU zyska³o.
+
+\bigskip
+
+Policzmy teraz wspó³czynnik agresywnoœci dla naszej spó³ki, korzystaj¹c z modelu:
+$$ (R_t-r_f)=\alpha+\beta(RM_t-r_f)+\eta_t, $$
+gdzie $RM_t$ jest logarytmiczn¹ stop¹ zwrotu WIG-u, $R_t$ logarytmiczn¹ stop¹ zwrotu naszej spó³ki, $r_f$ wynosi $5\%$ w skali roku, a $\eta_t$ to b³¹d losowy. Oszacujemy wiêc wspó³czynnik agresywnoœci $\beta$ metod¹ najmniejszych kwadratów:
+
+<<>>=
+rf <- 0.05/365
+y <- stop_zwr-rf
+x <- stop_zwr_wig-rf
+l <- lm(y~x)   
+
+summary(l)
+@
+
+Widaæ wiêc, ¿e wspó³czynnik agresywnoœci $\beta=0.91$, jest wiêc mniejszy ni¿ $1$. Oznacza to, ¿e spó³ka nie zachowywa³a siê agresywnie na gie³dzie, czyli gra³a raczej asekuracyjnie -- niewiele ryzykowa³a, ale te¿ niewiele traci³a.
+
+\bigskip
+
+PrzeprowadŸmy test Engle'a, ¿eby sprawdziæ, czy w modelu wystêpuje heteroskedastycznoœæ drugiego rodzaju:
+
+<<message=FALSE,warning=FALSE>>=
+library("FinTS")
+ArchTest(l$residuals,2)
+@
+
+$P-value$ testu jest ma³e, zatem odrzucamy hipotezê, czyli wystêpuje heteroskedastycznoœæ drugiego rodzaju. 
+
+\bigskip
+
+Zróbmy jeszcze test na wystêpowanie heteroskedastycznoœci pierwszego rodzaju:
+
+<<>>=
+white.test(l)
+@
+
+$P-value$ testu White'a jest ma³e, zatem heteroskedastycznoœæ pierwszego rodzaju wystêpuje. 
+
+\bigskip 
+
+Nie mamy zatem jednorodnoœci wariancji (zale¿y ona od dnia) oraz to co dziœ zale¿y od tego, co by³o wczoraj.
+
+\bigskip
+
+SprawdŸmy teraz, czy w modelu wystêpuje autokorelacja:
+
+<<message=FALSE,warning=FALSE>>=
+library("stats")
+Box.test(l$residuals,type="Ljung-Box")  
+dwtest(l,alternative="two.sided")
+@
+
+Zarówno test Ljunga-Boxa, jak i test Durbina-Watsona wskazuje na obecnoœæ autokorelacji. WprowadŸmy wiêc poprawkê Newey'a-Westa na wariancjê estymatorów MNK i sprawdŸmy testem $t$, czy wtedy parametry s¹ istotne:
+
+<<message=FALSE, warning=FALSE>>=
+library("sandwich")
+nw <- NeweyWest(l)
+
+co <- l$coefficients
+
+T1 <- (co[1]-0)/sqrt(nw[1,1])
+2*min(pt(T1,n-2),pt(T1,n-2,lower.tail=FALSE))  
+@
+
+$P-value$ testu na istotnoœæ parametru $\alpha$ jest wiêc ma³e i wskazuje na nieistotnoœæ parametru. SprawdŸmy, czy istotne jest $\beta$:
+
+<<>>=
+T2 <- (co[2]-0)/sqrt(nw[2,2])
+2*min(pt(T2,n-2),pt(T2,n-2,lower.tail=FALSE)) 
+@
+
+$P-value$ testu na istotnoœæ parametru $\beta$ jest ma³e i wskazuje na istotnoœæ parametru $\beta$ (wspó³czynnik agresywnoœci). Jako, ¿e w modelu wysz³o nam, ¿e $\beta=0.91$, sprawdŸmy jeszcze, czy nasz parametr jest istotnie mniejszy od~$1$:
+
+<<>>=
+T3 <- (co[2]-1)/sqrt(nw[2,2])
+pt(T3,n-2)
+@
+
+$P-value$ tego testu znowu jest ma³e, zatem rzeczywiœcie przyjmujemy hipotezê, ¿e nasz wspó³czynnik agresywnoœci jest istotnie mniejszy od jedynki. Potwierdzaj¹ siê wiêc wnioski, ¿e spó³ka PZU nie gra³a agresywnie na gie³dzie -- zachowywa³a siê raczej asekuracyjnie.
+
+\end{document}

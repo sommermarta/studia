@@ -1,0 +1,426 @@
+\documentclass[10pt,a4paper]{report}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=0.8cm, bmargin=0.8cm, lmargin=0.8cm, rmargin=0.8cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+\section*{\centering BIOSTATYSTYKA -- PRACA DOMOWA 3\\ MARTA SOMMER -- BSMAD}
+
+\subsection*{\underline{Zadanie 1.}}
+
+Rozwa¿amy dane dotycz¹ce raka pêcherza. Model warunkowy (PWP) przedstawiony na wykladzie (\texttt{mod.wyk}) zak³ada ten sam efekt leczenia dla wszystkich typów zdarzeñ. Skonstruujê model (\texttt{mod.moj}), który dopuszcza mo¿liwoœæ, ¿e efekt ten jest ró¿ny dla ró¿nych typów zdarzeñ. Oto wspó³czynniki w moim modelu: 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time1, time2, status) ~ rx1 + rx2 + rx3 + 
+##     rx4 + size + number + cluster(patid) + strata(enum), data = b3)
+## 
+## 
+##            coef exp(coef) se(coef) robust se      z     p
+## rx1    -0.41835     0.658   0.3042    0.2936 -1.425 0.150
+## rx2    -0.45184     0.636   0.3981    0.4371 -1.034 0.300
+## rx3    -0.06741     0.935   0.5985    0.4107 -0.164 0.870
+## rx4     0.20436     1.227   0.6881    0.5028  0.406 0.680
+## size   -0.00745     0.993   0.0732    0.0633 -0.118 0.910
+## number  0.11421     1.121   0.0540    0.0513  2.227 0.026
+## 
+## Likelihood ratio test=7.47  on 6 df, p=0.28  n= 178, number of events= 112
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zwróæmy najpierw uwagê na statystykê ilorazu wiarogodnoœci ($p=0.2799$). Oznacza ona, ¿e model jest Ÿle dopasowany i wspó³czynniki nie s¹ istotne. Podobnie zreszt¹ wskazuj¹ testy Walda ($p=0.1983$), score ($p=0.2511$) i Robust ($p=0.1489$). Zatem na efekt leczenia nie ma wp³ywu rodzaj zdarzenia.   
+
+U¿ywaj¹c skalowanych reszt Schoenfelda, sprawdŸmy jeszcze, czy spe³nione jest za³o¿enie proporcjonalnych hazardów:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##            rho   chisq     p
+## rx1    -0.0593 0.37922 0.538
+## rx2     0.1281 2.05291 0.152
+## rx3    -0.0531 0.15751 0.691
+## rx4     0.0430 0.10867 0.742
+## size   -0.0056 0.00269 0.959
+## number -0.0376 0.14146 0.707
+## GLOBAL      NA 2.84062 0.829
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+P-value wszêdzie jest du¿e, zatem nie mamy podstaw do odrzucenia hipotezy o spe³nianiu za³o¿enia proporcjonalnych hazardów. Model skonstruowany powy¿ej ma zatem sens i w ogóle móg³ byæ zbudowany.
+
+PrzeprowadŸmy jeszcze test hipotezy zerowej, ¿e efekt leczenia jest taki sam dla wszystkich typów zdarzeñ. U¿yjê statystyki testu ilorazu wiarogodnosci do hipotez liniowych i przyrównam j¹ do rozk³adu $\chi^2$ z trzema stopniami swobody, gdy¿ takiego rzêdu jest nasza macierz restrykcji. P-value mojego testu jest du¿e ($0.8118099$), zatem nie mam podstaw do odrzucenia hipotezy zerowej.
+
+
+
+
+\subsection*{\underline{Zadanie 2.}}
+
+Bêdziemy rozwa¿aæ dane dotycz¹ce czasu do wznowy po uzyskaniu remisji dla par chorych na bia³aczkê. Pacjenci byli dobierani w pary tak, by pochodzili z tego samego oœrodka medycznego i mieli ten sam typu uzyskanej remisji, dlatego zastosujemy do nich model podatnoœci. Ponadto chcemy uwzglêdniæ efekt remisji, wiêc u¿yjemy warstwowania zmiennej \texttt{partial}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time, status) ~ treat + frailty(patid) + 
+##     strata(partial), data = l)
+## 
+##   n= 42, number of events= 31 
+## 
+##                coef  se(coef) se2   Chisq DF p      
+## treat          -1.71 0.437    0.437 15.3  1  9.3e-05
+## frailty(patid)                       0.0  0  9.5e-01
+## 
+##       exp(coef) exp(-coef) lower .95 upper .95
+## treat     0.181       5.52     0.077     0.427
+## 
+## Iterations: 6 outer, 35 Newton-Raphson
+##      Variance of random effect= 5e-07   I-likelihood = -68.6 
+## Degrees of freedom for terms= 1 0 
+## Concordance= 0.808  (se = 0.076 )
+## Likelihood ratio test= 17.8  on 1 df,   p=2.53e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Test najwiêkszej wiarogodnoœci ($p=2.526e-05$) wskazuje na to, ¿e mamy podstawy do odrzucenia hipotezy o nieistotnoœci modelu. Zatem model ma sens. Zmienna \texttt{treat} jest istotna ($9.3e-05$). Zatem efekt leczenia w parach jest istotny. Mo¿emy równie¿ odczytaæ, ¿e leczenie przy wzroœcie o jednostkê (czyli jeœli mamy aktywny lek) zmniejsza ryzyko wznowy $0.18$ razy, czyli wyd³u¿a czas do wyst¹pienia zdarzenia $5,5$ raza.
+
+SprawdŸmy jeszcze na koniec, czy spe³nione s¹ za³o¿enia PH:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##           rho  chisq     p
+## treat -0.0411 0.0492 0.825
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+P-value jest du¿e, zatem za³o¿enie proporcjonalnych hazardów jest spe³nione.
+
+\subsection*{\underline{Zadanie 3.}}
+
+Analizujemy dane dotycz¹ce czasów do pojawienia siê guzów gruczo³ów mlekowych u 48 samic szczurów. Dopasujê model proporcjonalnych œrednich (AG), bior¹c pod uwagê korelacjê zmiennej \texttt{ratid}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time1, time2, status) ~ treat + cluster(ratid), 
+##     data = m)
+## 
+##   n= 252, number of events= 210 
+## 
+##         coef exp(coef) se(coef) robust se     z Pr(>|z|)   
+## treat -0.685     0.504    0.152     0.212 -3.23   0.0012 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##       exp(coef) exp(-coef) lower .95 upper .95
+## treat     0.504       1.98     0.333     0.764
+## 
+## Concordance= 0.587  (se = 0.02 )
+## Rsquare= 0.083   (max possible= 0.998 )
+## Likelihood ratio test= 21.9  on 1 df,   p=2.85e-06
+## Wald test            = 10.4  on 1 df,   p=0.00123
+## Score (logrank) test = 21  on 1 df,   p=4.5e-06,   Robust = 8.03  p=0.00461
+## 
+##   (Note: the likelihood ratio and score tests assume independence of
+##      observations within a cluster, the Wald and robust score tests do not).
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Z testu ilorazu wiarogodnoœci ($p=2.847e-06$) wynika, ¿e model ma sens. Zmienna \texttt{treat} jest istotna. Zmniejsza ona ryzyko o oko³o po³owê, czyli czas do wznowy zwiêksza siê $1.98$ raza. 
+
+SprawdŸmy jeszcze (testem skalowanych reszt Schoenfelda), czy s¹ spe³nione za³o¿enia PH:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##          rho chisq     p
+## treat -0.038 0.604 0.437
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+P-value jest du¿e, zatem nie mamy podstaw do odrzucenia hipotezy o spe³nionych za³o¿eniach proporcjonalnych hazardów i mogliœmy u¿yæ powy¿szego modelu.
+
+\subsection*{\underline{Zadanie 4.}}
+
+Bêdziemy analizowaæ dane dla 865 pacjentów chorych na ziarnicê z³oœliw¹ (chorobê
+Hodgkina), którzy byli leczeni radioterapi¹ lub radioterapi¹ ³¹czon¹ z chemioterapi¹. Usuwam z danych zmienn¹ \texttt{stnum}, która odpowiada za numer pacjenta. Obserwowano czas do pierwszego zdarzenia. Zdarzeniem móg³ byæ nawrót choroby, zgon lub
+pojawienie siê innego pierwotnego nowotworu, czyli mamy tu do czynienia z konkuruj¹cym ryzykiem. Interesuje nas efekt leczenia na czas do pojawienia sie innego pierwotnego nowotworu. W tym celu najpierw dopasujemy model PH dla funkcji sub-hazardu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(firsttime, event_cause == 1) ~ cmt, data = m)
+## 
+##   n= 865, number of events= 93 
+## 
+##     coef exp(coef) se(coef)    z Pr(>|z|)   
+## cmt 0.59      1.80     0.21 2.81    0.005 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##     exp(coef) exp(-coef) lower .95 upper .95
+## cmt       1.8      0.554      1.19      2.72
+## 
+## Concordance= 0.593  (se = 0.027 )
+## Rsquare= 0.009   (max possible= 0.699 )
+## Likelihood ratio test= 7.61  on 1 df,   p=0.00581
+## Wald test            = 7.88  on 1 df,   p=0.005
+## Score (logrank) test = 8.1  on 1 df,   p=0.00441
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(firsttime, event_cause == 2) ~ cmt, data = m)
+## 
+##   n= 865, number of events= 386 
+## 
+##       coef exp(coef) se(coef)     z Pr(>|z|)    
+## cmt -0.499     0.607    0.125 -4.01    6e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##     exp(coef) exp(-coef) lower .95 upper .95
+## cmt     0.607       1.65     0.475     0.775
+## 
+## Concordance= 0.547  (se = 0.012 )
+## Rsquare= 0.02   (max possible= 0.997 )
+## Likelihood ratio test= 17.6  on 1 df,   p=2.72e-05
+## Wald test            = 16.1  on 1 df,   p=6.03e-05
+## Score (logrank) test = 16.4  on 1 df,   p=5.05e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zarówno dla modelu z chorob¹ Hodkina, jak i dla modelu z innym nowotworem leczenie jest istotne. W pierwszym przypadku przy leczeniu radioterapi¹ i chemioterapi¹ na raz ryzyko zdarzenia maleje $0.6$ raza. W drugim przypadku roœnie $1,8$ raza! W obu modelach test najwiêkszej wiarogodnoœci ma ma³e p-value, wiêc jest istotny statystycznie, czyli modele maj¹ sens. SprawdŸmy jeszcze za³o¿enia modelu hazardów:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##        rho chisq      p
+## cmt -0.175  2.87 0.0904
+##        rho chisq     p
+## cmt 0.0127 0.062 0.803
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zarówno w pierwszym, jak i drugim modelu nie mamy podstaw s¹dziæ, ¿e za³o¿enia nie s¹ spe³nione.
+
+\bigskip
+
+Powy¿szy model nie bra³ pod uwagê pozosta³ych zmiennych z modelu. Dopasujmy wiêc teraz model PH dla funkcji hazardu sub-dystrybuanty, bior¹c pod uwagê wszystkie zmienne:
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(mod.inny} \hlkwb{<-} \hlkwd{crr}\hlstd{(}\hlkwc{ftime} \hlstd{= firsttime,} \hlkwc{fstatus} \hlstd{= event_cause,} \hlkwc{cov1} \hlstd{= mac,} \hlkwc{failcode} \hlstd{=} \hlnum{1}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## convergence:  TRUE 
+## coefficients:
+##     cmt    male   nodes mediast   age30 clinstg 
+##  0.7164 -0.3682 -0.5415  0.2912 -0.2128 -0.1678 
+## standard errors:
+## [1] 0.2346 0.2075 0.3949 0.1693 0.2248 0.2550
+## two-sided p-values:
+##     cmt    male   nodes mediast   age30 clinstg 
+##  0.0023  0.0760  0.1700  0.0850  0.3400  0.5100
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Dla innych nowotworów z testu najwiêkszej wiarogodnoœci widaæ, ¿e model jest dobrze dopasowany. Istotny jest tylko efekt leczenia, inne zmienne ju¿ nie. Przy czym leczenie chemioterapi¹ i radioterapi¹ jednoczeœnie zwiêksza ryzyko zachorowania dwukrotnie w porównaniu do leczenia sam¹ radioterapi¹.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(mod.hod} \hlkwb{<-} \hlkwd{crr}\hlstd{(}\hlkwc{ftime} \hlstd{= firsttime,} \hlkwc{fstatus} \hlstd{= event_cause,} \hlkwc{cov1} \hlstd{= mac,} \hlkwc{failcode} \hlstd{=} \hlnum{2}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## convergence:  TRUE 
+## coefficients:
+##     cmt    male   nodes mediast   age30 clinstg 
+## -0.5335  0.1418  0.3152 -0.2382 -0.4689  0.2095 
+## standard errors:
+## [1] 0.13650 0.10520 0.19770 0.09801 0.10410 0.11550
+## two-sided p-values:
+##     cmt    male   nodes mediast   age30 clinstg 
+## 9.3e-05 1.8e-01 1.1e-01 1.5e-02 6.6e-06 7.0e-02
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Dla choroby Hodgkina z testu najwiêkszej wiarogodnoœci widaæ, ¿e model jest dobrze dopasowany. Istotny jest efekt leczenia, ale te¿ zmienna \texttt{mediast} i \texttt{clinstg}. Przy czym efekt leczenia chemioterapi¹ zmniejsza ryzyko wznowy o po³owê. Wy¿szy stopieñ zaawansowania nowotworu zwiêksza ryzyko $1,2$ raza, zaœ wzrost stopnia zajêcia œródpiersia zmniejsza (co jest ma³o intuicyjne) ryzyko wznowy $0,79$ raza.
+
+Graficzne oszacowania funkcji skumulowanych czêstoœci dla modelu:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-14} 
+
+}
+
+
+
+\end{knitrout}
+
+
+\subsection*{\underline{Syntaks R-a}}
+
+\begin{small}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# zad.1}
+
+\hlkwd{library}(\hlstr{"survival"})
+b3 <- \hlkwd{read.csv}(\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}pd3\textbackslash{}\textbackslash{}bladder3.csv"})
+mod.moj <- \hlkwd{coxph}(\hlkwd{Surv}(time1,time2,status) ~ rx1 + rx2 + rx3 + rx4 + size + number + \hlkwd{cluster}(patid)+ \hlkwd{strata}(enum),
+              data=b3)
+mod.wyk <- \hlkwd{coxph}(\hlkwd{Surv}(time1,time2,status) ~ rx + size + number + \hlkwd{cluster}(patid) + \hlkwd{strata}(enum),
+              data=b3)
+mod.moj
+zal_mod1 <- \hlkwd{cox.zph}(mod.moj, transform=\hlstr{"identity"})
+zal_mod1 
+s <- 2*(mod.moj$loglik[2]-mod.wyk$loglik[2])
+p <- 1-\hlkwd{pchisq}(s,3)
+
+\hlcom{# zad.2}
+
+l <- \hlkwd{read.csv}(\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}pd3\textbackslash{}\textbackslash{}leukemia.csv"})
+mod <- \hlkwd{coxph}(\hlkwd{Surv}(time,status) ~ treat + \hlkwd{frailty}(patid)+\hlkwd{strata}(partial), data=l)
+\hlkwd{summary}(mod)
+zz <- \hlkwd{cox.zph}(mod, transform=\hlstr{"identity"})
+zz 
+
+\hlcom{# zad.3}
+
+m <- \hlkwd{read.csv}(\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}pd3\textbackslash{}\textbackslash{}mammary.csv"})
+mod <- \hlkwd{coxph}(\hlkwd{Surv}(time1,time2,status) ~ treat + \hlkwd{cluster}(ratid), data=m)
+\hlkwd{summary}(mod)
+zz <- \hlkwd{cox.zph}(mod, transform=\hlstr{"identity"})
+zz 
+
+\hlcom{# zad.4}
+
+\hlkwd{library}(\hlstr{"cmprsk"})
+m <- \hlkwd{read.csv}(\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Biostatystyka\textbackslash{}\textbackslash{}pd3\textbackslash{}\textbackslash{}hodgkin1.csv"})
+\hlkwd{attach}(m)
+\hlkwd{summary}(coxph.inny <- \hlkwd{coxph}(\hlkwd{Surv}(firsttime, event_cause == 1) ~ cmt, data=m))
+\hlkwd{summary}(coxph.hod <- \hlkwd{coxph}(\hlkwd{Surv}(firsttime, event_cause == 2) ~ cmt, data=m))
+\hlkwd{cox.zph}(coxph.inny, transform=\hlstr{"identity"})
+\hlkwd{cox.zph}(coxph.hod, transform=\hlstr{"identity"}
+mac <- \hlkwd{model.matrix}(~ cmt + male + nodes + mediast + age30 + clinstg)[,-1]
+(mod.inny <- \hlkwd{crr}(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=1))
+(mod.hod <- \hlkwd{crr}(ftime=firsttime, fstatus=event_cause, cov1=mac,
+                        failcode=2))
+\hlkwd{par}(mfrow=\hlkwd{c}(1,2))
+inny.pred <- \hlkwd{predict}(mod.inny, cov1=\hlkwd{rbind}(0,1))
+\hlkwd{plot}(inny.pred,lty=1:2,color=2:3, main=\hlstr{"Inny"})
+\hlkwd{legend}(\hlstr{"topleft"},lty=1:2,col=2:3,\hlkwd{c}(\hlstr{"radio"},\hlstr{"radio+chemio"}),cex=0.7)
+hod.pred <- \hlkwd{predict}(mod.hod, cov1=\hlkwd{rbind}(0,1))
+\hlkwd{plot}(hod.pred,lty=1:2,color=2:3, main=\hlstr{"Hod"})
+\hlkwd{legend}(\hlstr{"bottomright"},lty=1:2,col=2:3,\hlkwd{c}(\hlstr{"radio"},\hlstr{"radio+chemio"}),cex=0.7)
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{small}
+
+\end{document}

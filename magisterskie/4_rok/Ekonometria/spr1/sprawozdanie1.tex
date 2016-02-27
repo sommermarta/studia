@@ -1,0 +1,636 @@
+\documentclass[10pt,a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{savesym}
+\savesymbol{arc}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{pict2e}
+\usepackage{epstopdf}
+\usepackage{geometry}
+
+\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+\pagestyle{empty}
+\linespread{1.2}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+\section*{\centering SPRAWOZDANIE 1\\ EKONOMETRIA - 14 lutego 2014r.\\ \textbf{MARTA SOMMER} -- BSMAD -- 237503}
+
+\subsection*{\underline{\textbf{Zadanie 1.}}}
+
+Wczytajmy dane i dopasujmy model liniowy (zmienna \textit{liniowa}):
+$$ pop=\beta_0+\beta_1\cdot cena + \beta_2\cdot doch $$
+przy uwzglêdnieniu inflacji i ludnoœci kraju.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{a} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr1\textbackslash{}\textbackslash{}lab1_zad1.csv"}\hlstd{,}
+    \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{,} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{y} \hlkwb{<-} \hlstd{a}\hlopt{$}\hlstd{pop}\hlopt{/}\hlstd{(a}\hlopt{$}\hlstd{CPI} \hlopt{*} \hlstd{a}\hlopt{$}\hlstd{ludnosc)}
+\hlstd{x} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwd{c}\hlstd{(a}\hlopt{$}\hlstd{cena}\hlopt{/}\hlstd{a}\hlopt{$}\hlstd{CPI, a}\hlopt{$}\hlstd{doch}\hlopt{/}\hlstd{a}\hlopt{$}\hlstd{CPI),} \hlkwc{ncol} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{colnames}\hlstd{(x)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"cena2"}\hlstd{,} \hlstr{"dochod2"}\hlstd{)}
+
+\hlstd{liniowa} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x)}
+\hlkwd{summary}\hlstd{(liniowa)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.00892 -0.00345  0.00043  0.00315  0.00844 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)   0.0847     0.0273    3.10    0.017 *
+## xcena2       -0.4898     0.4518   -1.08    0.314  
+## xdochod2      0.0493     0.0320    1.54    0.167  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.00574 on 7 degrees of freedom
+## Multiple R-squared:  0.263,	Adjusted R-squared:  0.0526 
+## F-statistic: 1.25 on 2 and 7 DF,  p-value: 0.343
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu $F$ wynosi $0,3435$, jest zatem bardzo du¿e, czyli nie mamy podstaw do odrzucenia hipotezy o nieistotnoœci ca³ego modelu. W praktyce oznacza to, ¿e popyt na alkohol nie zale¿y od ceny i dochodu. Wynik mo¿e nieco dziwiæ, ale wnosi on tyle, ¿e alkohol jest dobrem pierwszej potrzeby i ¿e zawsze bêdzie na niego popyt (w pewnym sensie i w pewnych granicach niezale¿nie od jego ceny i od dochodów ludnoœci).
+
+\bigskip
+
+Przyjrzyjmy siê jednak elastycznoœci, która wska¿e pewn¹ tendencjê przydatn¹ w interpretacji. Elastycznoœæ cenowa w modelu liniowym (\textit{elast\_cen\_liniowy}) wyra¿a siê wzorem: 
+$$ \varepsilon^{C}=\beta_1\cdot \dfrac{cena}{pop} $$
+zaœ elastycznoœæ dochodowa (\textit{elast\_dochod\_potegowy}) wzorem:
+$$ \varepsilon^{I}=\beta_2\cdot \dfrac{doch}{pop} $$
+S¹ to wektory, tak wiêc je uœredniamy.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{elast_cen_liniowy} \hlkwb{<-} \hlstd{(liniowa}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]} \hlopt{*} \hlstd{x[,} \hlstr{"cena2"}\hlstd{])}\hlopt{/}\hlstd{y}
+\hlstd{elast_dochod_liniowy} \hlkwb{<-} \hlstd{(liniowa}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]} \hlopt{*} \hlstd{x[,} \hlstr{"dochod2"}\hlstd{])}\hlopt{/}\hlstd{y}
+\hlkwd{mean}\hlstd{(elast_cen_liniowy)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.1482
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(elast_dochod_liniowy)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.4198
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Elastycznoœæ cenowa wynosi $-0,1482$, czyli przy wzroœcie ceny o $1\%$, popyt maleje o $0,15\%$. 
+Elastycznoœæ dochodowa wynosi $0,4198$, czyli przy wzroœcie dochodu o $1\%$, popyt roœnie o $0,42\%$.
+Obie tendencje wydaj¹ siê sensowne.
+
+\bigskip
+
+Dopasujmy teraz model potêgowy (zmienna \textit{potegowa}):
+$$ pop=\beta_0\cdot cena^{\beta1}\cdot doch^{\beta_2} $$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{potegowa} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(y)} \hlopt{~} \hlkwd{log}\hlstd{(x))}
+\hlkwd{summary}\hlstd{(potegowa)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(y) ~ log(x))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.07867 -0.02833  0.00405  0.02437  0.07560 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -2.521      0.383   -6.58  0.00031 ***
+## log(x)cena2     -0.111      0.114   -0.97  0.36397    
+## log(x)dochod2    0.369      0.276    1.34  0.22352    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.0496 on 7 degrees of freedom
+## Multiple R-squared:  0.213,	Adjusted R-squared:  -0.0123 
+## F-statistic: 0.945 on 2 and 7 DF,  p-value: 0.433
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Z testu $F$ wynika, ¿e w tym modelu zmienne równie¿ nie s¹ istotne ($p-value=0,433$). 
+
+\bigskip
+
+Zbadajmy jeszcze elastycznoœæ, która dla modelu potêgowego wyra¿a siê wzorami, odpowiednio:
+$$\varepsilon^C=\beta_1$$
+$$\varepsilon^I=\beta_2$$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{elast_cen_potegowy} \hlkwb{<-} \hlstd{potegowa}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]}
+\hlstd{elast_dochod_potegowy} \hlkwb{<-} \hlstd{potegowa}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]}
+\hlstd{elast_cen_potegowy}
+\end{alltt}
+\begin{verbatim}
+## log(x)cena2 
+##     -0.1111
+\end{verbatim}
+\begin{alltt}
+\hlstd{elast_dochod_potegowy}
+\end{alltt}
+\begin{verbatim}
+## log(x)dochod2 
+##        0.3692
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Elastycznoœæ cenowa wynosi $-0,1111$, czyli przy wzroœcie ceny o $1\%$, popyt maleje o $0,11\%$.  
+Elastycznoœæ dochodowa wynosi $0,3692$, czyli przy wzroœcie dochodu o $1\%$, popyt roœnie o $0,37\%$.
+Wyniki s¹ wiêc bardzo zbli¿one do tych z modelu liniowego. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 2.}}}
+
+Dopasujmy model potêgowy:
+$$ \ln{q}=\beta_0+\beta_1\ln{p}+\beta_2\ln{doch} $$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{zywn} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr1\textbackslash{}\textbackslash{}lab1_zad2.csv"}\hlstd{,}
+    \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{,} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{attach}\hlstd{(zywn)}
+
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn)}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(q) ~ log(p) + log(doch), data = zywn)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.020763 -0.007164  0.000065  0.008644  0.015038 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   4.0473     0.1360   29.76   <2e-16 ***
+## log(p)       -0.1189     0.0404   -2.95   0.0066 ** 
+## log(doch)     0.2412     0.0134   17.95   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.0103 on 27 degrees of freedom
+## Multiple R-squared:  0.973,	Adjusted R-squared:  0.971 
+## F-statistic:  488 on 2 and 27 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu $F$ jest ma³e i wynosi $<2e-16$, zatem odrzucamy hipotezê o nieistotnoœci zmiennych w modelu (krótko mówi¹c - model ma sens). Poza tym zmodyfikowany wspó³czynnik $R^2$ jest równy $0,971$, jest zatem bardzo du¿y, co œwiadczy o dobrym dopasowaniu modelu.
+
+\bigskip
+
+Elastycznoœæ cenowa i dochodowa tego modelu to, odpowiednio, wspó³czynniki $\beta_1 (=-0,1189)$ i~$\beta_2~(=0,2412)$. Tak wiêc, gdy cena roœnie, to popyt na ¿ywnoœæ minimalnie maleje, a gdy dochód roœnie, to popyt mimimalnie roœnie. Fakt, ¿e nie jest to du¿y spadek (lub wzrost) mo¿na t³umaczyæ tym, ¿e ¿ywnoœæ jest produktem pierwszej potrzeby. 
+
+\bigskip
+
+Dopasujmy teraz model z interakcjami:
+$$ \ln{q}=\beta_0+\beta_1\ln{p}+\beta_2\ln{doch} +\beta_3\ln{p}\ln{doch} $$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ll} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{*} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn)}
+\hlkwd{summary}\hlstd{(ll)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(q) ~ log(p) * log(doch), data = zywn)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.018870 -0.006899 -0.000065  0.007257  0.015455 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)        8.0290     1.7981    4.47  0.00014 ***
+## log(p)            -0.9963     0.3970   -2.51  0.01866 *  
+## log(doch)         -0.7184     0.4324   -1.66  0.10866    
+## log(p):log(doch)   0.2112     0.0951    2.22  0.03535 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.00963 on 26 degrees of freedom
+## Multiple R-squared:  0.977,	Adjusted R-squared:  0.975 
+## F-statistic:  375 on 3 and 26 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Tutaj model równie¿ ma sens (zmienne s¹ istotne), a zmodyfikowany wspó³czynnik $R^2$ jest nawet nieco lepszy ni¿ w zwyk³ym modelu potêgowym (wynosi $0,975$). Przyjrzyjmy siê elastycznoœci cenowej i dochodowej w tym modelu. Bêdzie ona wynosi³a, odpowiednio:
+\begin{eqnarray*}
+\varepsilon^C&=&\beta_1+\beta_3\ln(doch)\\
+\varepsilon^I&=&\beta_2+\beta_3\ln(p) \\
+\end{eqnarray*}
+i równie¿ bêdzie wektorem, wiêc rozpatrzymy jej œredni¹.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{elast_cen} \hlkwb{<-} \hlstd{ll}\hlopt{$}\hlstd{coefficients[}\hlnum{2}\hlstd{]} \hlopt{+} \hlstd{ll}\hlopt{$}\hlstd{coefficients[}\hlnum{4}\hlstd{]} \hlopt{*} \hlkwd{log}\hlstd{(zywn}\hlopt{$}\hlstd{doch)}
+\hlstd{elast_doch} \hlkwb{<-} \hlstd{ll}\hlopt{$}\hlstd{coefficients[}\hlnum{3}\hlstd{]} \hlopt{+} \hlstd{ll}\hlopt{$}\hlstd{coefficients[}\hlnum{4}\hlstd{]} \hlopt{*} \hlkwd{log}\hlstd{(zywn}\hlopt{$}\hlstd{p)}
+\hlkwd{mean}\hlstd{(elast_cen)}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.09084
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(elast_doch)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2394
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Widaæ wiêc, ¿e elastycznoœæ jest bardzo zbli¿ona do tej z modelu bez interakcji i odpowiednia tendencja jest zachowana.
+
+\bigskip
+
+Wróæmy do zwyk³ego modelu potêgowego. Zbadajmy stabilnoœæ funkcji popytu przy pomocy testu Chowa.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{"strucchange"}\hlstd{)}
+\hlkwd{sctest}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn,} \hlkwc{type} \hlstd{=} \hlstr{"Chow"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Chow test
+## 
+## data:  log(q) ~ log(p) + log(doch)
+## F = 5.54, p-value = 0.004913
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu wysz³o bardzo ma³e ($0,004913$), wiêc odrzucamy hipotezê o stabilnoœci, zatem funkcja popytu dla tego modelu nie jest stabilna. Rozwa¿my wiêc podokresy (przed i po wojnie) i przekonajmy siê, czy taki model bêdzie lepiej dopasowany.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{l_przed_wojna} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn[}\hlnum{1}\hlopt{:}\hlnum{15}\hlstd{, ])}
+\hlkwd{summary}\hlstd{(l_przed_wojna)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(q) ~ log(p) + log(doch), data = zywn[1:15, ])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.01581 -0.00570  0.00228  0.00694  0.01448 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   4.5549     0.2009   22.67  3.2e-11 ***
+## log(p)       -0.2352     0.0534   -4.41  0.00086 ***
+## log(doch)     0.2432     0.0229   10.63  1.9e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.0098 on 12 degrees of freedom
+## Multiple R-squared:  0.907,	Adjusted R-squared:  0.891 
+## F-statistic: 58.2 on 2 and 12 DF,  p-value: 6.64e-07
+\end{verbatim}
+\begin{alltt}
+\hlstd{l_po_wojnie} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn[}\hlnum{16}\hlopt{:}\hlnum{30}\hlstd{, ])}
+\hlkwd{summary}\hlstd{(l_po_wojnie)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(q) ~ log(p) + log(doch), data = zywn[16:30, 
+##     ])
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.012503 -0.004076 -0.000251  0.004325  0.012466 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   5.0522     0.9014    5.61  0.00012 ***
+## log(p)       -0.2372     0.1540   -1.54  0.14947    
+## log(doch)     0.1407     0.0464    3.03  0.01037 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.00673 on 12 degrees of freedom
+## Multiple R-squared:  0.874,	Adjusted R-squared:  0.853 
+## F-statistic: 41.7 on 2 and 12 DF,  p-value: 3.97e-06
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Oba modele maj¹ sens ($p-value$ testu $F$ ma³e). Zmodyfikowany wspó³czynnik $R^2$ jest nieco gorszy ni¿ w modelu dopasowanym dla wszystkich danych, mo¿e to jednak byæ skutkiem mniejszej o po³owê liczby danych, jak równie¿ ewentualnego wp³ywu obserwacji odstaj¹cych. 
+
+\bigskip
+
+Zbadajmy jeszcze stabilnoœæ w podokresach:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sctest}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn[}\hlnum{1}\hlopt{:}\hlnum{15}\hlstd{, ],} \hlkwc{type} \hlstd{=} \hlstr{"Chow"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Chow test
+## 
+## data:  log(q) ~ log(p) + log(doch)
+## F = 4.168, p-value = 0.0416
+\end{verbatim}
+\begin{alltt}
+\hlkwd{sctest}\hlstd{(}\hlkwd{log}\hlstd{(q)} \hlopt{~} \hlkwd{log}\hlstd{(p)} \hlopt{+} \hlkwd{log}\hlstd{(doch),} \hlkwc{data} \hlstd{= zywn[}\hlnum{16}\hlopt{:}\hlnum{30}\hlstd{, ],} \hlkwc{type} \hlstd{=} \hlstr{"Chow"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Chow test
+## 
+## data:  log(q) ~ log(p) + log(doch)
+## F = 0.366, p-value = 0.7794
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+W okresie przed wojn¹ $p-value$ jest równe $0,0416$, czyli wskazuje na niestabilnoœæ funkcji popytu, jednak w okresie po wojnie ju¿ zdecydowanie tê stabilnoœæ mamy ($p-value$ du¿e, równe $0,7794$).  
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 3.}}}
+
+Wczytajmy dane i dopasujmy model potêgowy:
+$$ \ln{\dfrac{G}{Pop}}=\beta_0+\beta_1\ln{Y}+\beta_2\ln{Pg}+\beta_3\ln{Pnc}+\beta_4\ln{Puc} $$
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{gas} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlstr{"C:\textbackslash{}\textbackslash{}Users\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}Desktop\textbackslash{}\textbackslash{}Marta\textbackslash{}\textbackslash{}studia\textbackslash{}\textbackslash{}rok4\textbackslash{}\textbackslash{}Ekonometria\textbackslash{}\textbackslash{}spr1\textbackslash{}\textbackslash{}lab1_zad3.csv"}\hlstd{,}
+    \hlkwc{sep} \hlstd{=} \hlstr{";"}\hlstd{,} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{attach}\hlstd{(gas)}
+
+\hlstd{l} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{log}\hlstd{(G}\hlopt{/}\hlstd{Pop)} \hlopt{~} \hlkwd{log}\hlstd{(Y)} \hlopt{+} \hlkwd{log}\hlstd{(Pg)} \hlopt{+} \hlkwd{log}\hlstd{(Pnc)} \hlopt{+} \hlkwd{log}\hlstd{(Puc),} \hlkwc{data} \hlstd{= gas)}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(G/Pop) ~ log(Y) + log(Pg) + log(Pnc) + log(Puc), 
+##     data = gas)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.06504 -0.01884  0.00153  0.02079  0.05808 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -12.3418     0.6749  -18.29   <2e-16 ***
+## log(Y)        1.3734     0.0756   18.16   <2e-16 ***
+## log(Pg)      -0.0591     0.0325   -1.82    0.079 .  
+## log(Pnc)     -0.1268     0.1270   -1.00    0.326    
+## log(Puc)     -0.1187     0.0813   -1.46    0.154    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.033 on 31 degrees of freedom
+## Multiple R-squared:  0.958,	Adjusted R-squared:  0.953 
+## F-statistic:  177 on 4 and 31 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu $F$ jest ma³e (wynosi $<2e-16$), zatem model ma sens (zmienne s¹ istotne). Wspó³czynnik $R^2$ modelu jest du¿y (0,9526), wiêc model jest dobrze dopasowany. Z testu $t$ wynika, ¿e istotne s¹ tylko zmienne $Pg$ i $Y$. 
+
+\bigskip
+
+Jest to model potêgowy, wiêc elastycznoœci to po prostu wspó³czynniki stoj¹ce przy odpowiednich zmiennych. Tak wiêc elastycznoœæ cenowa dotycz¹ca nowych samochodów wynosi $-0,13$. Czyli gdy cena nowych samochodów roœnie, to popyt na benzynê maleje. Elastycznoœæ cenowa dotycz¹ca samochodów u¿ywanych wynosi $-0,12$, czyli gdy cena samochodów u¿ywanych roœnie, to popyt nieznacznie maleje. Elastycznoœæ cenowa dotycz¹ca ceny benzyny wynosi $-0,06$, czyli przy wzroœcie ceny benzyny popyt na ni¹ maleje. I wreszcie elastycznoœæ dochodowa wynosi $1,37$, czyli przy wzroœcie dochodów ludnoœci, popyt na benzynê te¿ roœnie. Wyniki wydaj¹ siê wiêc intuicyjne. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 4.}}}
+
+Dla modelu z zadania 3. zbadajmy charakter elastycznoœci popytu na benzynê. Przypomnijmy, jak wygl¹da \textit{summary} naszego modelu, a tym samym (poniewa¿ to by³ model potêgowy) jego elastycznoœci:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(l)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = log(G/Pop) ~ log(Y) + log(Pg) + log(Pnc) + log(Puc), 
+##     data = gas)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.06504 -0.01884  0.00153  0.02079  0.05808 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -12.3418     0.6749  -18.29   <2e-16 ***
+## log(Y)        1.3734     0.0756   18.16   <2e-16 ***
+## log(Pg)      -0.0591     0.0325   -1.82    0.079 .  
+## log(Pnc)     -0.1268     0.1270   -1.00    0.326    
+## log(Puc)     -0.1187     0.0813   -1.46    0.154    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.033 on 31 degrees of freedom
+## Multiple R-squared:  0.958,	Adjusted R-squared:  0.953 
+## F-statistic:  177 on 4 and 31 DF,  p-value: <2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Zajmijmy siê elastycznoœci¹ dochodow¹. Z testu $t$ wynika, ¿e jest ona istotna, czyli nie jest równa $0$. Widzimy, ¿e jest równa $1,3734$, sprawdŸmy zatem hipotezê:
+\begin{eqnarray*}
+H: \textrm{elastycznoœæ dochodowa} &=& 1\\
+K: \textrm{elastycznoœæ dochodowa} &>& 1\\
+\end{eqnarray*}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{tabela} \hlkwb{<-} \hlkwd{summary}\hlstd{(l)}\hlopt{$}\hlstd{coefficients}
+\hlstd{t.value} \hlkwb{<-} \hlstd{(tabela[}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{]} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{/}\hlstd{tabela[}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{]}
+\hlstd{p.value} \hlkwb{<-} \hlkwd{pt}\hlstd{(t.value,} \hlnum{36} \hlopt{-} \hlnum{5}\hlstd{,} \hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{p.value}
+\end{alltt}
+\begin{verbatim}
+## [1] 1.285e-05
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ testu $t$ dla tej hipotezy wynosi $1,285e-05$, jest zatem bardzo ma³e, czyli hipotezê odrzucamy. Zatem rzeczywiœcie elastycznoœæ dochodowa jest wiêksza od $1$. Popyt jest wiêc elastyczny (wzrost dochodów ludnoœci bêdzie mieæ faktyczny wp³yw na zwiêkszenie popytu na benzynê).
+
+\bigskip
+
+Z testu $t$ dla elastycznoœci cenowej benzyny wynika, ¿e popyt jest doskonale sztywny. $P-value$ tego testu wysz³o jednak stosunkowo niewielkie ($0,0786$). SprawdŸmy wiêc jeszcze hipotezê jednostronn¹:
+
+\begin{eqnarray*}
+H: \textrm{elastycznoœæ cenowa benzyny} &=& 0\\
+K: \textrm{elastycznoœæ cenowa benzyny} &>& 0\\
+\end{eqnarray*}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{t.value} \hlkwb{<-} \hlstd{(tabela[}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{]} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{/}\hlstd{tabela[}\hlnum{3}\hlstd{,} \hlnum{2}\hlstd{]}
+\hlstd{p.value} \hlkwb{<-} \hlnum{2} \hlopt{*} \hlkwd{min}\hlstd{(}\hlkwd{pt}\hlstd{(t.value,} \hlnum{36} \hlopt{-} \hlnum{5}\hlstd{,} \hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{),} \hlkwd{pt}\hlstd{(t.value,} \hlnum{31}\hlstd{))}
+\hlstd{p.value}
+\end{alltt}
+\begin{verbatim}
+## [1] 1.48e-25
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+$P-value$ wysz³o bardzo ma³e, zatem rzeczywiœcie mo¿emy przypuszczaæ, ¿e elastycznoœæ cenowa benzyny jest wiêksza od zera, zatem popyt nie jest elastyczny. Oznacza to tyle, ¿e wzrost ceny benzyny nie ma znacz¹cego wp³ywu na popyt.
+
+\bigskip
+
+Z testu $t$ z \textit{summary} wnioskujemy natomiast, ¿e zarówno elastycznoœæ cenowa nowych samochodów, jak i elastycznoœæ cenowa samochodów u¿ywanych s¹ doskonale nieelastyczne. 
+
+\newpage
+\subsection*{\underline{\textbf{Zadanie 5.}}}
+
+Przeanalizujmy nastêpuj¹ce wykresy:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(G}\hlopt{/}\hlstd{Pop} \hlopt{~} \hlstd{Year,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlstr{"black"}\hlstd{,} \hlnum{14}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlnum{22}\hlstd{)),} \hlkwc{main} \hlstd{=} \hlstr{"Zale¿noœæ popytu od czasu"}\hlstd{)}
+\hlkwd{plot}\hlstd{(G}\hlopt{/}\hlstd{Pop} \hlopt{~} \hlstd{Pg,} \hlkwc{col} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlstr{"black"}\hlstd{,} \hlnum{14}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlnum{22}\hlstd{)),} \hlkwc{main} \hlstd{=} \hlstr{"Zale¿noœæ popytu od ceny benzyny"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{figure}[h]
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{2.pdf}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\includegraphics[width=\textwidth]{1.pdf}
+\end{minipage}
+\end{figure}
+
+Funkcja popytu nie jest stabilna, a punkt ,,prze³¹czenia'' nastêpuje oko³o 1974 roku (widaæ to wyraŸnie na powy¿szych wykresach, gdzie dane powy¿ej roku 1974 zaznaczone s¹ kolorem czerwonym). SprawdŸmy to jeszcze formalnie testem Chowa: 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sctest}\hlstd{(}\hlkwd{log}\hlstd{(G}\hlopt{/}\hlstd{Pop)} \hlopt{~} \hlkwd{log}\hlstd{(Y)} \hlopt{+} \hlkwd{log}\hlstd{(Pg)} \hlopt{+} \hlkwd{log}\hlstd{(Pnc)} \hlopt{+} \hlkwd{log}\hlstd{(Puc),} \hlkwc{data} \hlstd{= gas,} \hlkwc{type} \hlstd{=} \hlstr{"Chow"}\hlstd{,}
+    \hlkwc{point} \hlstd{=} \hlnum{15}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Chow test
+## 
+## data:  log(G/Pop) ~ log(Y) + log(Pg) + log(Pnc) + log(Puc)
+## F = 22.67, p-value = 1.008e-08
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Rzeczywiœcie, $p-value$ jest bardzo ma³e ($1,008e-08$), wiêc odrzucamy hipotezê o stabilnoœci. 
+
+\end{document}
